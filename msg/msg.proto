@@ -197,8 +197,15 @@ message BankerData_S2C {
     PlayerData playerList = 1;
 }
 
-//message EmojiChat_C2S {
-//}
-//
-//message EmojiChat_S2C {
-//}
+// 表情发送
+message EmojiChat_C2S {
+    int32 actNum = 1;
+    int32 goalId = 2;
+}
+
+// 表情发送
+message EmojiChat_S2C {
+    int32 actNum = 1;
+    int32 actId = 2;
+    int32 goalId = 3;
+}

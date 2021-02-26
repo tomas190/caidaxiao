@@ -221,7 +221,7 @@ func (r *Room) GetCaiYuan() {
 		return
 	}
 
-	log.Debug("res:", res)
+	log.Debug("res:%v", res)
 	result, err := ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
 	if err != nil {

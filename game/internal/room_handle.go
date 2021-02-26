@@ -99,6 +99,7 @@ func (r *Room) GrabDealTimerTask() {
 	go func() {
 		for range r.clock.C {
 			r.counter++
+			log.Debug("BankerTime :%v",r.counter)
 			if r.counter == BankerTime {
 				r.counter = 0
 				BankerChannel <- true
@@ -138,6 +139,7 @@ func (r *Room) DownBetTime() {
 	t := time.NewTicker(time.Second)
 	for range t.C {
 		r.counter++
+		log.Debug("DownBetTime :%v",r.counter)
 		if r.counter == DownBetTime {
 			break
 		}
@@ -188,6 +190,7 @@ func (r *Room) CompareSettlement() {
 
 	for range t.C {
 		r.counter++
+		log.Debug("SettleTime :%v",r.counter)
 		// 如果时间处理不及时,可以判断定时9秒的时候将处理这个数据然后发送给前端进行处理
 		if r.counter == SettleTime {
 			// 踢出房间断线玩家

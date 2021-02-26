@@ -1,13 +1,13 @@
 {
   "LogLevel": "debug",
   "LogPath": "",
-  "WSAddr": "0.0.0.0:1344",
+  "WSAddr": "0.0.0.0:1345",
   "HTTPPort": "3344",
   "MaxConnNum": 20000,
 
   "MongoDBAddr": "172.16.100.5:27017",
   "MongoDBAuth": "",
-  "MongoDBUser": "dezhoupoker",
+  "MongoDBUser": "caidaxiao",
   "MongoDBPwd": "123456",
 
   "TokenServer": "http://172.16.100.2:9502/Token/getToken",
@@ -20,5 +20,5 @@
 
   "LogAddr": "http://172.16.100.7:4151/pub?topic=game-server",
 
-  "CaiYuan":"http://free.manycai.com/K25a4072e6ef333/hn60-1.json"
+  "CaiYuan":"http://free.manycai.com/K2601968389c853/hn60-1.json"
 }
