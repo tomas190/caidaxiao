@@ -12,7 +12,7 @@ import (
 func (r *Room) JoinGameRoom(p *Player) {
 	// 插入玩家信息
 	if p.IsRobot == false {
-		//FindPlayerID(p) todo
+		p.FindPlayerInfo()
 	}
 	// 将用户添加到用户列表
 	r.PlayerList = append(r.PlayerList, p)
