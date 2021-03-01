@@ -29,5 +29,8 @@ func init() {
 	Processor.Register(&ResultData_S2C{})
 	Processor.Register(&BankerData_C2S{})
 	Processor.Register(&BankerData_S2C{})
+	Processor.Register(&EmojiChat_C2S{})
+	Processor.Register(&EmojiChat_S2C{})
+
 }
 

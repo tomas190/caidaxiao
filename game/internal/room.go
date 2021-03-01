@@ -153,6 +153,53 @@ func (r *Room) LoadRoomRobots(num int) {
 //RespRoomData 返回房间数据
 func (r *Room) RespRoomData() *msg.RoomData {
 	rd := &msg.RoomData{}
+	rd.RoomId = r.RoomId
+	rd.GameTime = r.counter
+	rd.GameStep = r.GameStat
+	for _, v := range r.Lottery {
+		rd.ResultInt = append(rd.ResultInt, int32(v))
+	}
+	rd.PotMoneyCount = new(msg.DownBetMoney)
+	rd.PotMoneyCount.BigDownBet = r.PlayerTotalMoney.BigDownBet
+	rd.PotMoneyCount.SmallDownBet = r.PlayerTotalMoney.SmallDownBet
+	rd.PotMoneyCount.SingleDownBet = r.PlayerTotalMoney.SingleDownBet
+	rd.PotMoneyCount.DoubleDownBet = r.PlayerTotalMoney.DoubleDownBet
+	rd.PotMoneyCount.PairDownBet = r.PlayerTotalMoney.PairDownBet
+	rd.PotMoneyCount.StraightDownBet = r.PlayerTotalMoney.StraightDownBet
+	rd.PotMoneyCount.LeopardDownBet = r.PlayerTotalMoney.LeopardDownBet
+	for _, v := range r.PotWinList {
+		pot := &msg.PotWinList{}
+		pot.CardType = v.CardType
+		pot.BigSmall = v.BigSmall
+		pot.SinDouble = v.SinDouble
+		pot.ResultNum = v.ResultNum
+		rd.PotWinList = append(rd.PotWinList, pot)
+	}
+	// 这里只需要遍历桌面玩家，站起玩家不显示出来
+	for _, v := range r.PlayerList {
+		if v != nil {
+			pd := &msg.PlayerData{}
+			pd.PlayerInfo = new(msg.PlayerInfo)
+			pd.PlayerInfo.Id = v.Id
+			pd.PlayerInfo.NickName = v.NickName
+			pd.PlayerInfo.HeadImg = v.HeadImg
+			pd.PlayerInfo.Account = v.Account
+			pd.DownBetMoney = new(msg.DownBetMoney)
+			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
+			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
+			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
+			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
+			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
+			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			pd.TotalDownBet = v.TotalDownBet
+			pd.WinTotalCount = v.WinTotalCount
+			pd.ResultMoney = v.ResultMoney
+			pd.IsAction = v.IsAction
+			pd.IsBanker = v.IsBanker
+			rd.PlayerData = append(rd.PlayerData, pd)
+		}
+	}
 	return rd
 }
 
@@ -161,7 +208,26 @@ func (r *Room) RespUptPlayerList() []*msg.PlayerData {
 	var playerSlice []*msg.PlayerData
 	for _, v := range r.PlayerList {
 		if v != nil {
-			//data := &msg.PlayerData{}
+			pd := &msg.PlayerData{}
+			pd.PlayerInfo = new(msg.PlayerInfo)
+			pd.PlayerInfo.Id = v.Id
+			pd.PlayerInfo.NickName = v.NickName
+			pd.PlayerInfo.HeadImg = v.HeadImg
+			pd.PlayerInfo.Account = v.Account
+			pd.DownBetMoney = new(msg.DownBetMoney)
+			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
+			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
+			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
+			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
+			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
+			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			pd.TotalDownBet = v.TotalDownBet
+			pd.WinTotalCount = v.WinTotalCount
+			pd.ResultMoney = v.ResultMoney
+			pd.IsAction = v.IsAction
+			pd.IsBanker = v.IsBanker
+			playerSlice = append(playerSlice, pd)
 		}
 	}
 	return playerSlice
@@ -327,7 +393,7 @@ func (r *Room) ExitFromRoom(p *Player) {
 	p.WinTotalCount = 0
 	p.TwentyData = nil
 	p.DownBetHistory = nil
-	p.IsButton = false
+	p.IsBanker = false
 	p.IsAction = false
 
 	//从房间列表删除玩家信息,更新房间列表

@@ -18,6 +18,8 @@ func init() {
 
 	handlerReg(&msg.PlayerAction_C2S{}, handlePlayerAction)
 
+	handlerReg(&msg.BankerData_C2S{}, handleBankerData)
+	handlerReg(&msg.EmojiChat_C2S{}, handleEmojiChat)
 }
 
 // 注册消息处理函数
@@ -233,3 +235,35 @@ func handlePlayerAction(args []interface{}) {
 		p.PlayerAction(m)
 	}
 }
+
+func handleBankerData(args []interface{}) {
+	m := args[0].(*msg.BankerData_C2S)
+	a := args[1].(gate.Agent)
+
+	p, ok := a.UserData().(*Player)
+	log.Debug("handleBankerData 庄家行动状态~ : %v", p.Id)
+
+	if ok {
+		p.BankerAction(m)
+	}
+}
+
+func handleEmojiChat(args []interface{}) {
+	m := args[0].(*msg.EmojiChat_C2S)
+	a := args[1].(gate.Agent)
+
+	p, ok := a.UserData().(*Player)
+	if ok {
+		roomId := hall.UserRoom[p.Id]
+		r, _ := hall.RoomRecord.Load(roomId)
+		if r != nil {
+			room := r.(*Room)
+			data := &msg.EmojiChat_S2C{}
+			data.ActNum = m.ActNum
+			data.ActId = p.Id
+			data.GoalId = m.GoalId
+			room.BroadCastMsg(data)
+		}
+	}
+}
+

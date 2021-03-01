@@ -23,6 +23,8 @@ enum MessageID {
     MSG_ResultData_S2C = 16;
     MSG_BankerData_C2S = 17;
     MSG_BankerData_S2C = 18;
+    MSG_EmojiChat_C2S = 19;
+    MSG_EmojiChat_S2C = 20;
 }
 
 // 游戏阶段
@@ -124,6 +126,8 @@ message PlayerData {
     int32 winTotalCount = 5; // 玩家房间Win总次数
     double resultMoney = 6; // 本局结算金额
     repeated PotWinList potWinList = 7; // 游戏记录开奖列表
+    bool IsAction = 8; // 玩家是否行动
+    bool IsBanker = 9; // 玩家是否庄家
 }
 
 message RoomData {
@@ -200,12 +204,12 @@ message BankerData_S2C {
 // 表情发送
 message EmojiChat_C2S {
     int32 actNum = 1;
-    int32 goalId = 2;
+    string goalId = 2;
 }
 
 // 表情发送
 message EmojiChat_S2C {
     int32 actNum = 1;
-    int32 actId = 2;
-    int32 goalId = 3;
+    string actId = 2;
+    string goalId = 3;
 }

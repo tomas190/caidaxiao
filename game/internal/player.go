@@ -34,7 +34,7 @@ type Player struct {
 	WinTotalCount   int32             // 玩家房间获胜Win总次数
 	TwentyData      []int32           // 20局Win数据,1Lose,2Win
 	DownBetHistory  []*DownBetHistory // 下注记录 10条
-	IsButton        bool              // 是否庄家
+	IsBanker        bool              // 是否庄家
 	IsAction        bool              // 玩家是否行动
 	IsRobot         bool              // 是否机器人
 	IsOnline        bool              // 玩家是否在线
@@ -52,7 +52,7 @@ func (p *Player) Init() {
 	p.WinTotalCount = 0
 	p.TwentyData = nil
 	p.DownBetHistory = nil
-	p.IsButton = false
+	p.IsBanker = false
 	p.IsAction = false
 	p.IsRobot = false
 	p.IsOnline = true

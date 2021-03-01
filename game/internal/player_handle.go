@@ -161,3 +161,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		}
 	}
 }
+
+func (p *Player) BankerAction(m *msg.BankerData_C2S)  {
+
+}

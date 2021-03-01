@@ -241,7 +241,7 @@ func (r *Room) ResultMoney() {
 
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsAction == true {
-			if v.IsButton == true { // 庄家开奖（包括系统坐庄）
+			if v.IsBanker == true { // 庄家开奖（包括系统坐庄）
 				nowTime := time.Now().Unix()
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				reason := "庄家赢钱"
