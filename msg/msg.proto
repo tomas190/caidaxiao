@@ -198,7 +198,8 @@ message BankerData_C2S {
 }
 
 message BankerData_S2C {
-    PlayerData playerList = 1;
+    PlayerData banker = 1;
+    int32 takeMoney = 2;
 }
 
 // 表情发送

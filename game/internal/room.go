@@ -23,7 +23,7 @@ const (
 )
 
 const (
-	BankerTime  = 7  // 庄家时间
+	BankerTime  = 10 // 庄家时间
 	DownBetTime = 25 // 下注时间 22秒
 	SettleTime  = 10 // 结算时间 10秒
 )
@@ -50,8 +50,9 @@ type Room struct {
 	RoomId     string    // 房间号
 	PlayerList []*Player // 玩家列表
 
-	BankerId    string  // 庄家ID
-	BankerMoney float64 // 庄家金额
+	BankerId    string           // 庄家ID
+	BankerMoney float64          // 庄家金额
+	bankerList  map[string]int32 // 抢庄列表
 
 	Lottery          []int            // 开奖数据
 	LotteryResult    msg.PotWinList   // 开奖结果
@@ -74,6 +75,7 @@ func (r *Room) Init() {
 
 	r.BankerId = ""
 	r.BankerMoney = 0
+	r.bankerList = make(map[string]int32)
 
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
@@ -612,4 +614,97 @@ func (r *Room) RobotLength() int {
 		}
 	}
 	return num
+}
+
+func (r *Room) PlayerUpBanker() {
+	if len(r.bankerList) == 0 {
+		p := gRobotCenter.CreateRobot()
+		p.Account = RandomBankerAccount()
+		p.IsBanker = true
+		r.BankerId = p.Id
+		hall.UserRoom[p.Id] = r.RoomId
+		r.PlayerList = append(r.PlayerList, p)
+
+		bankerMoney := []int32{2000, 5000, 10000, 20000}
+		num := RandInRange(0, 4)
+
+		p.bankerMoney = float64(bankerMoney[num])
+		r.BankerMoney = float64(bankerMoney[num])
+
+		data := &msg.BankerData_S2C{}
+		data.Banker = p.RespPlayerData()
+		data.TakeMoney = bankerMoney[num]
+		r.BroadCastMsg(data)
+	} else if len(r.bankerList) >= 1 {
+		b2000 := make([]string, 0)
+		b5000 := make([]string, 0)
+		b10000 := make([]string, 0)
+		b20000 := make([]string, 0)
+		for k := range r.bankerList {
+			if r.bankerList[k] == 2000 {
+				b2000 = append(b2000, k)
+			}
+			if r.bankerList[k] == 5000 {
+				b5000 = append(b5000, k)
+			}
+			if r.bankerList[k] == 10000 {
+				b10000 = append(b10000, k)
+			}
+			if r.bankerList[k] == 20000 {
+				b20000 = append(b20000, k)
+			}
+		}
+		if len(b20000) >= 1 {
+			if len(b20000) == 1 {
+				r.SetBanker(b20000[0], 20000)
+			} else {
+				num := RandInRange(0, len(b20000))
+				r.SetBanker(b20000[num], 20000)
+			}
+			return
+		}
+		if len(b10000) >= 1 {
+			if len(b10000) == 1 {
+				r.SetBanker(b10000[0], 10000)
+			} else {
+				num := RandInRange(0, len(b10000))
+				r.SetBanker(b10000[num], 10000)
+			}
+			return
+		}
+		if len(b5000) >= 1 {
+			if len(b5000) == 1 {
+				r.SetBanker(b5000[0], 5000)
+			} else {
+				num := RandInRange(0, len(b5000))
+				r.SetBanker(b5000[num], 5000)
+			}
+			return
+		}
+		if len(b2000) >= 1 {
+			if len(b2000) == 1 {
+				r.SetBanker(b2000[0], 2000)
+			} else {
+				num := RandInRange(0, len(b2000))
+				r.SetBanker(b2000[num], 2000)
+			}
+			return
+		}
+	}
+}
+
+// 设定庄家并发送数据
+func (r *Room) SetBanker(id string, takeMoney int32) {
+	for _, v := range r.PlayerList {
+		if v != nil && v.Id == id {
+			v.IsBanker = true
+			v.bankerMoney = float64(takeMoney)
+			r.BankerId = id
+			r.BankerMoney = float64(takeMoney)
+			data := &msg.BankerData_S2C{}
+			data.Banker = v.RespPlayerData()
+			data.TakeMoney = takeMoney
+			r.BroadCastMsg(data)
+		}
+	}
 }

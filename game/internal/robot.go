@@ -35,7 +35,6 @@ func (rc *RobotsCenter) CreateRobot() *Player {
 	//生成机器人金币随机数
 	r.Account = RandomAccount()
 
-	//log.Debug("创建机器人~ : %v", r.Id)
 	return r
 }
 
@@ -562,12 +561,6 @@ func RandomIMG() string {
 	return slice[num]
 }
 
-func RandomAccount() float64 {
-	rand.Intn(int(time.Now().Unix()))
-	money := RandInRange(200, 5000)
-	return float64(money)
-}
-
 //生成随机机器人NickName
 func RandomName() string {
 	for {
@@ -576,4 +569,16 @@ func RandomName() string {
 			return randNum
 		}
 	}
+}
+
+func RandomAccount() float64 {
+	rand.Intn(int(time.Now().Unix()))
+	money := RandInRange(200, 5000)
+	return float64(money)
+}
+
+func RandomBankerAccount() float64 {
+	rand.Intn(int(time.Now().Unix()))
+	money := RandInRange(2000, 20000)
+	return float64(money)
 }

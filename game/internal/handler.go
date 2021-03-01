@@ -253,6 +253,7 @@ func handleEmojiChat(args []interface{}) {
 	a := args[1].(gate.Agent)
 
 	p, ok := a.UserData().(*Player)
+	log.Debug("handleEmojiChat 玩家发送表情~ : %v", p.Id)
 	if ok {
 		roomId := hall.UserRoom[p.Id]
 		r, _ := hall.RoomRecord.Load(roomId)

@@ -24,6 +24,7 @@ type Player struct {
 	Token    string
 	RoundId  string
 
+	bankerMoney     float64           // 庄家金额
 	Status          msg.PlayerStatus  // 玩家状态
 	BankerStatus    msg.BankerStatus  // 庄家状态
 	DownBetMoney    msg.DownBetMoney  // 玩家各注池下注金额
@@ -42,6 +43,7 @@ type Player struct {
 
 func (p *Player) Init() {
 	p.RoundId = ""
+	p.bankerMoney = 0
 	p.Status = msg.PlayerStatus_XX_Status
 	p.BankerStatus = msg.BankerStatus_BankerNot
 	p.DownBetMoney = msg.DownBetMoney{}
@@ -63,4 +65,27 @@ func (p *Player) SendMsg(msg interface{}) {
 	if p.ConnAgent != nil {
 		p.ConnAgent.WriteMsg(msg)
 	}
+}
+
+func (p *Player) RespPlayerData() *msg.PlayerData {
+	pd := &msg.PlayerData{}
+	pd.PlayerInfo = new(msg.PlayerInfo)
+	pd.PlayerInfo.Id = p.Id
+	pd.PlayerInfo.NickName = p.NickName
+	pd.PlayerInfo.HeadImg = p.HeadImg
+	pd.PlayerInfo.Account = p.Account
+	pd.DownBetMoney = new(msg.DownBetMoney)
+	pd.DownBetMoney.BigDownBet = p.DownBetMoney.BigDownBet
+	pd.DownBetMoney.SmallDownBet = p.DownBetMoney.SmallDownBet
+	pd.DownBetMoney.SingleDownBet = p.DownBetMoney.SingleDownBet
+	pd.DownBetMoney.DoubleDownBet = p.DownBetMoney.DoubleDownBet
+	pd.DownBetMoney.PairDownBet = p.DownBetMoney.PairDownBet
+	pd.DownBetMoney.StraightDownBet = p.DownBetMoney.StraightDownBet
+	pd.DownBetMoney.LeopardDownBet = p.DownBetMoney.LeopardDownBet
+	pd.TotalDownBet = p.TotalDownBet
+	pd.WinTotalCount = p.WinTotalCount
+	pd.ResultMoney = p.ResultMoney
+	pd.IsAction = p.IsAction
+	pd.IsBanker = p.IsBanker
+	return pd
 }

@@ -14,6 +14,9 @@ func (r *Room) JoinGameRoom(p *Player) {
 	if p.IsRobot == false {
 		p.FindPlayerInfo()
 	}
+
+	hall.UserRoom[p.Id] = r.RoomId
+
 	// 将用户添加到用户列表
 	r.PlayerList = append(r.PlayerList, p)
 
@@ -87,7 +90,7 @@ func (r *Room) StartGameRun() {
 	r.GrabDealTimerTask()
 	// 下注阶段定时
 	r.DownBetTimerTask()
-	// 机器开始下注 todo
+	// 机器开始下注
 	r.RobotsDownBet()
 	// 结算阶段定时
 	r.SettlerTimerTask()
@@ -99,7 +102,11 @@ func (r *Room) GrabDealTimerTask() {
 	go func() {
 		for range r.clock.C {
 			r.counter++
-			log.Debug("BankerTime :%v",r.counter)
+			log.Debug("BankerTime :%v", r.counter)
+			if r.counter == 7 {
+				// 产生庄家
+				r.PlayerUpBanker()
+			}
 			if r.counter == BankerTime {
 				r.counter = 0
 				BankerChannel <- true
@@ -139,7 +146,7 @@ func (r *Room) DownBetTime() {
 	t := time.NewTicker(time.Second)
 	for range t.C {
 		r.counter++
-		log.Debug("DownBetTime :%v",r.counter)
+		log.Debug("DownBetTime :%v", r.counter)
 		if r.counter == DownBetTime {
 			break
 		}
@@ -190,7 +197,7 @@ func (r *Room) CompareSettlement() {
 
 	for range t.C {
 		r.counter++
-		log.Debug("SettleTime :%v",r.counter)
+		log.Debug("SettleTime :%v", r.counter)
 		// 如果时间处理不及时,可以判断定时9秒的时候将处理这个数据然后发送给前端进行处理
 		if r.counter == SettleTime {
 			// 踢出房间断线玩家
@@ -310,9 +317,11 @@ func (r *Room) ResultMoney() {
 					}
 				}
 				tax := float64(taxMoney) * taxRate
-				v.ResultMoney = float64(totalWin + taxMoney) - tax
+				v.ResultMoney = float64(totalWin+taxMoney) - tax
 				v.Account += v.ResultMoney
 				v.ResultMoney -= float64(totalLose)
+
+				v.bankerMoney += v.ResultMoney
 			}
 		}
 	}
