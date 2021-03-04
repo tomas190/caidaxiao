@@ -434,8 +434,8 @@ func (r *Room) ExitFromRoom(p *Player) {
 
 func (r *Room) HandleBanker() {
 	for _, v := range r.PlayerList {
-		if v != nil && v.IsBanker == true {
-			if v.BankerMoney < 2000 {
+		if v != nil && v.IsRobot == false && v.IsBanker == true {
+			if v.BankerMoney < 2000 || v.bankerCount >= 3 {
 				v.BankerStatus = msg.BankerStatus_BankerDown
 				r.IsConBanker = false
 				nowTime := time.Now().Unix()
@@ -718,6 +718,7 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 		if v != nil && v.Id == id {
 			v.IsBanker = true
 			v.BankerMoney = float64(takeMoney)
+			v.bankerCount ++
 			v.BankerStatus = msg.BankerStatus_BankerUp
 			r.BankerId = id
 			r.BankerMoney = float64(takeMoney)

@@ -109,7 +109,7 @@ func (r *Room) BankerTimerTask() {
 		for range r.clock.C {
 			r.counter++
 			log.Debug("BankerTime :%v", r.counter)
-			if r.counter == 7 {
+			if r.counter == 5 {
 				// 产生庄家
 				r.PlayerUpBanker()
 			}
@@ -124,6 +124,12 @@ func (r *Room) BankerTimerTask() {
 
 //GrabDealTimerTask 庄家连庄定时器任务
 func (r *Room) Banker2TimerTask() {
+	for _, v := range r.PlayerList {
+		if v != nil && v.Id == r.BankerId {
+			v.bankerCount++
+		}
+	}
+	
 	r.GameStat = msg.GameStep_Banker2
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}

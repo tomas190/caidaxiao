@@ -123,12 +123,13 @@ message PlayerData {
     PlayerInfo playerInfo = 1;
     DownBetMoney downBetMoney = 2; //玩家各注池下注的金额
     PlayerStatus status = 3; // 玩家状态
-    int32 totalDownBet = 4; // 玩家房间总下注
-    int32 winTotalCount = 5; // 玩家房间Win总次数
-    double resultMoney = 6; // 本局结算金额
-    repeated PotWinList potWinList = 7; // 游戏记录开奖列表
-    bool IsAction = 8; // 玩家是否行动
-    bool IsBanker = 9; // 玩家是否庄家
+    int32 bankerCount = 4; // 连庄次数
+    int32 totalDownBet = 5; // 玩家房间总下注
+    int32 winTotalCount = 6; // 玩家房间Win总次数
+    double resultMoney = 7; // 本局结算金额
+    repeated PotWinList potWinList = 8; // 游戏记录开奖列表
+    bool IsAction = 9; // 玩家是否行动
+    bool IsBanker = 10; // 玩家是否庄家
 }
 
 message RoomData {
