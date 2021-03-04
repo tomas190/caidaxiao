@@ -23,10 +23,10 @@ const (
 )
 
 const (
-	BankerTime  = 9  // 庄家时间 9秒
+	BankerTime  = 7  // 庄家时间 7秒
 	Banker2Time = 3  // 庄家连庄 3秒
-	DownBetTime = 23 // 下注时间 22秒
-	SettleTime  = 29 // 结算时间 10秒
+	DownBetTime = 23 // 下注时间 23秒
+	SettleTime  = 29 // 结算时间 29秒
 )
 
 const (
