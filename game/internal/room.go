@@ -183,6 +183,15 @@ func (r *Room) RespRoomData() *msg.RoomData {
 		pot.ResultNum = v.ResultNum
 		rd.PotWinList = append(rd.PotWinList, pot)
 	}
+	for _, v := range r.HistoryData {
+		his := &msg.HistoryData{}
+		his.TimeFmt = v.TimeFmt
+		his.ResNum = v.ResNum
+		his.Result = v.Result
+		his.BigSmall = v.BigSmall
+		his.SinDouble = v.SinDouble
+		rd.HistoryData = append(rd.HistoryData, his)
+	}
 	// 这里只需要遍历桌面玩家，站起玩家不显示出来
 	for _, v := range r.PlayerList {
 		if v != nil {
