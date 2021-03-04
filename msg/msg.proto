@@ -131,6 +131,7 @@ message PlayerData {
     repeated PotWinList potWinList = 9; // 游戏记录开奖列表
     bool IsAction = 10; // 玩家是否行动
     bool IsBanker = 11; // 玩家是否庄家
+    bool IsRobot = 12; // 玩家是否机器人
 }
 
 message RoomData {

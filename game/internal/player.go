@@ -90,5 +90,6 @@ func (p *Player) RespPlayerData() *msg.PlayerData {
 	pd.ResultMoney = p.ResultMoney
 	pd.IsAction = p.IsAction
 	pd.IsBanker = p.IsBanker
+	pd.IsRobot = p.IsRobot
 	return pd
 }

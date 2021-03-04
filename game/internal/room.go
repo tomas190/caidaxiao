@@ -204,6 +204,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			pd.ResultMoney = v.ResultMoney
 			pd.IsAction = v.IsAction
 			pd.IsBanker = v.IsBanker
+			pd.IsRobot = v.IsRobot
 			rd.PlayerData = append(rd.PlayerData, pd)
 		}
 	}
