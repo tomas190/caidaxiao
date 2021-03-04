@@ -100,16 +100,22 @@ func (r *Room) StartGameRun() {
 func (r *Room) BankerTimerTask() {
 	r.GameStat = msg.GameStep_Banker
 
-	bTime := BankerTime
+	// 抢庄时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_Banker
+	data.StartTime = 0
+	r.BroadCastMsg(data)
+
 	go func() {
 		for range r.clock.C {
 			r.counter++
 			// 抢庄时间
 			data := &msg.ActionTime_S2C{}
 			data.GameStep = msg.GameStep_Banker
-			data.StartTime = int32(bTime) - r.counter
+			data.StartTime = r.counter
 			r.BroadCastMsg(data)
-			log.Debug("BankerTime :%v", data.StartTime)
+
+			log.Debug("BankerTime :%v", r.counter)
 			if r.counter == 5 {
 				// 产生庄家
 				r.PlayerUpBanker()
@@ -171,7 +177,12 @@ func (r *Room) DownBetTime() {
 	// 房间状态
 	r.GameStat = msg.GameStep_DownBet
 
-	dTime := DownBetTime
+	// 下注时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_DownBet
+	data.StartTime = 0
+	r.BroadCastMsg(data)
+
 	// 定时
 	t := time.NewTicker(time.Second)
 	for range t.C {
@@ -179,9 +190,9 @@ func (r *Room) DownBetTime() {
 		// 下注时间
 		data := &msg.ActionTime_S2C{}
 		data.GameStep = msg.GameStep_DownBet
-		data.StartTime = int32(dTime) - r.counter
+		data.StartTime = r.counter
 		r.BroadCastMsg(data)
-		log.Debug("DownBetTime :%v", data.StartTime)
+		log.Debug("DownBetTime :%v", r.counter)
 		if r.counter == DownBetTime {
 			break
 		}
