@@ -26,7 +26,7 @@ type Player struct {
 
 	Status          msg.PlayerStatus  // 玩家状态
 	BankerMoney     float64           // 庄家金额
-	bankerCount     int32             // 庄家次数
+	BankerCount     int32             // 庄家次数
 	BankerStatus    msg.BankerStatus  // 庄家状态
 	DownBetMoney    msg.DownBetMoney  // 玩家各注池下注金额
 	ResultMoney     float64           // 结算金额
@@ -75,6 +75,8 @@ func (p *Player) RespPlayerData() *msg.PlayerData {
 	pd.PlayerInfo.NickName = p.NickName
 	pd.PlayerInfo.HeadImg = p.HeadImg
 	pd.PlayerInfo.Account = p.Account
+	pd.BankerMoney = p.BankerMoney
+	pd.BankerCount = p.BankerCount
 	pd.DownBetMoney = new(msg.DownBetMoney)
 	pd.DownBetMoney.BigDownBet = p.DownBetMoney.BigDownBet
 	pd.DownBetMoney.SmallDownBet = p.DownBetMoney.SmallDownBet

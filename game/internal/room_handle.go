@@ -126,10 +126,10 @@ func (r *Room) BankerTimerTask() {
 func (r *Room) Banker2TimerTask() {
 	for _, v := range r.PlayerList {
 		if v != nil && v.Id == r.BankerId {
-			v.bankerCount++
+			v.BankerCount++
 		}
 	}
-	
+
 	r.GameStat = msg.GameStep_Banker2
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}
