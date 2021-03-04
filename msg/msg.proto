@@ -134,6 +134,14 @@ message PlayerData {
     bool IsRobot = 12; // 玩家是否机器人
 }
 
+message HistoryData {
+    string timeFmt = 1;
+    repeated int32 resNum = 2;
+    int32 result = 3;
+    int32 sinDouble = 4;
+    int32 bigSmall = 5;
+}
+
 message RoomData {
     string roomId = 1;
     repeated PlayerData playerData = 2;
@@ -142,6 +150,7 @@ message RoomData {
     repeated int32 resultInt = 5; // 结算数据
     DownBetMoney potMoneyCount = 6; // 注池金额集合
     repeated PotWinList potWinList = 7; // 游戏记录开奖列表
+    repeated HistoryData historyData = 8; // 历史记录数据
 }
 
 message JoinRoom_C2S {

@@ -56,16 +56,17 @@ type Room struct {
 	bankerList  map[string]int32 // 抢庄列表
 	IsConBanker bool             // 是否继续连庄
 
-	Lottery          []int            // 开奖数据
-	LotteryResult    msg.PotWinList   // 开奖结果
-	RoomStat         RoomStatus       // 房间状态
-	GameStat         msg.GameStep     // 游戏状态
-	PotMoneyCount    msg.DownBetMoney // 注池下注总金额(用于客户端显示)
-	PlayerTotalMoney msg.DownBetMoney // 所有真实玩家注池下注(用于计算金额)
-	PotWinList       []msg.PotWinList // 游戏开奖记录
-
-	counter int32        // 已经过去多少秒
-	clock   *time.Ticker // 计时器
+	resultTime       string            // 结算时间
+	Lottery          []int             // 开奖数据
+	LotteryResult    msg.PotWinList    // 开奖结果
+	RoomStat         RoomStatus        // 房间状态
+	GameStat         msg.GameStep      // 游戏状态
+	PotMoneyCount    msg.DownBetMoney  // 注池下注总金额(用于客户端显示)
+	PlayerTotalMoney msg.DownBetMoney  // 所有真实玩家注池下注(用于计算金额)
+	PotWinList       []msg.PotWinList  // 游戏开奖记录
+	HistoryData      []msg.HistoryData // 历史开奖数据
+	counter          int32             // 已经过去多少秒
+	clock            *time.Ticker      // 计时器
 
 	UserLeave []string // 用户是否在房间
 }
@@ -80,6 +81,7 @@ func (r *Room) Init() {
 	r.bankerList = make(map[string]int32)
 	r.IsConBanker = false
 
+	r.resultTime = ""
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
 	r.RoomStat = RoomStatusNone
@@ -87,6 +89,7 @@ func (r *Room) Init() {
 	r.PlayerTotalMoney = msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
 	r.PotWinList = make([]msg.PotWinList, 0)
+	r.HistoryData = make([]msg.HistoryData, 0)
 
 	r.counter = 0
 	r.clock = time.NewTicker(time.Second)
@@ -325,6 +328,7 @@ func (r *Room) GetCaiYuan() {
 			code := lottery["code"] // 中奖号码
 			log.Debug("中奖号码:%v", code)
 
+			r.resultTime = opendate.(string)
 			codeString := code.(string)
 			codeSlice := strings.Split(codeString, `,`)
 			codeSlice = append(codeSlice[:0], codeSlice[2:]...)
@@ -721,7 +725,7 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 		if v != nil && v.Id == id {
 			v.IsBanker = true
 			v.BankerMoney = float64(takeMoney)
-			v.BankerCount ++
+			v.BankerCount++
 			v.BankerStatus = msg.BankerStatus_BankerUp
 			r.BankerId = id
 			r.BankerMoney = float64(takeMoney)

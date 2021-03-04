@@ -408,4 +408,18 @@ func (r *Room) GetResultType() {
 	if len(r.PotWinList) > 10 {
 		r.PotWinList = append(r.PotWinList[:0], r.PotWinList[1:]...)
 	}
+
+	var history msg.HistoryData
+	history.TimeFmt = r.resultTime
+	for _, v := range r.Lottery {
+		history.ResNum = append(history.ResNum, int32(v))
+	}
+	history.Result = r.LotteryResult.ResultNum
+	history.BigSmall = r.LotteryResult.BigSmall
+	history.SinDouble = r.LotteryResult.SinDouble
+	r.HistoryData = append(r.HistoryData, history)
+	// 判断数据大于10条就删除出一条
+	if len(r.HistoryData) > 70 {
+		r.HistoryData = append(r.HistoryData[:0], r.HistoryData[1:]...)
+	}
 }
