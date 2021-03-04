@@ -2,7 +2,9 @@ package internal
 
 import (
 	"caidaxiao/msg"
+	"fmt"
 	"github.com/name5566/leaf/log"
+	"time"
 )
 
 //PlayerExitRoom 玩家退出房间
@@ -162,13 +164,26 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 	}
 }
 
-func (p *Player) BankerAction(m *msg.BankerData_C2S)  {
+func (p *Player) BankerAction(m *msg.BankerData_C2S) {
 	if m.Status == 2 {
 		roomId := hall.UserRoom[p.Id]
 		r, _ := hall.RoomRecord.Load(roomId)
 		if r != nil {
 			room := r.(*Room)
 			room.bankerList[p.Id] = m.TakeMoney
+		}
+	}
+	if m.Status == 3 {
+		roomId := hall.UserRoom[p.Id]
+		r, _ := hall.RoomRecord.Load(roomId)
+		if r != nil {
+			room := r.(*Room)
+			p.BankerStatus = msg.BankerStatus_BankerDown
+			room.IsConBanker = false
+			nowTime := time.Now().Unix()
+			p.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), room.RoomId)
+			reason := "庄家申请下庄"
+			c4c.BankerStatus(p, nowTime, p.RoundId, reason)
 		}
 	}
 }

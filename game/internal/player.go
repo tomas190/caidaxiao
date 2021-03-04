@@ -24,8 +24,9 @@ type Player struct {
 	Token    string
 	RoundId  string
 
-	bankerMoney     float64           // 庄家金额
 	Status          msg.PlayerStatus  // 玩家状态
+	BankerMoney     float64           // 庄家金额
+	bankerCount     int32             // 庄家次数
 	BankerStatus    msg.BankerStatus  // 庄家状态
 	DownBetMoney    msg.DownBetMoney  // 玩家各注池下注金额
 	ResultMoney     float64           // 结算金额
@@ -43,7 +44,7 @@ type Player struct {
 
 func (p *Player) Init() {
 	p.RoundId = ""
-	p.bankerMoney = 0
+	p.BankerMoney = 0
 	p.Status = msg.PlayerStatus_XX_Status
 	p.BankerStatus = msg.BankerStatus_BankerNot
 	p.DownBetMoney = msg.DownBetMoney{}

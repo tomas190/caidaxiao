@@ -23,9 +23,10 @@ const (
 )
 
 const (
-	BankerTime  = 10 // 庄家时间
-	DownBetTime = 25 // 下注时间 22秒
-	SettleTime  = 10 // 结算时间 10秒
+	BankerTime  = 9  // 庄家时间 9秒
+	Banker2Time = 3  // 庄家连庄 3秒
+	DownBetTime = 23 // 下注时间 22秒
+	SettleTime  = 29 // 结算时间 10秒
 )
 
 const (
@@ -53,6 +54,7 @@ type Room struct {
 	BankerId    string           // 庄家ID
 	BankerMoney float64          // 庄家金额
 	bankerList  map[string]int32 // 抢庄列表
+	IsConBanker bool             // 是否继续连庄
 
 	Lottery          []int            // 开奖数据
 	LotteryResult    msg.PotWinList   // 开奖结果
@@ -76,6 +78,7 @@ func (r *Room) Init() {
 	r.BankerId = ""
 	r.BankerMoney = 0
 	r.bankerList = make(map[string]int32)
+	r.IsConBanker = false
 
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
@@ -429,6 +432,21 @@ func (r *Room) ExitFromRoom(p *Player) {
 	delete(hall.UserRoom, p.Id)
 }
 
+func (r *Room) HandleBanker() {
+	for _, v := range r.PlayerList {
+		if v != nil && v.IsBanker == true {
+			if v.BankerMoney < 2000 {
+				v.BankerStatus = msg.BankerStatus_BankerDown
+				r.IsConBanker = false
+				nowTime := time.Now().Unix()
+				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+				reason := "庄家申请下庄"
+				c4c.BankerStatus(v, nowTime, v.RoundId, reason)
+			}
+		}
+	}
+}
+
 //HandleRobot 处理机器人
 func (r *Room) HandleRobot() {
 	timeNow := time.Now().Hour()
@@ -628,8 +646,9 @@ func (r *Room) PlayerUpBanker() {
 		bankerMoney := []int32{2000, 5000, 10000, 20000}
 		num := RandInRange(0, 4)
 
-		p.bankerMoney = float64(bankerMoney[num])
+		p.BankerMoney = float64(bankerMoney[num])
 		r.BankerMoney = float64(bankerMoney[num])
+		log.Debug("机器人当庄:%v,当庄金额:%v", p.Id, p.BankerMoney)
 
 		data := &msg.BankerData_S2C{}
 		data.Banker = p.RespPlayerData()
@@ -698,9 +717,17 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 	for _, v := range r.PlayerList {
 		if v != nil && v.Id == id {
 			v.IsBanker = true
-			v.bankerMoney = float64(takeMoney)
+			v.BankerMoney = float64(takeMoney)
+			v.BankerStatus = msg.BankerStatus_BankerUp
 			r.BankerId = id
 			r.BankerMoney = float64(takeMoney)
+			r.IsConBanker = true
+			nowTime := time.Now().Unix()
+			v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+			reason := "庄家申请上庄"
+			c4c.BankerStatus(v, nowTime, v.RoundId, reason)
+			log.Debug("玩家当庄:%v,当庄金额:%v", v.Id, v.BankerMoney)
+
 			data := &msg.BankerData_S2C{}
 			data.Banker = v.RespPlayerData()
 			data.TakeMoney = takeMoney

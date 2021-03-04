@@ -31,8 +31,9 @@ enum MessageID {
 enum GameStep {
     XX_Step = 0;
     Banker = 1;
-    DownBet = 2;
-    Settle = 3;
+    Banker2 = 2;
+    DownBet = 3;
+    Settle = 4;
 }
 
 enum PlayerStatus {

@@ -51,6 +51,8 @@ func (r *Room) JoinGameRoom(p *Player) {
 	if r.GameStat == msg.GameStep_Banker {
 		data.RoomData.GameTime = BankerTime - r.counter
 		//log.Debug("加入房间 BankerTime: %v", msg.GameTime)
+	} else if r.GameStat == msg.GameStep_Banker2 {
+		data.RoomData.GameTime = Banker2Time - r.counter
 	} else if r.GameStat == msg.GameStep_DownBet {
 		data.RoomData.GameTime = DownBetTime - r.counter
 		//log.Debug("加入房间 DownBetTime: %v", msg.GameTime)
@@ -78,16 +80,14 @@ func (r *Room) StartGameRun() {
 	}
 
 	r.RoomStat = RoomStatusRun
-	r.GameStat = msg.GameStep_Banker
 
-	// 抢庄时间
-	data := &msg.ActionTime_S2C{}
-	data.GameStep = msg.GameStep_Banker
-	data.StartTime = BankerTime
-	r.BroadCastMsg(data)
-
-	// 抢庄阶段定时
-	r.GrabDealTimerTask()
+	if r.IsConBanker == false {
+		// 庄家抢庄定时
+		r.BankerTimerTask()
+	} else {
+		// 庄家连庄定时
+		r.Banker2TimerTask()
+	}
 	// 下注阶段定时
 	r.DownBetTimerTask()
 	// 机器开始下注
@@ -96,9 +96,15 @@ func (r *Room) StartGameRun() {
 	r.SettlerTimerTask()
 }
 
-//GrabDealTimerTask 庄家阶段定时器任务
-func (r *Room) GrabDealTimerTask() {
-	log.Debug("------开始抢庄阶段------")
+//GrabDealTimerTask 庄家抢庄定时器任务
+func (r *Room) BankerTimerTask() {
+	r.GameStat = msg.GameStep_Banker
+	// 抢庄时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_Banker
+	data.StartTime = BankerTime
+	r.BroadCastMsg(data)
+
 	go func() {
 		for range r.clock.C {
 			r.counter++
@@ -116,9 +122,30 @@ func (r *Room) GrabDealTimerTask() {
 	}()
 }
 
+//GrabDealTimerTask 庄家连庄定时器任务
+func (r *Room) Banker2TimerTask() {
+	r.GameStat = msg.GameStep_Banker2
+	// 抢庄时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_Banker2
+	data.StartTime = Banker2Time
+	r.BroadCastMsg(data)
+
+	go func() {
+		for range r.clock.C {
+			r.counter++
+			log.Debug("Banker2Time :%v", r.counter)
+			if r.counter == Banker2Time {
+				r.counter = 0
+				BankerChannel <- true
+				return
+			}
+		}
+	}()
+}
+
 //DownBetTimerTask 下注阶段定时器任务
 func (r *Room) DownBetTimerTask() {
-	log.Debug("------开始下注阶段------")
 	go func() {
 		select {
 		case t := <-BankerChannel:
@@ -155,7 +182,6 @@ func (r *Room) DownBetTime() {
 
 //SettlerTimerTask 结算阶段定时器任务
 func (r *Room) SettlerTimerTask() {
-	log.Debug("------开始结算阶段------")
 	go func() {
 		select {
 		case t := <-DownBetChannel:
@@ -202,9 +228,10 @@ func (r *Room) CompareSettlement() {
 		if r.counter == SettleTime {
 			// 踢出房间断线玩家
 			r.KickOutPlayer()
+			// 判断庄家金额是否<2000,否则下庄
+			r.HandleBanker()
 			//根据时间来控制机器人数量
 			r.HandleRobot()
-
 			// 玩家列表更新
 			r.UpdatePlayerList()
 			uptPlayerList := &msg.UptPlayerList_S2C{}
@@ -321,7 +348,7 @@ func (r *Room) ResultMoney() {
 				v.Account += v.ResultMoney
 				v.ResultMoney -= float64(totalLose)
 
-				v.bankerMoney += v.ResultMoney
+				v.BankerMoney += v.ResultMoney
 			}
 		}
 	}
