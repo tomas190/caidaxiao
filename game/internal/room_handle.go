@@ -224,7 +224,7 @@ func (r *Room) CompareSettlement() {
 	// 结算时间
 	actionTime := &msg.ActionTime_S2C{}
 	actionTime.GameStep = msg.GameStep_Settle
-	actionTime.StartTime = SettleTime
+	actionTime.StartTime = 0
 	r.BroadCastMsg(actionTime)
 
 	// 获取彩源数据
@@ -242,6 +242,12 @@ func (r *Room) CompareSettlement() {
 
 	for range t.C {
 		r.counter++
+		// 结算时间
+		actionTime := &msg.ActionTime_S2C{}
+		actionTime.GameStep = msg.GameStep_Settle
+		actionTime.StartTime = r.counter
+		r.BroadCastMsg(actionTime)
+
 		log.Debug("SettleTime :%v", r.counter)
 		// 如果时间处理不及时,可以判断定时9秒的时候将处理这个数据然后发送给前端进行处理
 		if r.counter == SettleTime {
