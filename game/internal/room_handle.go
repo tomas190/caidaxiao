@@ -362,7 +362,9 @@ func (r *Room) ResultMoney() {
 					reason := "ResultLoseScore"
 					//同时同步赢分和输分
 					if v.LoseResultMoney != 0 {
-						c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason)
+						if v.IsRobot == false {
+							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason)
+						}
 					}
 				}
 				tax := float64(taxMoney) * taxRate
