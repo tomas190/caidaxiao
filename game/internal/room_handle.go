@@ -410,7 +410,7 @@ func (r *Room) GetResultType() {
 	potWin.CardType = r.LotteryResult.CardType
 	r.PotWinList = append(r.PotWinList, potWin)
 	// 判断数据大于10条就删除出一条
-	if len(r.PotWinList) >= 6 {
+	if len(r.PotWinList) > 6 {
 		r.PotWinList = append(r.PotWinList[:0], r.PotWinList[1:]...)
 	}
 

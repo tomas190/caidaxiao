@@ -496,19 +496,19 @@ func (r *Room) RobotsDownBet() {
 func RobotRandPot() int32 {
 	num := RandInRange(1, 10001)
 	var pot int32
-	if num >= 1 || num <= 2074 {
+	if num >= 1 && num <= 2074 {
 		pot = 1
-	} else if num >= 2075 || num <= 4148 {
+	} else if num >= 2075 && num <= 4148 {
 		pot = 2
-	} else if num >= 4149 || num <= 6222 {
+	} else if num >= 4149 && num <= 6222 {
 		pot = 3
-	} else if num >= 6223 || num <= 8296 {
+	} else if num >= 6223 && num <= 8296 {
 		pot = 4
-	} else if num >= 8297 || num <= 9679 {
+	} else if num >= 8297 && num <= 9679 {
 		pot = 5
-	} else if num >= 9680 || num <= 9938 {
+	} else if num >= 9680 && num <= 9938 {
 		pot = 6
-	} else if num >= 9939 || num <= 10000 {
+	} else if num >= 9939 && num <= 10000 {
 		pot = 7
 	}
 	return pot
@@ -518,19 +518,19 @@ func RobotRandPot() int32 {
 func RobotRandBet() int32 {
 	num := RandInRange(1, 1001)
 	var bet int32
-	if num >= 1 || num <= 480 {
+	if num >= 1 && num <= 480 {
 		bet = 1
-	} else if num >= 481 || num <= 695 {
+	} else if num >= 481 && num <= 695 {
 		bet = 5
-	} else if num >= 696 || num <= 847 {
+	} else if num >= 696 && num <= 847 {
 		bet = 10
-	} else if num >= 848 || num <= 915 {
+	} else if num >= 848 && num <= 915 {
 		bet = 50
-	} else if num >= 916 || num <= 963 {
+	} else if num >= 916 && num <= 963 {
 		bet = 100
-	} else if num >= 964 || num <= 985 {
+	} else if num >= 964 && num <= 985 {
 		bet = 500
-	} else if num >= 986 || num <= 1000 {
+	} else if num >= 986 && num <= 1000 {
 		bet = 1000
 	}
 	return bet
