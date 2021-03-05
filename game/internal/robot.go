@@ -42,6 +42,7 @@ func (rc *RobotsCenter) CreateRobot() *Player {
 func (r *Room) RobotsDownBet() {
 	// 线程下注
 	go func() {
+		log.Debug("进来了1")
 		time.Sleep(time.Second)
 		rData := &RobotDATA{}
 		rData.RoomId = r.RoomId
@@ -55,8 +56,10 @@ func (r *Room) RobotsDownBet() {
 		rData.StraightPot = new(ChipDownBet)
 		rData.LeopardPot = new(ChipDownBet)
 		for {
+			log.Debug("进来了2")
 			for _, v := range r.PlayerList {
 				if v != nil && v.IsRobot == true {
+					log.Debug("进来了3")
 					// 间隔时间
 					timerSlice := []int32{50, 150, 20, 300, 30}
 					rand.Seed(time.Now().UnixNano())

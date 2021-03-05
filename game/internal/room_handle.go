@@ -92,8 +92,6 @@ func (r *Room) StartGameRun() {
 	}
 	// 下注阶段定时
 	r.DownBetTimerTask()
-	// 机器开始下注
-	r.RobotsDownBet()
 	// 结算阶段定时
 	r.SettlerTimerTask()
 }
@@ -178,6 +176,9 @@ func (r *Room) DownBetTimerTask() {
 func (r *Room) DownBetTime() {
 	// 房间状态
 	r.GameStat = msg.GameStep_DownBet
+
+	// 机器开始下注
+	r.RobotsDownBet()
 
 	// 下注时间
 	data := &msg.ActionTime_S2C{}
