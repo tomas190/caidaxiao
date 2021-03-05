@@ -453,6 +453,7 @@ func (r *Room) HandleBanker() {
 		if v != nil && v.IsRobot == false && v.IsBanker == true {
 			if v.BankerMoney < 2000 || v.BankerCount >= 3 {
 				v.BankerStatus = msg.BankerStatus_BankerDown
+				v.IsBanker = false
 				r.IsConBanker = false
 				nowTime := time.Now().Unix()
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)

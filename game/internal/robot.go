@@ -70,6 +70,7 @@ func (r *Room) RobotsDownBet() {
 							v.DownBetMoney.SingleDownBet + v.DownBetMoney.DoubleDownBet +
 							v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet +
 							v.DownBetMoney.LeopardDownBet) > 1000 {
+							log.Debug("机器的下注金额大于1000~")
 							continue
 						}
 						v.IsAction = true
@@ -83,6 +84,7 @@ func (r *Room) RobotsDownBet() {
 								time.Sleep(time.Millisecond * 20)
 								// 判断机器人的下注筹码是否足够
 								if v.Account < float64(bet) {
+									log.Debug("机器的下注金额不足~")
 									continue
 								}
 								var downBetMoney float64
@@ -477,9 +479,11 @@ func (r *Room) RobotsDownBet() {
 							potChange.PotMoneyCount.StraightDownBet = r.PotMoneyCount.StraightDownBet
 							potChange.PotMoneyCount.LeopardDownBet = r.PotMoneyCount.LeopardDownBet
 							r.BroadCastMsg(potChange)
+
+							log.Debug("机器Id: %v,下注: %v", v.Id, v.DownBetMoney)
 						}
 					} else {
-						//InsertRobotData(rData) todo
+						InsertRobotData(rData)
 						return
 					}
 				}
