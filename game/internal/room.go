@@ -758,6 +758,10 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 
 func (r *Room) GetTablePlayer() {
 
+	if len(r.PlayerList) < 6 {
+		return
+	}
+
 	// 获取桌面6个玩家
 	num := len(r.PlayerList) - 6
 	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
