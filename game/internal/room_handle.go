@@ -62,6 +62,9 @@ func (r *Room) JoinGameRoom(p *Player) {
 	}
 	p.SendMsg(data)
 
+	// 获取桌面玩家
+	r.GetTablePlayer()
+
 	if r.RoomStat != RoomStatusRun {
 		// None和Over状态都直接开始运行游戏
 		r.StartGameRun()

@@ -757,7 +757,6 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 }
 
 func (r *Room) GetTablePlayer() {
-
 	if len(r.PlayerList) < 6 {
 		return
 	}
