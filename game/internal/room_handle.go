@@ -101,13 +101,18 @@ func (r *Room) BankerTimerTask() {
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Banker
-	data.StartTime = BankerTime
+	data.StartTime = 0
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
 	go func() {
 		for range r.clock.C {
 			r.counter++
+			data := &msg.ActionTime_S2C{}
+			data.GameStep = msg.GameStep_Banker
+			data.StartTime = r.counter
+			data.RoomData = r.RespRoomData()
+			r.BroadCastMsg(data)
 			log.Debug("BankerTime :%v", r.counter)
 			if r.counter == 5 {
 				// 产生庄家
@@ -178,7 +183,7 @@ func (r *Room) DownBetTime() {
 	// 下注时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_DownBet
-	data.StartTime = DownBetTime
+	data.StartTime = 0
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
@@ -186,6 +191,13 @@ func (r *Room) DownBetTime() {
 	t := time.NewTicker(time.Second)
 	for range t.C {
 		r.counter++
+		// 下注时间
+		data := &msg.ActionTime_S2C{}
+		data.GameStep = msg.GameStep_DownBet
+		data.StartTime = r.counter
+		data.RoomData = r.RespRoomData()
+		r.BroadCastMsg(data)
+
 		log.Debug("DownBetTime :%v", r.counter)
 		if r.counter == DownBetTime {
 			break

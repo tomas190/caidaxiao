@@ -102,10 +102,12 @@ func (hall *GameHall) PlayerJoinRoom(rid string, p *Player) {
 				enter := &msg.EnterRoom_S2C{}
 				enter.RoomData = roomData
 				if r.GameStat == msg.GameStep_Banker {
+					enter.RoomData.GameTime = BankerTime - r.counter
+				} else if r.GameStat == msg.GameStep_Banker2 {
+					enter.RoomData.GameTime = Banker2Time - r.counter
+				} else if r.GameStat == msg.GameStep_DownBet {
 					enter.RoomData.GameTime = DownBetTime - r.counter
-				} else if r.GameStat == msg.GameStep_DownBet {
-					enter.RoomData.GameTime = SettleTime - r.counter
-				} else if r.GameStat == msg.GameStep_DownBet {
+				} else if r.GameStat == msg.GameStep_Settle {
 					enter.RoomData.GameTime = SettleTime - r.counter
 				}
 				p.SendMsg(enter)
