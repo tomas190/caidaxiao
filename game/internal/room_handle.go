@@ -81,8 +81,6 @@ func (r *Room) StartGameRun() {
 
 	r.RoomStat = RoomStatusRun
 
-	time.Sleep(time.Second)
-
 	if r.IsConBanker == false {
 		// 庄家抢庄定时
 		r.BankerTimerTask()
@@ -103,18 +101,13 @@ func (r *Room) BankerTimerTask() {
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Banker
-	data.StartTime = 0
+	data.StartTime = BankerTime
+	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
 	go func() {
 		for range r.clock.C {
 			r.counter++
-			// 抢庄时间
-			data := &msg.ActionTime_S2C{}
-			data.GameStep = msg.GameStep_Banker
-			data.StartTime = r.counter
-			r.BroadCastMsg(data)
-
 			log.Debug("BankerTime :%v", r.counter)
 			if r.counter == 5 {
 				// 产生庄家
@@ -131,17 +124,12 @@ func (r *Room) BankerTimerTask() {
 
 //GrabDealTimerTask 庄家连庄定时器任务
 func (r *Room) Banker2TimerTask() {
-	for _, v := range r.PlayerList {
-		if v != nil && v.Id == r.BankerId {
-			v.BankerCount++
-		}
-	}
-
 	r.GameStat = msg.GameStep_Banker2
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Banker2
 	data.StartTime = Banker2Time
+	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
 	go func() {
@@ -180,21 +168,24 @@ func (r *Room) DownBetTime() {
 	// 机器开始下注
 	r.RobotsDownBet()
 
+	// 记录连庄次数
+	for _, v := range r.PlayerList {
+		if v != nil && v.Id == r.BankerId {
+			v.BankerCount++
+		}
+	}
+
 	// 下注时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_DownBet
-	data.StartTime = 0
+	data.StartTime = DownBetTime
+	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
 	// 定时
 	t := time.NewTicker(time.Second)
 	for range t.C {
 		r.counter++
-		// 下注时间
-		data := &msg.ActionTime_S2C{}
-		data.GameStep = msg.GameStep_DownBet
-		data.StartTime = r.counter
-		r.BroadCastMsg(data)
 		log.Debug("DownBetTime :%v", r.counter)
 		if r.counter == DownBetTime {
 			break
@@ -225,10 +216,11 @@ func (r *Room) CompareSettlement() {
 	r.GameStat = msg.GameStep_Settle
 
 	// 结算时间
-	actionTime := &msg.ActionTime_S2C{}
-	actionTime.GameStep = msg.GameStep_Settle
-	actionTime.StartTime = SettleTime
-	r.BroadCastMsg(actionTime)
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_Settle
+	data.StartTime = SettleTime
+	data.RoomData = r.RespRoomData()
+	r.BroadCastMsg(data)
 
 	// 获取彩源数据
 	r.GetCaiYuan()

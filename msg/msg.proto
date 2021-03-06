@@ -175,6 +175,7 @@ message LeaveRoom_S2C {
 message ActionTime_S2C {
     int32 startTime = 1;
     GameStep gameStep = 2; // 当前状态
+    RoomData roomData = 3; // 房间数据
 }
 
 message PlayerAction_C2S {
