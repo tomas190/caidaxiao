@@ -81,6 +81,9 @@ func (r *Room) StartGameRun() {
 
 	r.RoomStat = RoomStatusRun
 
+	// 获取桌面玩家
+	r.GetTablePlayer()
+
 	if r.IsConBanker == false {
 		// 庄家抢庄定时
 		r.BankerTimerTask()
@@ -175,7 +178,7 @@ func (r *Room) DownBetTime() {
 
 	// 记录连庄次数
 	for _, v := range r.PlayerList {
-		if v != nil && v.Id == r.BankerId {
+		if v != nil && v.IsBanker == true {
 			v.BankerCount++
 		}
 	}

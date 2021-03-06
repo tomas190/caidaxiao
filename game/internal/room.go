@@ -48,8 +48,9 @@ var BankerChannel chan bool
 var DownBetChannel chan bool
 
 type Room struct {
-	RoomId     string    // 房间号
-	PlayerList []*Player // 玩家列表
+	RoomId      string    // 房间号
+	PlayerList  []*Player // 玩家列表
+	TablePlayer []*Player // 玩家列表
 
 	BankerId    string           // 庄家ID
 	BankerMoney float64          // 庄家金额
@@ -75,6 +76,7 @@ func (r *Room) Init() {
 	//roomId := fmt.Sprintf("%06v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(1000000))
 	//r.RoomId = roomId
 	r.PlayerList = nil
+	r.TablePlayer = nil
 
 	r.BankerId = ""
 	r.BankerMoney = 0
@@ -752,4 +754,41 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 			r.BroadCastMsg(data)
 		}
 	}
+}
+
+func (r *Room) GetTablePlayer() {
+
+	// 获取桌面6个玩家
+	num := len(r.PlayerList) - 6
+	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
+
+	data := &msg.TablePlayer_S2C{}
+	for _, v := range r.TablePlayer {
+		if v != nil {
+			pd := &msg.PlayerData{}
+			pd.PlayerInfo = new(msg.PlayerInfo)
+			pd.PlayerInfo.Id = v.Id
+			pd.PlayerInfo.NickName = v.NickName
+			pd.PlayerInfo.HeadImg = v.HeadImg
+			pd.PlayerInfo.Account = v.Account
+			pd.BankerMoney = v.BankerMoney
+			pd.BankerCount = v.BankerCount
+			pd.DownBetMoney = new(msg.DownBetMoney)
+			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
+			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
+			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
+			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
+			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
+			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			pd.TotalDownBet = v.TotalDownBet
+			pd.WinTotalCount = v.WinTotalCount
+			pd.ResultMoney = v.ResultMoney
+			pd.IsAction = v.IsAction
+			pd.IsBanker = v.IsBanker
+			pd.IsRobot = v.IsRobot
+			data.PlayerList = append(data.PlayerList, pd)
+		}
+	}
+	r.BroadCastMsg(data)
 }

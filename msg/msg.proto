@@ -25,6 +25,7 @@ enum MessageID {
     MSG_BankerData_S2C = 18;
     MSG_EmojiChat_C2S = 19;
     MSG_EmojiChat_S2C = 20;
+    MSG_TablePlayer_S2C = 21;
 }
 
 // 游戏阶段
@@ -227,4 +228,9 @@ message EmojiChat_S2C {
     int32 actNum = 1;
     string actId = 2;
     string goalId = 3;
+}
+
+// 表情发送
+message TablePlayer_S2C {
+    repeated PlayerData playerList = 1;
 }
