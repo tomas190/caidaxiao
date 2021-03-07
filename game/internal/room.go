@@ -442,10 +442,9 @@ func (r *Room) ExitFromRoom(p *Player) {
 	p.SendMsg(leave)
 
 	// 玩家列表更新
-	r.UpdatePlayerList()
 	uptPlayerList := &msg.UptPlayerList_S2C{}
 	uptPlayerList.PlayerList = r.RespUptPlayerList()
-	r.BroadCastExcept(uptPlayerList, p)
+	r.BroadCastMsg(uptPlayerList)
 
 	delete(hall.UserRoom, p.Id)
 }
@@ -756,42 +755,3 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 	}
 }
 
-func (r *Room) GetTablePlayer() {
-	if len(r.PlayerList) < 6 {
-		return
-	}
-
-	// 获取桌面6个玩家
-	num := len(r.PlayerList) - 6
-	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
-
-	data := &msg.TablePlayer_S2C{}
-	for _, v := range r.TablePlayer {
-		if v != nil {
-			pd := &msg.PlayerData{}
-			pd.PlayerInfo = new(msg.PlayerInfo)
-			pd.PlayerInfo.Id = v.Id
-			pd.PlayerInfo.NickName = v.NickName
-			pd.PlayerInfo.HeadImg = v.HeadImg
-			pd.PlayerInfo.Account = v.Account
-			pd.BankerMoney = v.BankerMoney
-			pd.BankerCount = v.BankerCount
-			pd.DownBetMoney = new(msg.DownBetMoney)
-			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
-			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
-			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
-			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
-			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
-			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
-			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-			pd.TotalDownBet = v.TotalDownBet
-			pd.WinTotalCount = v.WinTotalCount
-			pd.ResultMoney = v.ResultMoney
-			pd.IsAction = v.IsAction
-			pd.IsBanker = v.IsBanker
-			pd.IsRobot = v.IsRobot
-			data.PlayerList = append(data.PlayerList, pd)
-		}
-	}
-	r.BroadCastMsg(data)
-}

@@ -25,7 +25,7 @@ enum MessageID {
     MSG_BankerData_S2C = 18;
     MSG_EmojiChat_C2S = 19;
     MSG_EmojiChat_S2C = 20;
-    MSG_TablePlayer_S2C = 21;
+    MSG_SendActTime_S2C = 21;
 }
 
 // 游戏阶段
@@ -45,9 +45,8 @@ enum PlayerStatus {
 
 enum BankerStatus {
     BankerNot = 0;
-    BankerNow = 1;
-    BankerUp = 2;
-    BankerDown = 3;
+    BankerUp = 1;
+    BankerDown = 2;
 }
 
 //注池类型
@@ -174,9 +173,8 @@ message LeaveRoom_S2C {
 }
 
 message ActionTime_S2C {
-    int32 startTime = 1;
-    GameStep gameStep = 2; // 当前状态
-    RoomData roomData = 3; // 房间数据
+    GameStep gameStep = 1; // 当前状态
+    RoomData roomData = 2; // 房间数据
 }
 
 message PlayerAction_C2S {
@@ -230,7 +228,9 @@ message EmojiChat_S2C {
     string goalId = 3;
 }
 
-// 表情发送
-message TablePlayer_S2C {
-    repeated PlayerData playerList = 1;
+// 发送时间
+message SendActTime_S2C {
+    int32 startTime = 1;
+    int32 gameTime = 2;
+    GameStep gameStep = 3; // 当前状态
 }

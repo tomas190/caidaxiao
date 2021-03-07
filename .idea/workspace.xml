@@ -2353,8 +2353,14 @@
       <change beforePath="$PROJECT_DIR$/../assets/subgame/hh/res/word/xutou.labelatlas.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../assets/subgame/readme.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../assets/subgame/readme.txt.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/gameHall.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/gameHall.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/player_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/player_handle.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/room.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/room_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.proto" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../node_modules/moment.meta" beforeDir="false" />
@@ -3338,10 +3344,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state width="1237" height="203" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1615060731756" />
-    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1615022834736">
+    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1615131584630">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1615022834736" />
+    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1615131584630" />
     <state x="622" y="1" width="672" height="678" key="search.everywhere.popup" timestamp="1612347164469">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

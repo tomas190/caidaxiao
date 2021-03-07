@@ -32,13 +32,6 @@ func (p *Player) PlayerExitRoom() {
 			leave.PlayerInfo.HeadImg = p.HeadImg
 			leave.PlayerInfo.Account = p.Account
 			p.SendMsg(leave)
-
-			// 玩家列表更新
-			room.UpdatePlayerList()
-			uptPlayerList := &msg.UptPlayerList_S2C{}
-			uptPlayerList.PlayerList = room.RespUptPlayerList()
-			room.BroadCastExcept(uptPlayerList, p)
-
 		} else {
 			room.ExitFromRoom(p)
 		}

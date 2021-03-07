@@ -21,7 +21,6 @@ func (r *Room) JoinGameRoom(p *Player) {
 	r.PlayerList = append(r.PlayerList, p)
 
 	// 玩家列表更新
-	r.UpdatePlayerList()
 	uptPlayerList := &msg.UptPlayerList_S2C{}
 	uptPlayerList.PlayerList = r.RespUptPlayerList()
 	r.BroadCastMsg(uptPlayerList)
@@ -62,9 +61,6 @@ func (r *Room) JoinGameRoom(p *Player) {
 	}
 	p.SendMsg(data)
 
-	// 获取桌面玩家
-	r.GetTablePlayer()
-
 	if r.RoomStat != RoomStatusRun {
 		// None和Over状态都直接开始运行游戏
 		r.StartGameRun()
@@ -84,8 +80,11 @@ func (r *Room) StartGameRun() {
 
 	r.RoomStat = RoomStatusRun
 
-	// 获取桌面玩家
-	r.GetTablePlayer()
+	// 玩家列表更新
+	r.UpdatePlayerList()
+	uptPlayerList := &msg.UptPlayerList_S2C{}
+	uptPlayerList.PlayerList = r.RespUptPlayerList()
+	r.BroadCastMsg(uptPlayerList)
 
 	if r.IsConBanker == false {
 		// 庄家抢庄定时
@@ -107,18 +106,18 @@ func (r *Room) BankerTimerTask() {
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Banker
-	data.StartTime = 0
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
 	go func() {
 		for range r.clock.C {
 			r.counter++
-			data := &msg.ActionTime_S2C{}
-			data.GameStep = msg.GameStep_Banker
-			data.StartTime = r.counter
-			data.RoomData = r.RespRoomData()
-			r.BroadCastMsg(data)
+			// 发送时间
+			send := &msg.SendActTime_S2C{}
+			send.StartTime = r.counter
+			send.GameTime = BankerTime
+			send.GameStep = msg.GameStep_Banker
+			r.BroadCastMsg(send)
 			log.Debug("BankerTime :%v", r.counter)
 			if r.counter == 5 {
 				// 产生庄家
@@ -139,7 +138,6 @@ func (r *Room) Banker2TimerTask() {
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Banker2
-	data.StartTime = Banker2Time
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
@@ -189,7 +187,6 @@ func (r *Room) DownBetTime() {
 	// 下注时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_DownBet
-	data.StartTime = 0
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
@@ -197,13 +194,12 @@ func (r *Room) DownBetTime() {
 	t := time.NewTicker(time.Second)
 	for range t.C {
 		r.counter++
-		// 下注时间
-		data := &msg.ActionTime_S2C{}
-		data.GameStep = msg.GameStep_DownBet
-		data.StartTime = r.counter
-		data.RoomData = r.RespRoomData()
-		r.BroadCastMsg(data)
-
+		// 发送时间
+		send := &msg.SendActTime_S2C{}
+		send.StartTime = r.counter
+		send.GameTime = DownBetTime
+		send.GameStep = msg.GameStep_DownBet
+		r.BroadCastMsg(send)
 		log.Debug("DownBetTime :%v", r.counter)
 		if r.counter == DownBetTime {
 			break
@@ -236,7 +232,6 @@ func (r *Room) CompareSettlement() {
 	// 结算时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Settle
-	data.StartTime = SettleTime
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
@@ -264,12 +259,6 @@ func (r *Room) CompareSettlement() {
 			r.HandleBanker()
 			//根据时间来控制机器人数量
 			r.HandleRobot()
-			// 玩家列表更新
-			r.UpdatePlayerList()
-			uptPlayerList := &msg.UptPlayerList_S2C{}
-			uptPlayerList.PlayerList = r.RespUptPlayerList()
-			r.BroadCastMsg(uptPlayerList)
-
 			// 清空房间数据,开始下局游戏
 			r.CleanRoomData()
 			return
@@ -317,6 +306,7 @@ func (r *Room) ResultMoney() {
 						c4c.BankerWinScore(v, nowTime, v.RoundId, reason)
 					}
 					v.ResultMoney = float64(bankerRes) - (float64(bankerRes) * taxRate)
+					v.BankerMoney += v.ResultMoney
 					v.Account += v.ResultMoney
 				} else { // 庄家赔付
 					v.LoseResultMoney -= float64(bankerRes)
@@ -324,43 +314,43 @@ func (r *Room) ResultMoney() {
 						c4c.BankerLoseScore(v, nowTime, v.RoundId, reason)
 					}
 					v.ResultMoney = v.LoseResultMoney
-					v.Account += v.LoseResultMoney
+					v.BankerMoney += v.ResultMoney
+					v.Account += v.ResultMoney
 				}
 			} else { // 玩家开奖
-				var taxMoney int32
 				var totalWin int32
+				var taxMoney int32
 				var totalLose int32
 				totalLose = v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet +
 					v.DownBetMoney.SingleDownBet + v.DownBetMoney.DoubleDownBet +
 					v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet + v.DownBetMoney.LeopardDownBet
 				if r.LotteryResult.BigSmall == 1 {
-					taxMoney += r.PlayerTotalMoney.SmallDownBet * WinSmall
 					totalWin += r.PlayerTotalMoney.SmallDownBet
+					taxMoney += r.PlayerTotalMoney.SmallDownBet * WinSmall
 				} else if r.LotteryResult.BigSmall == 2 {
-					taxMoney += r.PlayerTotalMoney.BigDownBet * WinBig
 					totalWin += r.PlayerTotalMoney.BigDownBet
+					taxMoney += r.PlayerTotalMoney.BigDownBet * WinBig
 				}
 				if r.LotteryResult.SinDouble == 1 {
-					taxMoney += r.PlayerTotalMoney.SingleDownBet * WinSingle
 					totalWin += r.PlayerTotalMoney.SingleDownBet
+					taxMoney += r.PlayerTotalMoney.SingleDownBet * WinSingle
 				} else if r.LotteryResult.SinDouble == 2 {
-					taxMoney += r.PlayerTotalMoney.DoubleDownBet * WinDouble
 					totalWin += r.PlayerTotalMoney.DoubleDownBet
+					taxMoney += r.PlayerTotalMoney.DoubleDownBet * WinDouble
 				}
 				if r.LotteryResult.CardType == msg.CardsType_Pair {
-					taxMoney += r.PlayerTotalMoney.PairDownBet * WinPair
 					totalWin += r.PlayerTotalMoney.PairDownBet
+					taxMoney += r.PlayerTotalMoney.PairDownBet * WinPair
 				} else if r.LotteryResult.CardType == msg.CardsType_Straight {
-					taxMoney += r.PlayerTotalMoney.StraightDownBet * WinStraight
 					totalWin += r.PlayerTotalMoney.StraightDownBet
+					taxMoney += r.PlayerTotalMoney.StraightDownBet * WinStraight
 				} else if r.LotteryResult.CardType == msg.CardsType_Leopard {
-					taxMoney += r.PlayerTotalMoney.LeopardDownBet * WinLeopard
 					totalWin += r.PlayerTotalMoney.LeopardDownBet
+					taxMoney += r.PlayerTotalMoney.LeopardDownBet * WinLeopard
 				}
 				nowTime := time.Now().Unix()
 				if taxMoney > 0 {
 					v.WinResultMoney = float64(taxMoney)
-					log.Debug("玩家金额: %v, 赢了Win: %v", v.Account, v.WinResultMoney)
 					reason := "ResultWinScore"
 					if v.IsRobot == false {
 						//同时同步赢分和输分
@@ -371,8 +361,8 @@ func (r *Room) ResultMoney() {
 					v.LoseResultMoney = float64(-totalLose + totalWin)
 					reason := "ResultLoseScore"
 					//同时同步赢分和输分
-					if v.LoseResultMoney != 0 {
-						if v.IsRobot == false {
+					if v.IsRobot == false {
+						if v.LoseResultMoney != 0 {
 							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason)
 						}
 					}
@@ -381,8 +371,9 @@ func (r *Room) ResultMoney() {
 				v.ResultMoney = float64(totalWin+taxMoney) - tax
 				v.Account += v.ResultMoney
 				v.ResultMoney -= float64(totalLose)
-
-				v.BankerMoney += v.ResultMoney
+				if v.IsRobot == true {
+					log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
+				}
 			}
 		}
 	}

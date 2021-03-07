@@ -112,12 +112,6 @@ func (hall *GameHall) PlayerJoinRoom(rid string, p *Player) {
 				}
 				p.SendMsg(enter)
 
-				// 玩家列表更新
-				r.UpdatePlayerList()
-				uptPlayerList := &msg.UptPlayerList_S2C{}
-				uptPlayerList.PlayerList = r.RespUptPlayerList()
-				r.BroadCastMsg(uptPlayerList)
-				return
 			}
 		}
 	}
