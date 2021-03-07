@@ -3289,11 +3289,11 @@
     </configuration>
     <list>
       <item itemvalue="Go Build.go build caidaxiao" />
-      <item itemvalue="Go Test.dezhoupoker" />
-      <item itemvalue="Go Test.TestCards_Straight in dezhoupoker/game/internal/algorithm (3)" />
       <item itemvalue="Go Test.TestCards_FLUSH in dezhoupoker/game/internal/algorithm" />
+      <item itemvalue="Go Test.TestCards_Straight in dezhoupoker/game/internal/algorithm (3)" />
       <item itemvalue="Go Test.TestCards_Straight in dezhoupoker/game/internal/algorithm (4)" />
       <item itemvalue="Go Test.TestCards_Straight in dezhoupoker/game/internal/algorithm" />
+      <item itemvalue="Go Test.dezhoupoker" />
     </list>
     <recent_temporary>
       <list>

@@ -123,7 +123,7 @@ func (r *Room) BankerTimerTask() {
 				// 产生庄家
 				r.PlayerUpBanker()
 			}
-			if r.counter == BankerTime {
+			if r.counter >= BankerTime {
 				r.counter = 0
 				BankerChannel <- true
 				return
@@ -145,7 +145,7 @@ func (r *Room) Banker2TimerTask() {
 		for range r.clock.C {
 			r.counter++
 			log.Debug("Banker2Time :%v", r.counter)
-			if r.counter == Banker2Time {
+			if r.counter >= Banker2Time {
 				r.counter = 0
 				BankerChannel <- true
 				return
@@ -201,7 +201,7 @@ func (r *Room) DownBetTime() {
 		send.GameStep = msg.GameStep_DownBet
 		r.BroadCastMsg(send)
 		log.Debug("DownBetTime :%v", r.counter)
-		if r.counter == DownBetTime {
+		if r.counter >= DownBetTime {
 			break
 		}
 	}
@@ -252,7 +252,7 @@ func (r *Room) CompareSettlement() {
 		r.counter++
 		log.Debug("SettleTime :%v", r.counter)
 		// 如果时间处理不及时,可以判断定时9秒的时候将处理这个数据然后发送给前端进行处理
-		if r.counter == SettleTime {
+		if r.counter >= SettleTime {
 			// 踢出房间断线玩家
 			r.KickOutPlayer()
 			// 判断庄家金额是否<2000,否则下庄
