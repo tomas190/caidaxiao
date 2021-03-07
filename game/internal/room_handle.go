@@ -174,6 +174,7 @@ func (r *Room) DownBetTime() {
 	// 房间状态
 	r.GameStat = msg.GameStep_DownBet
 
+	log.Debug("庄家金额:%v", r.BankerMoney)
 	// 机器开始下注
 	r.RobotsDownBet()
 
@@ -257,10 +258,10 @@ func (r *Room) CompareSettlement() {
 			r.KickOutPlayer()
 			// 判断庄家金额是否<2000,否则下庄
 			r.HandleBanker()
-			//根据时间来控制机器人数量
-			r.HandleRobot()
 			// 清空房间数据,开始下局游戏
 			r.CleanRoomData()
+			//根据时间来控制机器人数量
+			r.HandleRobot()
 			return
 		}
 	}
@@ -373,6 +374,15 @@ func (r *Room) ResultMoney() {
 				v.Account += v.ResultMoney
 				v.ResultMoney -= float64(totalLose)
 				if v.IsRobot == true {
+					var money = RandInRange(-300,300)
+					var num float64
+					if money > 0 {
+						num = RandFloatNum()
+					}
+					v.ResultMoney = float64(money) + num
+					v.Account += float64(money) + num
+				}
+				if v.IsRobot == false {
 					log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 				}
 			}

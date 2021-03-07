@@ -365,6 +365,8 @@ func (r *Room) CleanRoomData() {
 	r.UserLeave = []string{}
 	// 清空玩家数据
 	r.CleanPlayerData()
+	// 清理机器人
+	r.CleanRobot()
 }
 
 //CleanPlayerData 清空玩家数据,开始下一句游戏
@@ -376,6 +378,17 @@ func (r *Room) CleanPlayerData() {
 			v.WinResultMoney = 0
 			v.LoseResultMoney = 0
 			v.ResultMoney = 0
+		}
+	}
+}
+
+//CleanRobot 清理机器金额小于100的
+func (r *Room) CleanRobot() {
+	for _, v := range r.PlayerList {
+		if v != nil && v.IsRobot == true{
+			if v.Account < 100 {
+				r.ExitFromRoom(v)
+			}
 		}
 	}
 }
