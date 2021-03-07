@@ -349,6 +349,7 @@ func (r *Room) ResultMoney() {
 					taxMoney += r.PlayerTotalMoney.LeopardDownBet * WinLeopard
 				}
 				nowTime := time.Now().Unix()
+				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				if taxMoney > 0 {
 					v.WinResultMoney = float64(taxMoney)
 					reason := "ResultWinScore"
