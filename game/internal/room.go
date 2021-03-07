@@ -366,7 +366,7 @@ func (r *Room) CleanRoomData() {
 	// 清空玩家数据
 	r.CleanPlayerData()
 	// 清理机器人
-	r.CleanRobot()
+	//r.CleanRobot()
 }
 
 //CleanPlayerData 清空玩家数据,开始下一句游戏

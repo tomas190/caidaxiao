@@ -258,10 +258,10 @@ func (r *Room) CompareSettlement() {
 			r.KickOutPlayer()
 			// 判断庄家金额是否<2000,否则下庄
 			r.HandleBanker()
-			// 清空房间数据,开始下局游戏
-			r.CleanRoomData()
 			//根据时间来控制机器人数量
 			r.HandleRobot()
+			// 清空房间数据,开始下局游戏
+			r.CleanRoomData()
 			return
 		}
 	}
