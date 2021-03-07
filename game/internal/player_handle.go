@@ -67,56 +67,55 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				room.PotMoneyCount.StraightDownBet*WinStraight +
 				room.PotMoneyCount.LeopardDownBet*WinLeopard
 
-			var downBetMoney float64
 			// 判断注池限红
 			if m.DownPot == msg.PotType_BigPot {
-				money := room.PotMoneyCount.SmallDownBet*WinSmall
-				if float64(totalMoney - money) > room.BankerMoney {
+				money := room.PotMoneyCount.SmallDownBet * WinSmall
+				if float64(totalMoney-money) > room.BankerMoney {
 					log.Debug("玩家下注已限红~")
 					return
 				}
 			}
 			if m.DownPot == msg.PotType_SmallPot {
-				money := room.PotMoneyCount.BigDownBet*WinBig
-				if float64(totalMoney - money) > room.BankerMoney {
+				money := room.PotMoneyCount.BigDownBet * WinBig
+				if float64(totalMoney-money) > room.BankerMoney {
 					log.Debug("玩家下注已限红~")
 					return
 				}
 			}
 			if m.DownPot == msg.PotType_SinglePot {
-				money := room.PotMoneyCount.DoubleDownBet*WinDouble
-				if float64(totalMoney - money) > room.BankerMoney {
+				money := room.PotMoneyCount.DoubleDownBet * WinDouble
+				if float64(totalMoney-money) > room.BankerMoney {
 					log.Debug("玩家下注已限红~")
 					return
 				}
 			}
 			if m.DownPot == msg.PotType_DoublePot {
-				money := room.PotMoneyCount.SingleDownBet*WinSingle
-				if float64(totalMoney - money) > room.BankerMoney {
+				money := room.PotMoneyCount.SingleDownBet * WinSingle
+				if float64(totalMoney-money) > room.BankerMoney {
 					log.Debug("玩家下注已限红~")
 					return
 				}
 			}
 			if m.DownPot == msg.PotType_PairPot {
-				money := room.PotMoneyCount.StraightDownBet*WinStraight
-				money2 := room.PotMoneyCount.LeopardDownBet*WinLeopard
-				if float64(totalMoney - money - money2) > room.BankerMoney {
+				money := room.PotMoneyCount.StraightDownBet * WinStraight
+				money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
+				if float64(totalMoney-money-money2) > room.BankerMoney {
 					log.Debug("玩家下注已限红~")
 					return
 				}
 			}
 			if m.DownPot == msg.PotType_StraightPot {
-				money := room.PotMoneyCount.PairDownBet*WinPair
-				money2 := room.PotMoneyCount.LeopardDownBet*WinLeopard
-				if float64(totalMoney - money - money2) > room.BankerMoney {
+				money := room.PotMoneyCount.PairDownBet * WinPair
+				money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
+				if float64(totalMoney-money-money2) > room.BankerMoney {
 					log.Debug("玩家下注已限红~")
 					return
 				}
 			}
 			if m.DownPot == msg.PotType_LeopardPot {
-				money2 := room.PotMoneyCount.PairDownBet*WinPair
-				money := room.PotMoneyCount.StraightDownBet*WinStraight
-				if float64(totalMoney - money - money2) > room.BankerMoney {
+				money2 := room.PotMoneyCount.PairDownBet * WinPair
+				money := room.PotMoneyCount.StraightDownBet * WinStraight
+				if float64(totalMoney-money-money2) > room.BankerMoney {
 					log.Debug("玩家下注已限红~")
 					return
 				}
