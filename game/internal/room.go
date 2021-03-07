@@ -459,7 +459,7 @@ func (r *Room) HandleBanker() {
 				nowTime := time.Now().Unix()
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				reason := "庄家申请下庄"
-				c4c.BankerStatus(v, nowTime, v.RoundId, reason)
+				c4c.BankerStatus(v, 0, nowTime, v.RoundId, reason)
 			}
 		}
 	}
@@ -744,7 +744,7 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 			nowTime := time.Now().Unix()
 			v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 			reason := "庄家申请上庄"
-			c4c.BankerStatus(v, nowTime, v.RoundId, reason)
+			c4c.BankerStatus(v, 1, nowTime, v.RoundId, reason)
 			log.Debug("玩家当庄:%v,当庄金额:%v", v.Id, v.BankerMoney)
 
 			data := &msg.BankerData_S2C{}
@@ -754,4 +754,3 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 		}
 	}
 }
-

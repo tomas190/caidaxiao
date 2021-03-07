@@ -777,7 +777,7 @@ func (c4c *Conn4Center) NoticeWinMoreThan(playerId, playerName string, winGold f
 }
 
 //BankerStatus 庄家同步状态
-func (c4c *Conn4Center) BankerStatus(p *Player, timeUnix int64, roundId, reason string) {
+func (c4c *Conn4Center) BankerStatus(p *Player, status int,timeUnix int64, roundId, reason string) {
 	baseData := &BaseMessage{}
 	baseData.Event = msgBankerStatus
 	id, _ := strconv.Atoi(p.Id)
@@ -786,7 +786,7 @@ func (c4c *Conn4Center) BankerStatus(p *Player, timeUnix int64, roundId, reason 
 	banker.Auth.DevKey = c4c.DevKey
 
 	banker.Info.Id = id
-	banker.Info.Status = int(p.BankerStatus)
+	banker.Info.Status = status
 	banker.Info.CreateTime = timeUnix
 	banker.Info.PayReason = reason
 	banker.Info.Order = bson.NewObjectId().Hex()

@@ -176,7 +176,7 @@ func (p *Player) BankerAction(m *msg.BankerData_C2S) {
 			nowTime := time.Now().Unix()
 			p.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), room.RoomId)
 			reason := "庄家申请下庄"
-			c4c.BankerStatus(p, nowTime, p.RoundId, reason)
+			c4c.BankerStatus(p, 0, nowTime, p.RoundId, reason)
 		}
 	}
 }
