@@ -170,13 +170,13 @@ func (r *Room) RespRoomData() *msg.RoomData {
 		rd.ResultInt = append(rd.ResultInt, int32(v))
 	}
 	rd.PotMoneyCount = new(msg.DownBetMoney)
-	rd.PotMoneyCount.BigDownBet = r.PlayerTotalMoney.BigDownBet
-	rd.PotMoneyCount.SmallDownBet = r.PlayerTotalMoney.SmallDownBet
-	rd.PotMoneyCount.SingleDownBet = r.PlayerTotalMoney.SingleDownBet
-	rd.PotMoneyCount.DoubleDownBet = r.PlayerTotalMoney.DoubleDownBet
-	rd.PotMoneyCount.PairDownBet = r.PlayerTotalMoney.PairDownBet
-	rd.PotMoneyCount.StraightDownBet = r.PlayerTotalMoney.StraightDownBet
-	rd.PotMoneyCount.LeopardDownBet = r.PlayerTotalMoney.LeopardDownBet
+	rd.PotMoneyCount.BigDownBet = r.PotMoneyCount.BigDownBet
+	rd.PotMoneyCount.SmallDownBet = r.PotMoneyCount.SmallDownBet
+	rd.PotMoneyCount.SingleDownBet = r.PotMoneyCount.SingleDownBet
+	rd.PotMoneyCount.DoubleDownBet = r.PotMoneyCount.DoubleDownBet
+	rd.PotMoneyCount.PairDownBet = r.PotMoneyCount.PairDownBet
+	rd.PotMoneyCount.StraightDownBet = r.PotMoneyCount.StraightDownBet
+	rd.PotMoneyCount.LeopardDownBet = r.PotMoneyCount.LeopardDownBet
 	for _, v := range r.PotWinList {
 		pot := &msg.PotWinList{}
 		pot.CardType = v.CardType
@@ -365,8 +365,7 @@ func (r *Room) CleanRoomData() {
 	r.UserLeave = []string{}
 	// 清空玩家数据
 	r.CleanPlayerData()
-	// 清理机器人
-	//r.CleanRobot()
+
 }
 
 //CleanPlayerData 清空玩家数据,开始下一句游戏
