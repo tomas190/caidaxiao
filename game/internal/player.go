@@ -5,13 +5,6 @@ import (
 	"github.com/name5566/leaf/gate"
 )
 
-type DownBetHistory struct {
-	TimeStr       string           // 开奖时间
-	Lottery       []int            // 开奖数据
-	LotteryResult msg.PotWinList   // 开奖结果
-	DownBetMoney  msg.DownBetMoney // 注池下注金额
-}
-
 type Player struct {
 	// 玩家代理链接
 	ConnAgent gate.Agent
@@ -35,7 +28,7 @@ type Player struct {
 	TotalDownBet    int32             // 房间下注总金额
 	WinTotalCount   int32             // 玩家房间获胜Win总次数
 	TwentyData      []int32           // 20局Win数据,1Lose,2Win
-	DownBetHistory  []*DownBetHistory // 下注记录 10条
+	DownBetHistory  []msg.DownBetHistory // 下注记录 10条
 	IsBanker        bool              // 是否庄家
 	IsAction        bool              // 玩家是否行动
 	IsRobot         bool              // 是否机器人
@@ -54,7 +47,7 @@ func (p *Player) Init() {
 	p.TotalDownBet = 0
 	p.WinTotalCount = 0
 	p.TwentyData = nil
-	p.DownBetHistory = nil
+	p.DownBetHistory = make([]msg.DownBetHistory, 0)
 	p.IsBanker = false
 	p.IsAction = false
 	p.IsRobot = false

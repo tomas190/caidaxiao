@@ -2354,9 +2354,11 @@
       <change beforePath="$PROJECT_DIR$/../assets/subgame/readme.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../assets/subgame/readme.txt.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/internal/player_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/player_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/player.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/player.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/room.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/room_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.proto" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../node_modules/moment.meta" beforeDir="false" />
@@ -3289,11 +3291,11 @@
     </configuration>
     <list>
       <item itemvalue="Go Build.go build caidaxiao" />
-      <item itemvalue="Go Test.TestCards_FLUSH in dezhoupoker/game/internal/algorithm" />
+      <item itemvalue="Go Test.dezhoupoker" />
       <item itemvalue="Go Test.TestCards_Straight in dezhoupoker/game/internal/algorithm (3)" />
+      <item itemvalue="Go Test.TestCards_FLUSH in dezhoupoker/game/internal/algorithm" />
       <item itemvalue="Go Test.TestCards_Straight in dezhoupoker/game/internal/algorithm (4)" />
       <item itemvalue="Go Test.TestCards_Straight in dezhoupoker/game/internal/algorithm" />
-      <item itemvalue="Go Test.dezhoupoker" />
     </list>
     <recent_temporary>
       <list>

@@ -192,6 +192,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 		his.Result = v.Result
 		his.BigSmall = v.BigSmall
 		his.SinDouble = v.SinDouble
+		his.CardType = v.CardType
 		rd.HistoryData = append(rd.HistoryData, his)
 	}
 	// 这里只需要遍历桌面玩家，站起玩家不显示出来
@@ -213,6 +214,17 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
 			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
 			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			for _, v := range v.DownBetHistory {
+				his := &msg.DownBetHistory{}
+				his.TimeFmt = v.TimeFmt
+				his.ResNum = v.ResNum
+				his.Result = v.Result
+				his.BigSmall = v.BigSmall
+				his.SinDouble = v.SinDouble
+				his.CardType = v.CardType
+				his.DownBetMoney = v.DownBetMoney
+				pd.DownBetHistory = append(pd.DownBetHistory, his)
+			}
 			pd.TotalDownBet = v.TotalDownBet
 			pd.WinTotalCount = v.WinTotalCount
 			pd.ResultMoney = v.ResultMoney
@@ -427,7 +439,7 @@ func (r *Room) ExitFromRoom(p *Player) {
 	p.TotalDownBet = 0
 	p.WinTotalCount = 0
 	p.TwentyData = nil
-	p.DownBetHistory = nil
+	p.DownBetHistory = make([]msg.DownBetHistory, 0)
 	p.IsBanker = false
 	p.IsAction = false
 

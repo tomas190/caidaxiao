@@ -376,13 +376,16 @@ func (r *Room) ResultMoney() {
 				v.Account += v.ResultMoney
 				v.ResultMoney -= float64(totalLose)
 				if v.IsRobot == true {
-					var money = RandInRange(-300,300)
+					var money = RandInRange(-300, 300)
 					var num float64
 					if money > 0 {
 						num = RandFloatNum()
 					}
 					v.ResultMoney = float64(money) + num
 					v.Account += float64(money) + num
+				}
+				if v.ResultMoney > 0 {
+					v.WinTotalCount++
 				}
 				if v.IsRobot == false {
 					log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
@@ -436,9 +439,37 @@ func (r *Room) GetResultType() {
 	history.Result = r.LotteryResult.ResultNum
 	history.BigSmall = r.LotteryResult.BigSmall
 	history.SinDouble = r.LotteryResult.SinDouble
+	history.CardType = r.LotteryResult.CardType
 	r.HistoryData = append(r.HistoryData, history)
 	// 判断数据大于10条就删除出一条
 	if len(r.HistoryData) > 70 {
 		r.HistoryData = append(r.HistoryData[:0], r.HistoryData[1:]...)
+	}
+
+	// 存储下注记录
+	var downBetHis msg.DownBetHistory
+	downBetHis.TimeFmt = r.resultTime
+	for _, v := range r.Lottery {
+		downBetHis.ResNum = append(downBetHis.ResNum, int32(v))
+	}
+	downBetHis.Result = r.LotteryResult.ResultNum
+	downBetHis.BigSmall = r.LotteryResult.BigSmall
+	downBetHis.SinDouble = r.LotteryResult.SinDouble
+	downBetHis.CardType = r.LotteryResult.CardType
+	downBetHis.Result = r.LotteryResult.ResultNum
+	for _, v := range r.PlayerList {
+		if v != nil && v.IsAction == true {
+			downBetHis.DownBetMoney = new(msg.DownBetMoney)
+			downBetHis.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
+			downBetHis.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
+			downBetHis.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
+			downBetHis.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+			downBetHis.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
+			downBetHis.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
+			downBetHis.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			if len(v.DownBetHistory) > 70 {
+				v.DownBetHistory = append(v.DownBetHistory, downBetHis)
+			}
+		}
 	}
 }

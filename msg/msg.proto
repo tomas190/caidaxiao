@@ -129,9 +129,21 @@ message PlayerData {
     int32 winTotalCount = 7; // 玩家房间Win总次数
     double resultMoney = 8; // 本局结算金额
     repeated PotWinList potWinList = 9; // 游戏记录开奖列表
-    bool IsAction = 10; // 玩家是否行动
-    bool IsBanker = 11; // 玩家是否庄家
-    bool IsRobot = 12; // 玩家是否机器人
+    repeated DownBetHistory downBetHistory = 10; // 下注记录
+    bool IsAction = 11; // 玩家是否行动
+    bool IsBanker = 12; // 玩家是否庄家
+    bool IsRobot = 13; // 玩家是否机器人
+}
+
+message DownBetHistory {
+    string timeFmt = 1;
+    repeated int32 resNum = 2;
+    int32 result = 3;
+    int32 sinDouble = 4;
+    int32 bigSmall = 5;
+    CardsType cardType = 6; // 比牌类型 1对,2顺,3豹
+    DownBetMoney downBetMoney = 7;
+
 }
 
 message HistoryData {
@@ -140,6 +152,7 @@ message HistoryData {
     int32 result = 3;
     int32 sinDouble = 4;
     int32 bigSmall = 5;
+    CardsType cardType = 6; // 比牌类型 1对,2顺,3豹
 }
 
 message RoomData {
