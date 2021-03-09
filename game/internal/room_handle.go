@@ -480,7 +480,7 @@ func (r *Room) GetResultType() {
 	downBetHis.CardType = r.LotteryResult.CardType
 	downBetHis.Result = r.LotteryResult.ResultNum
 	for _, v := range r.PlayerList {
-		if v != nil && v.IsAction == true {
+		if v != nil && v.IsRobot == false && v.IsAction == true {
 			downBetHis.DownBetMoney = new(msg.DownBetMoney)
 			downBetHis.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
 			downBetHis.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
@@ -489,8 +489,9 @@ func (r *Room) GetResultType() {
 			downBetHis.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
 			downBetHis.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
 			downBetHis.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			v.DownBetHistory = append(v.DownBetHistory, downBetHis)
 			if len(v.DownBetHistory) > 70 {
-				v.DownBetHistory = append(v.DownBetHistory, downBetHis)
+				v.DownBetHistory = append(v.DownBetHistory[:0], v.DownBetHistory[1:]...)
 			}
 		}
 	}

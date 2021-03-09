@@ -17,22 +17,22 @@ type Player struct {
 	Token    string
 	RoundId  string
 
-	Status          msg.PlayerStatus  // 玩家状态
-	BankerMoney     float64           // 庄家金额
-	BankerCount     int32             // 庄家次数
-	BankerStatus    msg.BankerStatus  // 庄家状态
-	DownBetMoney    msg.DownBetMoney  // 玩家各注池下注金额
-	ResultMoney     float64           // 结算金额
-	WinResultMoney  float64           // 本局赢钱金额
-	LoseResultMoney float64           // 本局输钱金额
-	TotalDownBet    int32             // 房间下注总金额
-	WinTotalCount   int32             // 玩家房间获胜Win总次数
-	TwentyData      []int32           // 20局Win数据,1Lose,2Win
-	DownBetHistory  []msg.DownBetHistory // 下注记录 10条
-	IsBanker        bool              // 是否庄家
-	IsAction        bool              // 玩家是否行动
-	IsRobot         bool              // 是否机器人
-	IsOnline        bool              // 玩家是否在线
+	Status          msg.PlayerStatus     // 玩家状态
+	BankerMoney     float64              // 庄家金额
+	BankerCount     int32                // 庄家次数
+	BankerStatus    msg.BankerStatus     // 庄家状态
+	DownBetMoney    msg.DownBetMoney     // 玩家各注池下注金额
+	ResultMoney     float64              // 结算金额
+	WinResultMoney  float64              // 本局赢钱金额
+	LoseResultMoney float64              // 本局输钱金额
+	TotalDownBet    int32                // 房间下注总金额
+	WinTotalCount   int32                // 玩家房间获胜Win总次数
+	TwentyData      []int32              // 20局Win数据,1Lose,2Win
+	DownBetHistory  []msg.DownBetHistory // 下注记录 70条
+	IsBanker        bool                 // 是否庄家
+	IsAction        bool                 // 玩家是否行动
+	IsRobot         bool                 // 是否机器人
+	IsOnline        bool                 // 玩家是否在线
 }
 
 func (p *Player) Init() {
