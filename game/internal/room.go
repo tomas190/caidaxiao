@@ -234,6 +234,44 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			rd.PlayerData = append(rd.PlayerData, pd)
 		}
 	}
+	for _, v := range r.TablePlayer {
+		if v != nil {
+			pd := &msg.PlayerData{}
+			pd.PlayerInfo = new(msg.PlayerInfo)
+			pd.PlayerInfo.Id = v.Id
+			pd.PlayerInfo.NickName = v.NickName
+			pd.PlayerInfo.HeadImg = v.HeadImg
+			pd.PlayerInfo.Account = v.Account
+			pd.BankerMoney = v.BankerMoney
+			pd.BankerCount = v.BankerCount
+			pd.DownBetMoney = new(msg.DownBetMoney)
+			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
+			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
+			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
+			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
+			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
+			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			for _, v := range v.DownBetHistory {
+				his := &msg.DownBetHistory{}
+				his.TimeFmt = v.TimeFmt
+				his.ResNum = v.ResNum
+				his.Result = v.Result
+				his.BigSmall = v.BigSmall
+				his.SinDouble = v.SinDouble
+				his.CardType = v.CardType
+				his.DownBetMoney = v.DownBetMoney
+				pd.DownBetHistory = append(pd.DownBetHistory, his)
+			}
+			pd.TotalDownBet = v.TotalDownBet
+			pd.WinTotalCount = v.WinTotalCount
+			pd.ResultMoney = v.ResultMoney
+			pd.IsAction = v.IsAction
+			pd.IsBanker = v.IsBanker
+			pd.IsRobot = v.IsRobot
+			rd.TablePlayer = append(rd.TablePlayer, pd)
+		}
+	}
 	return rd
 }
 
@@ -367,6 +405,7 @@ func (r *Room) GetCaiYuan() {
 
 //CleanRoomData 清空房间数据,开始下一句游戏
 func (r *Room) CleanRoomData() {
+	r.TablePlayer = nil
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
 	r.RoomStat = RoomStatusOver

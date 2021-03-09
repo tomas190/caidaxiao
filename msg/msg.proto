@@ -164,6 +164,7 @@ message RoomData {
     DownBetMoney potMoneyCount = 6; // 注池金额集合
     repeated PotWinList potWinList = 7; // 游戏记录开奖列表
     repeated HistoryData historyData = 8; // 历史记录数据
+    repeated PlayerData tablePlayer = 9; // 桌面玩家
 }
 
 message JoinRoom_C2S {

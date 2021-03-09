@@ -21,6 +21,7 @@ func (r *Room) JoinGameRoom(p *Player) {
 	r.PlayerList = append(r.PlayerList, p)
 
 	// 玩家列表更新
+	r.UpdatePlayerList()
 	uptPlayerList := &msg.UptPlayerList_S2C{}
 	uptPlayerList.PlayerList = r.RespUptPlayerList()
 	r.BroadCastMsg(uptPlayerList)
@@ -86,6 +87,11 @@ func (r *Room) StartGameRun() {
 	uptPlayerList.PlayerList = r.RespUptPlayerList()
 	r.BroadCastMsg(uptPlayerList)
 
+	// 获取桌面显示的6个玩家
+	num := len(r.PlayerList) - 6
+	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
+
+	// 游戏阶段行动
 	if r.IsConBanker == false {
 		// 庄家抢庄定时
 		r.BankerTimerTask()
