@@ -71,7 +71,7 @@ func (r *Room) JoinGameRoom(p *Player) {
 //GameStart 游戏开始运行
 func (r *Room) StartGameRun() {
 	// 当前房间人数存在两人及两人以上才开始游戏
-	if r.PlayerLength() < 2 {
+	if r.PlayerLength() < 6 {
 		// 房间游戏不能开始,房间设为等待状态
 		r.RoomStat = RoomStatusNone
 
