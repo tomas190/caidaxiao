@@ -387,8 +387,10 @@ func (r *Room) ResultMoney() {
 					if money > 0 {
 						num = RandFloatNum()
 					}
-					v.ResultMoney = float64(money) + num
-					v.Account += float64(money) + num
+					if v.Account+v.ResultMoney > 0 {
+						v.ResultMoney = float64(money) + num
+						v.Account += v.ResultMoney
+					}
 				}
 				if v.ResultMoney > 0 {
 					v.WinTotalCount++
