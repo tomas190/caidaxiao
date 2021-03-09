@@ -32,7 +32,6 @@ var Server struct {
 	CenterUrl        string
 
 	LogAddr string
-	CaiYuan string
 }
 
 func init() {

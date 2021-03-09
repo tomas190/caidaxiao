@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"encoding/json"
 	"fmt"
@@ -353,7 +352,8 @@ func (r *Room) UpdatePlayerList() {
 
 //GetCaiYuan 获取彩源开奖结果
 func (r *Room) GetCaiYuan() {
-	res, err := http.Get(conf.Server.CaiYuan)
+	caiYuan := "http://free.manycai.com/K2601968389c853/hn60-1.json"
+	res, err := http.Get(caiYuan)
 	if err != nil {
 		log.Debug("再次获取随机数值失败: %v", err)
 		return
