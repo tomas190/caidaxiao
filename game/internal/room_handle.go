@@ -21,7 +21,6 @@ func (r *Room) JoinGameRoom(p *Player) {
 	r.PlayerList = append(r.PlayerList, p)
 
 	// 玩家列表更新
-	r.UpdatePlayerList()
 	uptPlayerList := &msg.UptPlayerList_S2C{}
 	uptPlayerList.PlayerList = r.RespUptPlayerList()
 	r.BroadCastMsg(uptPlayerList)
@@ -150,6 +149,12 @@ func (r *Room) Banker2TimerTask() {
 	go func() {
 		for range r.clock.C {
 			r.counter++
+			// 发送时间
+			send := &msg.SendActTime_S2C{}
+			send.StartTime = r.counter
+			send.GameTime = Banker2Time
+			send.GameStep = msg.GameStep_Banker2
+			r.BroadCastMsg(send)
 			log.Debug("Banker2Time :%v", r.counter)
 			if r.counter >= Banker2Time {
 				r.counter = 0
@@ -257,6 +262,12 @@ func (r *Room) CompareSettlement() {
 
 	for range t.C {
 		r.counter++
+		// 发送时间
+		send := &msg.SendActTime_S2C{}
+		send.StartTime = r.counter
+		send.GameTime = SettleTime
+		send.GameStep = msg.GameStep_Settle
+		r.BroadCastMsg(send)
 		log.Debug("SettleTime :%v", r.counter)
 		// 如果时间处理不及时,可以判断定时9秒的时候将处理这个数据然后发送给前端进行处理
 		if r.counter >= SettleTime {
@@ -317,6 +328,7 @@ func (r *Room) ResultMoney() {
 					v.ResultMoney = float64(bankerRes) - (float64(bankerRes) * taxRate)
 					v.BankerMoney += v.ResultMoney
 					v.Account += v.ResultMoney
+					log.Debug("庄家赢钱:%v", v.ResultMoney)
 				} else { // 庄家赔付
 					v.LoseResultMoney -= float64(bankerRes)
 					if v.IsRobot == false {
@@ -325,6 +337,7 @@ func (r *Room) ResultMoney() {
 					v.ResultMoney = v.LoseResultMoney
 					v.BankerMoney += v.ResultMoney
 					v.Account += v.ResultMoney
+					log.Debug("庄家输钱:%v", v.ResultMoney)
 				}
 			} else { // 玩家开奖
 				var totalWin int32
@@ -397,6 +410,7 @@ func (r *Room) ResultMoney() {
 				}
 				if v.IsRobot == false {
 					log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
+					log.Debug("玩家历史记录:%v", v.DownBetHistory)
 				}
 			}
 		}
