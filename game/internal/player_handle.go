@@ -2,9 +2,7 @@ package internal
 
 import (
 	"caidaxiao/msg"
-	"fmt"
 	"github.com/name5566/leaf/log"
-	"time"
 )
 
 //PlayerExitRoom 玩家退出房间
@@ -54,78 +52,74 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			log.Debug("玩家金额不足,不能进行下注~")
 			return
 		}
-		p.IsAction = m.IsAction
 
 		// 判断玩家是否行动做相应处理
+		// 各注池下注金额加上对应的倍数
+		totalMoney := room.PotMoneyCount.BigDownBet*WinBig +
+			room.PotMoneyCount.SmallDownBet*WinSmall +
+			room.PotMoneyCount.SingleDownBet*WinSingle +
+			room.PotMoneyCount.DoubleDownBet*WinDouble +
+			room.PotMoneyCount.PairDownBet*WinPair +
+			room.PotMoneyCount.StraightDownBet*WinStraight +
+			room.PotMoneyCount.LeopardDownBet*WinLeopard
+
+		// 判断注池限红
+		if m.DownPot == msg.PotType_BigPot {
+			money := room.PotMoneyCount.SmallDownBet * WinSmall
+			if float64(totalMoney-money) > room.BankerMoney {
+				log.Debug("玩家下注已限红~")
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_SmallPot {
+			money := room.PotMoneyCount.BigDownBet * WinBig
+			if float64(totalMoney-money) > room.BankerMoney {
+				log.Debug("玩家下注已限红~")
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_SinglePot {
+			money := room.PotMoneyCount.DoubleDownBet * WinDouble
+			if float64(totalMoney-money) > room.BankerMoney {
+				log.Debug("玩家下注已限红~")
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_DoublePot {
+			money := room.PotMoneyCount.SingleDownBet * WinSingle
+			if float64(totalMoney-money) > room.BankerMoney {
+				log.Debug("玩家下注已限红~")
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_PairPot {
+			money := room.PotMoneyCount.StraightDownBet * WinStraight
+			money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
+			if float64(totalMoney-money-money2) > room.BankerMoney {
+				log.Debug("玩家下注已限红~")
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_StraightPot {
+			money := room.PotMoneyCount.PairDownBet * WinPair
+			money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
+			if float64(totalMoney-money-money2) > room.BankerMoney {
+				log.Debug("玩家下注已限红~")
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_LeopardPot {
+			money2 := room.PotMoneyCount.PairDownBet * WinPair
+			money := room.PotMoneyCount.StraightDownBet * WinStraight
+			if float64(totalMoney-money-money2) > room.BankerMoney {
+				log.Debug("玩家下注已限红~")
+				return
+			}
+		}
+
+		p.IsAction = m.IsAction
+
 		if p.IsAction == true {
-			// 各注池下注金额加上对应的倍数
-			totalMoney := room.PotMoneyCount.BigDownBet*WinBig +
-				room.PotMoneyCount.SmallDownBet*WinSmall +
-				room.PotMoneyCount.SingleDownBet*WinSingle +
-				room.PotMoneyCount.DoubleDownBet*WinDouble +
-				room.PotMoneyCount.PairDownBet*WinPair +
-				room.PotMoneyCount.StraightDownBet*WinStraight +
-				room.PotMoneyCount.LeopardDownBet*WinLeopard
-
-			// 判断注池限红
-			if m.DownPot == msg.PotType_BigPot {
-				money := room.PotMoneyCount.SmallDownBet * WinSmall
-				if float64(totalMoney-money) > room.BankerMoney {
-					log.Debug("玩家下注已限红~")
-					return
-				}
-			}
-			if m.DownPot == msg.PotType_SmallPot {
-				money := room.PotMoneyCount.BigDownBet * WinBig
-				if float64(totalMoney-money) > room.BankerMoney {
-					log.Debug("玩家下注已限红~")
-					return
-				}
-			}
-			if m.DownPot == msg.PotType_SinglePot {
-				money := room.PotMoneyCount.DoubleDownBet * WinDouble
-				if float64(totalMoney-money) > room.BankerMoney {
-					log.Debug("玩家下注已限红~")
-					return
-				}
-			}
-			if m.DownPot == msg.PotType_DoublePot {
-				money := room.PotMoneyCount.SingleDownBet * WinSingle
-				if float64(totalMoney-money) > room.BankerMoney {
-					log.Debug("玩家下注已限红~")
-					return
-				}
-			}
-			if m.DownPot == msg.PotType_PairPot {
-				money := room.PotMoneyCount.StraightDownBet * WinStraight
-				money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
-				if float64(totalMoney-money-money2) > room.BankerMoney {
-					log.Debug("玩家下注已限红~")
-					return
-				}
-			}
-			if m.DownPot == msg.PotType_StraightPot {
-				money := room.PotMoneyCount.PairDownBet * WinPair
-				money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
-				if float64(totalMoney-money-money2) > room.BankerMoney {
-					log.Debug("玩家下注已限红~")
-					return
-				}
-			}
-			if m.DownPot == msg.PotType_LeopardPot {
-				money2 := room.PotMoneyCount.PairDownBet * WinPair
-				money := room.PotMoneyCount.StraightDownBet * WinStraight
-				if float64(totalMoney-money-money2) > room.BankerMoney {
-					log.Debug("玩家下注已限红~")
-					return
-				}
-			}
-
-			//if float64(totalMoney)+downBetMoney > room.BankerMoney {
-			//	log.Debug("玩家下注已限红~")
-			//	return
-			//}
-
 			// 记录玩家在该房间总下注 和 房间注池的总金额
 			if m.DownPot == msg.PotType_BigPot {
 				p.DownBetMoney.BigDownBet += m.DownBet
@@ -199,16 +193,8 @@ func (p *Player) BankerAction(m *msg.BankerData_C2S) {
 		}
 	}
 	if m.Status == 3 {
-		roomId := hall.UserRoom[p.Id]
-		r, _ := hall.RoomRecord.Load(roomId)
-		if r != nil {
-			room := r.(*Room)
-			p.BankerStatus = msg.BankerStatus_BankerDown
-			room.IsConBanker = false
-			nowTime := time.Now().Unix()
-			p.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), room.RoomId)
-			reason := "庄家申请下庄"
-			c4c.BankerStatus(p, 0, nowTime, p.RoundId, reason)
+		if p.IsBanker == true {
+			p.IsDownBanker = true
 		}
 	}
 }

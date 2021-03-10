@@ -272,7 +272,7 @@ func (r *Room) CompareSettlement() {
 		if r.counter >= SettleTime {
 			// 踢出房间断线玩家
 			r.KickOutPlayer()
-			// 判断庄家金额是否<2000,否则下庄
+			// 处理庄家
 			r.HandleBanker()
 			// 清理机器人
 			r.CleanRobot()
@@ -338,6 +338,7 @@ func (r *Room) ResultMoney() {
 					v.Account += v.ResultMoney
 					log.Debug("庄家输钱:%v", v.ResultMoney)
 				}
+				r.BankerMoney = v.Account
 			} else { // 玩家开奖
 				var totalWin int32
 				var taxMoney int32

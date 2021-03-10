@@ -30,6 +30,7 @@ type Player struct {
 	TwentyData      []int32              // 20局Win数据,1Lose,2Win
 	DownBetHistory  []msg.DownBetHistory // 下注记录 70条
 	IsBanker        bool                 // 是否庄家
+	IsDownBanker    bool                 // 是否下庄
 	IsAction        bool                 // 玩家是否行动
 	IsRobot         bool                 // 是否机器人
 	IsOnline        bool                 // 玩家是否在线
@@ -48,6 +49,7 @@ func (p *Player) Init() {
 	p.WinTotalCount = 0
 	p.TwentyData = nil
 	p.DownBetHistory = make([]msg.DownBetHistory, 0)
+	p.IsDownBanker = false
 	p.IsBanker = false
 	p.IsAction = false
 	p.IsRobot = false

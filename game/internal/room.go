@@ -416,7 +416,6 @@ func (r *Room) CleanRoomData() {
 	r.UserLeave = []string{}
 	// 清空玩家数据
 	r.CleanPlayerData()
-
 }
 
 //CleanPlayerData 清空玩家数据,开始下一句游戏
@@ -428,6 +427,7 @@ func (r *Room) CleanPlayerData() {
 			v.WinResultMoney = 0
 			v.LoseResultMoney = 0
 			v.ResultMoney = 0
+			v.IsDownBanker = false
 		}
 	}
 }
@@ -471,9 +471,10 @@ func (r *Room) ExitFromRoom(p *Player) {
 
 	//清空用户数据
 	p.Status = msg.PlayerStatus_XX_Status
-	p.DownBetMoney = msg.DownBetMoney{}
-	p.BankerCount = 0
 	p.BankerMoney = 0
+	p.BankerCount = 0
+	p.BankerStatus = 0
+	p.DownBetMoney = msg.DownBetMoney{}
 	p.ResultMoney = 0
 	p.WinResultMoney = 0
 	p.LoseResultMoney = 0
@@ -482,6 +483,7 @@ func (r *Room) ExitFromRoom(p *Player) {
 	p.TwentyData = nil
 	p.DownBetHistory = make([]msg.DownBetHistory, 0)
 	p.IsBanker = false
+	p.IsDownBanker = false
 	p.IsAction = false
 
 	//从房间列表删除玩家信息,更新房间列表
@@ -517,9 +519,26 @@ func (r *Room) ExitFromRoom(p *Player) {
 func (r *Room) HandleBanker() {
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsRobot == false && v.IsBanker == true {
-			if v.BankerMoney < 2000 || v.BankerCount >= 3 {
-				v.BankerStatus = msg.BankerStatus_BankerDown
+			// 如果玩家点击下庄就处理庄家下庄
+			if v.IsDownBanker == true {
+				v.BankerMoney = 0
+				v.BankerCount = 0
+				v.BankerStatus = 0
 				v.IsBanker = false
+				v.IsDownBanker = false
+				r.IsConBanker = false
+				nowTime := time.Now().Unix()
+				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+				reason := "庄家申请下庄"
+				c4c.BankerStatus(v, 0, nowTime, v.RoundId, reason)
+			}
+			// 判断庄家金额是否小于2000或者庄家连庄3次以上就下庄
+			if v.BankerMoney < 2000 || v.BankerCount >= 3 {
+				v.BankerMoney = 0
+				v.BankerCount = 0
+				v.BankerStatus = 0
+				v.IsBanker = false
+				v.IsDownBanker = false
 				r.IsConBanker = false
 				nowTime := time.Now().Unix()
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
@@ -528,6 +547,8 @@ func (r *Room) HandleBanker() {
 			}
 		}
 	}
+	// 清空机器庄家
+	r.ClearRobotBanker()
 }
 
 //HandleRobot 处理机器人
@@ -817,6 +838,20 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 			data.Banker = v.RespPlayerData()
 			data.TakeMoney = takeMoney
 			r.BroadCastMsg(data)
+		}
+	}
+}
+
+// 清除机器庄家
+func (r *Room) ClearRobotBanker() {
+	for _, v := range r.PlayerList {
+		if v != nil {
+			if v.IsRobot == true && v.IsBanker == true {
+				v.IsBanker = false
+				v.BankerMoney = 0
+				v.BankerCount = 0
+				v.BankerStatus = 0
+			}
 		}
 	}
 }
