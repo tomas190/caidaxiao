@@ -435,8 +435,8 @@ func (r *Room) CleanPlayerData() {
 //CleanRobot 清理机器金额小于100的
 func (r *Room) CleanRobot() {
 	for _, v := range r.PlayerList {
-		if v != nil && v.IsRobot == true{
-			if v.Account < 100 {
+		if v != nil && v.IsRobot == true {
+			if v.Account < 100 || v.WinTotalCount > 12 {
 				r.ExitFromRoom(v)
 			}
 		}

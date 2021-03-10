@@ -480,7 +480,7 @@ func (r *Room) RobotsDownBet() {
 							potChange.PotMoneyCount.LeopardDownBet = r.PotMoneyCount.LeopardDownBet
 							r.BroadCastMsg(potChange)
 
-							log.Debug("机器Id: %v,下注: %v", v.Id, v.DownBetMoney)
+							//log.Debug("机器Id: %v,下注: %v", v.Id, v.DownBetMoney)
 						}
 					} else {
 						InsertRobotData(rData)
