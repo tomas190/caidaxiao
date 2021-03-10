@@ -472,6 +472,8 @@ func (r *Room) ExitFromRoom(p *Player) {
 	//清空用户数据
 	p.Status = msg.PlayerStatus_XX_Status
 	p.DownBetMoney = msg.DownBetMoney{}
+	p.BankerCount = 0
+	p.BankerMoney = 0
 	p.ResultMoney = 0
 	p.WinResultMoney = 0
 	p.LoseResultMoney = 0
@@ -721,6 +723,7 @@ func (r *Room) PlayerUpBanker() {
 		p.Account = RandomBankerAccount()
 		p.IsBanker = true
 		r.BankerId = p.Id
+		p.BankerCount++
 		hall.UserRoom[p.Id] = r.RoomId
 		r.PlayerList = append(r.PlayerList, p)
 

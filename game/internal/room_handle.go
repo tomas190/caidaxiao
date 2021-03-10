@@ -140,6 +140,12 @@ func (r *Room) BankerTimerTask() {
 //GrabDealTimerTask 庄家连庄定时器任务
 func (r *Room) Banker2TimerTask() {
 	r.GameStat = msg.GameStep_Banker2
+
+	for _, v := range r.PlayerList {
+		if v != nil && v.Id == r.BankerId {
+			v.BankerCount++
+		}
+	}
 	// 抢庄时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Banker2
@@ -188,13 +194,6 @@ func (r *Room) DownBetTime() {
 	log.Debug("庄家金额:%v", r.BankerMoney)
 	// 机器开始下注
 	r.RobotsDownBet()
-
-	// 记录连庄次数
-	for _, v := range r.PlayerList {
-		if v != nil && v.IsBanker == true {
-			v.BankerCount++
-		}
-	}
 
 	// 下注时间
 	data := &msg.ActionTime_S2C{}
