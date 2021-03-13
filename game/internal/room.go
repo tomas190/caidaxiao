@@ -437,7 +437,7 @@ func (r *Room) CleanPlayerData() {
 func (r *Room) CleanRobot() {
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsRobot == true {
-			if v.Account < 100 || v.WinTotalCount > 12 {
+			if v.Account < 100 {
 				r.ExitFromRoom(v)
 			}
 		}
@@ -698,9 +698,10 @@ func (r *Room) HandleRobot() {
 
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsRobot == true {
-			rNum := 1 / ((v.WinTotalCount + 1) * 2)
+			rNum := 1 / float64((v.WinTotalCount+1)*2)
 			rNum2 := int(rNum * 1000)
 			rNum3 := RandInRange(0, 1000)
+			log.Debug("rNum2:%v,rNum3:%v", rNum2, rNum3)
 			if rNum3 <= rNum2 {
 				r.ExitFromRoom(v)
 				time.Sleep(time.Millisecond)
