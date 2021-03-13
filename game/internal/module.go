@@ -32,6 +32,7 @@ func (m *Module) OnInit() {
 	c4c.CreatConnect()
 
 	// 监听接口
+	go StartHttpServer()
 }
 
 func (m *Module) OnDestroy() {

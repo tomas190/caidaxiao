@@ -312,6 +312,7 @@ func (r *Room) ResultMoney() {
 
 	// 判断注池真实玩家总下注是否大于玩家所赢的钱,大于0庄家获利,否则庄家赔付
 	bankerRes := r.PotTotalMoney() - totalUserWin
+	log.Debug("房间玩家下注总和:%v,房间玩家赢钱总额:%v", r.PotTotalMoney(), totalUserWin)
 
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsAction == true {
@@ -338,7 +339,7 @@ func (r *Room) ResultMoney() {
 					v.Account += v.ResultMoney
 					log.Debug("庄家输钱:%v", v.ResultMoney)
 				}
-				r.BankerMoney = v.Account
+				r.BankerMoney = v.BankerMoney
 			} else { // 玩家开奖
 				var totalWin int32
 				var taxMoney int32
