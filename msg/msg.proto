@@ -247,4 +247,5 @@ message SendActTime_S2C {
     int32 startTime = 1;
     int32 gameTime = 2;
     GameStep gameStep = 3; // 当前状态
+    map<string, int32> bankerList = 4; // 庄家列表
 }

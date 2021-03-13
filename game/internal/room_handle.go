@@ -122,6 +122,9 @@ func (r *Room) BankerTimerTask() {
 			send.StartTime = r.counter
 			send.GameTime = BankerTime
 			send.GameStep = msg.GameStep_Banker
+			for k, v := range r.bankerList {
+				send.BankerList[k] = v
+			}
 			r.BroadCastMsg(send)
 			log.Debug("BankerTime :%v", r.counter)
 			if r.counter == 5 {

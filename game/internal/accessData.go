@@ -45,6 +45,7 @@ func StartHttpServer() {
 
 func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 	Id := r.FormValue("id")
+	log.Debug("reqPlayerLeave 踢出玩家:%v", Id)
 	rid := hall.UserRoom[Id]
 	v, _ := hall.RoomRecord.Load(rid)
 	if v != nil {
@@ -73,6 +74,7 @@ func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 			w.Write(js)
 		}
 	}
+
 	//user, _ := hall.UserRecord.Load(Id)
 	//if user != nil {
 	//	u := user.(*Player)
