@@ -242,10 +242,14 @@ message EmojiChat_S2C {
     string goalId = 3;
 }
 
+message BankerList {
+    string Id = 1;
+    int32 takeMoney = 2;
+}
 // 发送时间
 message SendActTime_S2C {
     int32 startTime = 1;
     int32 gameTime = 2;
     GameStep gameStep = 3; // 当前状态
-    map<string, int32> bankerList = 4; // 庄家列表
+    repeated BankerList bankerList = 4; // 庄家列表
 }

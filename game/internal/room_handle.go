@@ -123,7 +123,10 @@ func (r *Room) BankerTimerTask() {
 			send.GameTime = BankerTime
 			send.GameStep = msg.GameStep_Banker
 			for k, v := range r.bankerList {
-				send.BankerList[k] = v
+				banker := &msg.BankerList{}
+				banker.Id = k
+				banker.TakeMoney = v
+				send.BankerList = append(send.BankerList, banker)
 			}
 			r.BroadCastMsg(send)
 			log.Debug("BankerTime :%v", r.counter)
