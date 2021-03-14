@@ -412,13 +412,23 @@ func (r *Room) ResultMoney() {
 						v.Account += v.ResultMoney
 					}
 				}
+				// 记录玩家20句游戏Win次数
 				if v.ResultMoney > 0 {
-					v.WinTotalCount++
+					v.TwentyData = append(v.TwentyData, 2)
+				} else {
+					v.TwentyData = append(v.TwentyData, 1)
 				}
-				if v.IsRobot == false {
-					log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
-					log.Debug("玩家历史记录:%v", v.DownBetHistory)
+				if len(v.TwentyData) > 20 {
+					v.TwentyData = append(v.TwentyData[:0], v.TwentyData[1:]...)
 				}
+				var count int32
+				for _, n := range v.TwentyData {
+					if n == 2 {
+						count++
+					}
+				}
+				v.WinTotalCount = count
+				log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 			}
 		}
 	}

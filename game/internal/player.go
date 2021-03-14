@@ -34,6 +34,7 @@ type Player struct {
 	IsAction        bool                 // 玩家是否行动
 	IsRobot         bool                 // 是否机器人
 	IsOnline        bool                 // 玩家是否在线
+
 }
 
 func (p *Player) Init() {
