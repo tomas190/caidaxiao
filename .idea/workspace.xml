@@ -2,61 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d8b79f1e-14e6-4d2e-bcba-0431b68f5b19" name="默认更改列表" comment="默认更改列表">
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_jianjiaoji_mofabiaoqing/cdx_jianjiaoji_mofabiaoqing.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_jianjiaoji_mofabiaoqing/cdx_jianjiaoji_mofabiaoqing.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_jianjiaoji_mofabiaoqing/cdx_jianjiaoji_mofabiaoqing.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_meiguihua_mofabiaoqing/cdx_meiguihua_mofabiaoqing.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_meiguihua_mofabiaoqing/cdx_meiguihua_mofabiaoqing.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_meiguihua_mofabiaoqing/cdx_meiguihua_mofabiaoqing.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_pijiu_mofabiaoqing/cdx_pijiu_mofabiaoqing.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_pijiu_mofabiaoqing/cdx_pijiu_mofabiaoqing.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_pijiu_mofabiaoqing/cdx_pijiu_mofabiaoqing.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_tuoxie_mofabiaoqing/cdx_tuoxie_mofabiaoqing.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_tuoxie_mofabiaoqing/cdx_tuoxie_mofabiaoqing.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_tuoxie_mofabiaoqing/cdx_tuoxie_mofabiaoqing.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoDT.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoj_tu/cdx_emoji.plist" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoj_tu/cdx_emoji.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_dahaqian_biaoqingdonghua/cdx_dahaqian_biaoqingdonghua_1.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_dahaqian_biaoqingdonghua/cdx_dahaqian_biaoqingdonghua_1.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_dahaqian_biaoqingdonghua/cdx_dahaqian_biaoqingdonghua_1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_damuzhi_biaoqingdonghua/cdx_damuzhi_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_damuzhi_biaoqingdonghua/cdx_damuzhi_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_damuzhi_biaoqingdonghua/cdx_damuzhi_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_daxiao_biaoqingdonghua/cdx_daxiao_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_daxiao_biaoqingdonghua/cdx_daxiao_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_daxiao_biaoqingdonghua/cdx_daxiao_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanu_biaoqingdonghua/cdx_fanu_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanu_biaoqingdonghua/cdx_fanu_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanu_biaoqingdonghua/cdx_fanu_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanzao_biaoqingdonghua/cdx_fanzao_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanzao_biaoqingdonghua/cdx_fanzao_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanzao_biaoqingdonghua/cdx_fanzao_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_hanyan_biaoqingdonghua/cdx_hanyan_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_hanyan_biaoqingdonghua/cdx_hanyan_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_hanyan_biaoqingdonghua/cdx_hanyan_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_jiong_biaoqingdonghua/cdx_jiong_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_jiong_biaoqingdonghua/cdx_jiong_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_jiong_biaoqingdonghua/cdx_jiong_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_liukoushui_biaoqingdonghua/cdx_liukoushui_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_liukoushui_biaoqingdonghua/cdx_liukoushui_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_liukoushui_biaoqingdonghua/cdx_liukoushui_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shaogaoxiang_biaoqingdonghua/cdx_shaogaoxiang_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shaogaoxiang_biaoqingdonghua/cdx_shaogaoxiang_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shaogaoxiang_biaoqingdonghua/cdx_shaogaoxiang_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shihua_biaoqingdonghua/cdx_shihua_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shihua_biaoqingdonghua/cdx_shihua_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shihua_biaoqingdonghua/cdx_shihua_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yaobaiqi_biaoqingdonghua/cdx_yaobaiqi_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yaobaiqi_biaoqingdonghua/cdx_yaobaiqi_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yaobaiqi_biaoqingdonghua/cdx_yaobaiqi_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yun_biaoqingdonghua/cdx_yun_biaoqingdonghua.atlas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yun_biaoqingdonghua/cdx_yun_biaoqingdonghua.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yun_biaoqingdonghua/cdx_yun_biaoqingdonghua.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_bindBg.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_close.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_queren.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_spBg.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../allGameCDX/allGame" afterDir="false" />
       <change afterPath="$PROJECT_DIR$" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" />
@@ -1603,8 +1548,6 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.ios_mac/mac/Icon.icns" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/internal/player.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/player.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/internal/room.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/room_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room_handle.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />

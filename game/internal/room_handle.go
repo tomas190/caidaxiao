@@ -397,10 +397,6 @@ func (r *Room) ResultMoney() {
 						}
 					}
 				}
-				tax := float64(taxMoney) * taxRate
-				v.ResultMoney = float64(totalWin+taxMoney) - tax
-				v.Account += v.ResultMoney
-				v.ResultMoney -= float64(totalLose)
 				if v.IsRobot == true {
 					var money = RandInRange(-300, 300)
 					var num float64
@@ -411,6 +407,11 @@ func (r *Room) ResultMoney() {
 						v.ResultMoney = float64(money) + num
 						v.Account += v.ResultMoney
 					}
+				}else  {
+					tax := float64(taxMoney) * taxRate
+					v.ResultMoney = float64(totalWin+taxMoney) - tax
+					v.Account += v.ResultMoney
+					v.ResultMoney -= float64(totalLose)
 				}
 				// 记录玩家20句游戏Win次数
 				if v.ResultMoney > 0 {
