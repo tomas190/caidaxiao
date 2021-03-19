@@ -486,6 +486,13 @@ func (r *Room) GetResultType() {
 		r.HistoryData = append(r.HistoryData[:0], r.HistoryData[1:]...)
 	}
 
+	sort.Slice(r.HistoryData, func(i, j int) bool {
+		if r.HistoryData[i].TimeFmt > r.HistoryData[j].TimeFmt {
+			return true
+		}
+		return false
+	})
+
 	// 存储下注记录
 	var downBetHis msg.DownBetHistory
 	downBetHis.TimeFmt = r.resultTime
@@ -511,6 +518,13 @@ func (r *Room) GetResultType() {
 			if len(v.DownBetHistory) > 70 {
 				v.DownBetHistory = append(v.DownBetHistory[:0], v.DownBetHistory[1:]...)
 			}
+			sort.Slice(v.DownBetHistory, func(i, j int) bool {
+				if v.DownBetHistory[i].TimeFmt > v.DownBetHistory[j].TimeFmt {
+					return true
+				}
+				return false
+			})
 		}
 	}
+
 }

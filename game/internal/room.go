@@ -415,6 +415,7 @@ func (r *Room) CleanRoomData() {
 	r.PotMoneyCount = msg.DownBetMoney{}
 	r.counter = 0
 	r.UserLeave = []string{}
+	r.bankerList = make(map[string]int32)
 	// 清空玩家数据
 	r.CleanPlayerData()
 }

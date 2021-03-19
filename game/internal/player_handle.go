@@ -185,11 +185,13 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 func (p *Player) BankerAction(m *msg.BankerData_C2S) {
 	if m.Status == 2 {
-		roomId := hall.UserRoom[p.Id]
-		r, _ := hall.RoomRecord.Load(roomId)
-		if r != nil {
-			room := r.(*Room)
-			room.bankerList[p.Id] = m.TakeMoney
+		if p.Account > float64(m.TakeMoney) {
+			roomId := hall.UserRoom[p.Id]
+			r, _ := hall.RoomRecord.Load(roomId)
+			if r != nil {
+				room := r.(*Room)
+				room.bankerList[p.Id] = m.TakeMoney
+			}
 		}
 	}
 	if m.Status == 3 {
