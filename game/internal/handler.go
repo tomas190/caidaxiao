@@ -89,7 +89,12 @@ func handleLogin(args []interface{}) {
 				}
 				for _, v := range hall.roomList {
 					if v != nil {
-						login.PlayerNum = v.PlayerLength()
+						if v.RoomId == "1" {
+							login.PlayerNumR1 = v.PlayerLength()
+						}
+						if v.RoomId == "2" {
+							login.PlayerNumR2 = v.PlayerLength()
+						}
 					}
 				}
 				a.WriteMsg(login)
@@ -130,7 +135,12 @@ func handleLogin(args []interface{}) {
 			login.PlayerInfo.Account = u.Account
 			for _, v := range hall.roomList {
 				if v != nil {
-					login.PlayerNum = v.PlayerLength()
+					if v.RoomId == "1" {
+						login.PlayerNumR1 = v.PlayerLength()
+					}
+					if v.RoomId == "2" {
+						login.PlayerNumR2 = v.PlayerLength()
+					}
 				}
 			}
 			a.WriteMsg(login)
@@ -267,4 +277,3 @@ func handleEmojiChat(args []interface{}) {
 		}
 	}
 }
-

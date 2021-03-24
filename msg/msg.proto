@@ -92,7 +92,8 @@ message Login_C2S {
 message Login_S2C {
     PlayerInfo playerInfo = 1;
     bool backroom = 2;
-    int32 PlayerNum = 3;
+    int32 PlayerNumR1 = 3;
+    int32 PlayerNumR2 = 4;
 }
 
 message Logout_C2S {

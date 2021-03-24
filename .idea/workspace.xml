@@ -1547,7 +1547,10 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.android-studio/res/values/strings.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.ios_mac/mac/Icon.icns" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/msg/msg.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.proto" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../packages/ccc-png-auto-compress/CHANGELOG.md" beforeDir="false" />

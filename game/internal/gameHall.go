@@ -5,7 +5,9 @@ import (
 	"errors"
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
+	"strconv"
 	"sync"
+	"time"
 )
 
 type GameHall struct {
@@ -67,15 +69,19 @@ func (hall *GameHall) agentExist(a gate.Agent) bool {
 }
 
 func (hall *GameHall) CreateGameRoom() {
-	r := &Room{}
-	r.Init()
-	r.RoomId = "1"
-	hall.roomList = append(hall.roomList, r)
-	hall.RoomRecord.Store(r.RoomId, r)
+	for i := 0; i < 2; i++ {
+		time.Sleep(time.Millisecond)
+		r := &Room{}
+		r.Init()
+		ri := i + 1
+		r.RoomId = strconv.Itoa(ri)
+		hall.roomList = append(hall.roomList, r)
+		hall.RoomRecord.Store(r.RoomId, r)
+		log.Debug("CreateRoom 创建新的房间:%v,当前房间数量:%v", r.RoomId, len(hall.roomList))
 
+	}
+	// 加载机器人
 	gRobotCenter.Start()
-
-	log.Debug("CreateRoom 创建新的房间:%v,当前房间数量:%v", r.RoomId, len(hall.roomList))
 }
 
 func (hall *GameHall) PlayerJoinRoom(rid string, p *Player) {
