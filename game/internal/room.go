@@ -353,16 +353,28 @@ func (r *Room) UpdatePlayerList() {
 
 //GetCaiYuan 获取彩源开奖结果
 func (r *Room) GetCaiYuan() {
-	//caiYuan := "http://free.manycai.com/K2601968389c853/hn60-1.json"
-	res, err := http.Get(conf.Server.CaiYuan)
-	if err != nil {
-		log.Debug("再次获取随机数值失败: %v", err)
-		return
+	var dataRes *http.Response
+	if r.RoomId == "1" {
+		//caiYuan := "http://free.manycai.com/K2601968389c853/hn60-1.json"
+		res, err := http.Get(conf.Server.CaiYuan)
+		if err != nil {
+			log.Debug("再次获取随机数值失败: %v", err)
+			return
+		}
+		dataRes = res
+	}else  if r.RoomId == "2" {
+		caiYuan := "http://free.manycai.com/K2601968389c853/PTXFFC-1.json"
+		res, err := http.Get(caiYuan)
+		if err != nil {
+			log.Debug("再次获取随机数值失败: %v", err)
+			return
+		}
+		dataRes = res
 	}
 
-	log.Debug("res:%v", res)
-	result, err := ioutil.ReadAll(res.Body)
-	defer res.Body.Close()
+	log.Debug("res:%v", dataRes)
+	result, err := ioutil.ReadAll(dataRes.Body)
+	defer dataRes.Body.Close()
 	if err != nil {
 		log.Error("解析随机数值失败: %v", err)
 		return
