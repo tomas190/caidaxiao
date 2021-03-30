@@ -802,7 +802,7 @@ func (c4c *Conn4Center) BankerStatus(p *Player, status int,timeUnix int64, round
 //BankerWinScore 庄家同步赢分
 func (c4c *Conn4Center) BankerWinScore(p *Player, timeUnix int64, roundId, reason string) {
 	baseData := &BaseMessage{}
-	baseData.Event = msgUserWinScore
+	baseData.Event = msgBankerWinScore
 	id, _ := strconv.Atoi(p.Id)
 	banker := &UserChangeScore{}
 	banker.Auth.DevName = conf.Server.DevName
@@ -825,7 +825,7 @@ func (c4c *Conn4Center) BankerWinScore(p *Player, timeUnix int64, roundId, reaso
 //BankerLoseScore 庄家同步输分
 func (c4c *Conn4Center) BankerLoseScore(p *Player, timeUnix int64, roundId, reason string) {
 	baseData := &BaseMessage{}
-	baseData.Event = msgUserLoseScore
+	baseData.Event = msgBankerLoseScore
 	id, _ := strconv.Atoi(p.Id)
 	banker := &UserChangeScore{}
 	banker.Auth.DevName = conf.Server.DevName

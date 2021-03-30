@@ -16,13 +16,11 @@ var (
 const (
 	dbName          = "caidaxiao-Game"
 	playerInfo      = "playerInfo"
-	roomSettle      = "roomSettle"
 	settleWinMoney  = "settleWinMoney"
 	settleLoseMoney = "settleLoseMoney"
 	accessDB        = "accessData"
 	surPlusDB       = "surPlusDB"
 	surPool         = "surplus-pool"
-	playerGameData  = "playerGameData"
 	robotData       = "robotData"
 )
 
@@ -84,7 +82,7 @@ func InsertPlayerInfo(player *msg.PlayerInfo) error {
 }
 
 //LoadPlayerCount 获取玩家数量
-func LoadPlayerCount() int32 {
+func GetPlayerCount() int32 {
 	s, c := connect(dbName, playerInfo)
 	defer s.Close()
 
@@ -119,6 +117,7 @@ type RobotDATA struct {
 	LeopardPot  *ChipDownBet `json:"leopard_pot" bson:"leopard_pot"`
 }
 
+//InsertRobotData 插入机器人数据
 func InsertRobotData(rb *RobotDATA) {
 	s, c := connect(dbName, robotData)
 	defer s.Close()
@@ -153,4 +152,216 @@ func GetRobotData() ([]RobotDATA, error) {
 	}
 	log.Debug("获取机器人数据成功:%v,长度为:%v", rd, len(rd))
 	return rd, nil
+}
+
+//InsertWinMoney 插入赢钱数据
+func InsertWinMoney(base interface{}) {
+	s, c := connect(dbName, settleWinMoney)
+	defer s.Close()
+
+	err := c.Insert(base)
+	if err != nil {
+		log.Error("<----- 赢钱结算数据插入失败 ~ ----->:%v", err)
+		return
+	}
+	log.Debug("<----- 赢钱结算数据插入成功 ~ ----->")
+}
+
+//InsertLoseMoney 插入输钱数据
+func InsertLoseMoney(base interface{}) {
+	s, c := connect(dbName, settleLoseMoney)
+	defer s.Close()
+
+	err := c.Insert(base)
+	if err != nil {
+		log.Error("<----- 输钱结算数据插入失败 ~ ----->:%v", err)
+		return
+	}
+	log.Debug("<----- 输钱结算数据插入成功 ~ ----->")
+}
+
+// 玩家的记录
+type PlayerDownBetRecode struct {
+	Id              string           `json:"id" bson:"id"`                             // 玩家Id
+	GameId          string           `json:"game_id" bson:"game_id"`                   // gameId
+	RoundId         string           `json:"round_id" bson:"round_id"`                 // 随机Id
+	RoomId          string           `json:"room_id" bson:"room_id"`                   // 所在房间
+	DownBetInfo     *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"`       // 玩家各注池下注的金额
+	DownBetTime     int64            `json:"down_bet_time" bson:"down_bet_time"`       // 下注时间
+	StartTime       int64            `json:"start_time" bson:"start_time"`             // 开始时间
+	EndTime         int64            `json:"end_time" bson:"end_time"`                 // 结束时间
+	CardResult      *msg.PotWinList   `json:"card_result" bson:"card_result"`           // 当局开牌结果
+	SettlementFunds float64          `json:"settlement_funds" bson:"settlement_funds"` // 当局输赢结果(税后)
+	SpareCash       float64          `json:"spare_cash" bson:"spare_cash"`             // 剩余金额
+	TaxRate         float64          `json:"tax_rate" bson:"tax_rate"`                 // 税率
+}
+
+//InsertAccessData 插入运营数据接入
+func InsertAccessData(data *PlayerDownBetRecode) {
+	s, c := connect(dbName, accessDB)
+	defer s.Close()
+
+	log.Debug("AccessData 数据: %v", data)
+	err := c.Insert(data)
+	if err != nil {
+		log.Error("<----- 运营接入数据插入失败 ~ ----->:%v", err)
+		return
+	}
+	log.Debug("<----- 运营接入数据插入成功 ~ ----->")
+}
+
+//GetDownRecodeList 获取运营数据接入
+func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]PlayerDownBetRecode, int, error) {
+	s, c := connect(dbName, accessDB)
+	defer s.Close()
+
+	var wts []PlayerDownBetRecode
+
+	n, err := c.Find(selector).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	log.Debug("获取 %v 条数据,limit:%v", n, limit)
+	skip := (page - 1) * limit
+	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+	if err != nil {
+		return nil, 0, err
+	}
+	return wts, n, nil
+}
+
+//盈余池数据存入数据库
+type SurplusPoolDB struct {
+	UpdateTime     time.Time
+	TimeNow        string  //记录时间（分为时间戳/字符串显示）
+	Rid            string  //房间ID
+	TotalWinMoney  float64 //玩家当局总赢
+	TotalLoseMoney float64 //玩家当局总输
+	PoolMoney      float64 //盈余池
+	HistoryWin     float64 //玩家历史总赢
+	HistoryLose    float64 //玩家历史总输
+	PlayerNum      int32   //历史玩家人数
+}
+
+//InsertSurplusPool 插入盈余池数据
+func InsertSurplusPool(sur *SurplusPoolDB) {
+	s, c := connect(dbName, surPlusDB)
+	defer s.Close()
+
+	log.Debug("surplusPoolDB 数据: %v", sur.PoolMoney)
+
+	err := c.Insert(sur)
+	if err != nil {
+		log.Error("<----- 数据库插入SurplusPool数据失败 ~ ----->:%v", err)
+		return
+	}
+	log.Debug("<----- 数据库插入SurplusPool数据成功 ~ ----->")
+
+	SurPool := &SurPool{}
+	SurPool.GameId = conf.Server.GameID
+	SurPool.SurplusPool = sur.PoolMoney
+	SurPool.PlayerTotalLoseWin = sur.HistoryLose - sur.HistoryWin
+	SurPool.PlayerTotalLose = sur.HistoryLose
+	SurPool.PlayerTotalWin = sur.HistoryWin
+	SurPool.TotalPlayer = sur.PlayerNum
+	SurPool.FinalPercentage = 0.5
+	SurPool.PercentageToTotalWin = 1
+	SurPool.CoefficientToTotalPlayer = sur.PlayerNum * 0
+	SurPool.PlayerLoseRateAfterSurplusPool = 0.7
+	SurPool.DataCorrection = 0
+	SurPool.PlayerWinRate = 0.6
+
+	FindSurPool(SurPool)
+}
+
+//FindSurplusPool
+func FindSurplusPool() *SurplusPoolDB {
+	s, c := connect(dbName, surPlusDB)
+	defer s.Close()
+
+	sur := &SurplusPoolDB{}
+	err := c.Find(nil).Sort("-updatetime").One(sur)
+	if err != nil {
+		log.Error("<----- 查找SurplusPool数据失败 ~ ----->:%v", err)
+		return nil
+	}
+	return sur
+}
+
+type SurPool struct {
+	GameId                         string  `json:"game_id" bson:"game_id"`
+	PlayerTotalLose                float64 `json:"player_total_lose" bson:"player_total_lose"`
+	PlayerTotalWin                 float64 `json:"player_total_win" bson:"player_total_win"`
+	PercentageToTotalWin           float64 `json:"percentage_to_total_win" bson:"percentage_to_total_win"`
+	TotalPlayer                    int32   `json:"total_player" bson:"total_player"`
+	CoefficientToTotalPlayer       int32   `json:"coefficient_to_total_player" bson:"coefficient_to_total_player"`
+	FinalPercentage                float64 `json:"final_percentage" bson:"final_percentage"`
+	PlayerTotalLoseWin             float64 `json:"player_total_lose_win" bson:"player_total_lose_win" `
+	SurplusPool                    float64 `json:"surplus_pool" bson:"surplus_pool"`
+	PlayerLoseRateAfterSurplusPool float64 `json:"player_lose_rate_after_surplus_pool" bson:"player_lose_rate_after_surplus_pool"`
+	DataCorrection                 float64 `json:"data_correction" bson:"data_correction"`
+	PlayerWinRate                  float64 `json:"player_win_rate" bson:"player_win_rate"`
+}
+
+func FindSurPool(SurP *SurPool) {
+	s, c := connect(dbName, surPool)
+	defer s.Close()
+
+	sur := &SurPool{}
+	err := c.Find(nil).One(sur)
+	if err != nil {
+		InsertSurPool(SurP)
+	} else {
+		SurP.SurplusPool = (SurP.PlayerTotalLose - (SurP.PlayerTotalWin * sur.PercentageToTotalWin) - float64(SurP.TotalPlayer*sur.CoefficientToTotalPlayer) + sur.DataCorrection) * sur.FinalPercentage
+		SurP.FinalPercentage = sur.FinalPercentage
+		SurP.PercentageToTotalWin = sur.PercentageToTotalWin
+		SurP.CoefficientToTotalPlayer = sur.CoefficientToTotalPlayer
+		SurP.PlayerLoseRateAfterSurplusPool = sur.PlayerLoseRateAfterSurplusPool
+		SurP.DataCorrection = sur.DataCorrection
+		SurP.PlayerWinRate = sur.PlayerWinRate
+		UpdateSurPool(SurP)
+	}
+}
+
+//InsertSurPool 插入盈余池数据
+func InsertSurPool(sur *SurPool) {
+	s, c := connect(dbName, surPool)
+	defer s.Close()
+
+	log.Debug("SurPool 数据: %v", sur)
+
+	err := c.Insert(sur)
+	if err != nil {
+		log.Error("<----- 数据库插入SurPool数据失败 ~ ----->:%v", err)
+		return
+	}
+	log.Debug("<----- 数据库插入SurPool数据成功 ~ ----->")
+}
+
+//UpdateSurPool 更新盈余池数据
+func UpdateSurPool(sur *SurPool) {
+	s, c := connect(dbName, surPool)
+	defer s.Close()
+
+	err := c.Update(bson.M{}, sur)
+	if err != nil {
+		log.Error("<----- 更新 SurPool数据失败 ~ ----->:%v", err)
+		return
+	}
+	log.Debug("<----- 更新SurPool数据成功 ~ ----->")
+}
+
+
+//GetDownRecodeList 获取盈余池数据
+func GetSurPoolData(selector bson.M) (SurPool, error) {
+	s, c := connect(dbName, surPool)
+	defer s.Close()
+
+	var wts SurPool
+
+	err := c.Find(selector).One(&wts)
+	if err != nil {
+		return wts, err
+	}
+	return wts, nil
 }

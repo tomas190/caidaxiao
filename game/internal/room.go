@@ -362,7 +362,7 @@ func (r *Room) GetCaiYuan() {
 			return
 		}
 		dataRes = res
-	}else  if r.RoomId == "2" {
+	} else if r.RoomId == "2" {
 		caiYuan := "http://free.manycai.com/K2601968389c853/PTXFFC-1.json"
 		res, err := http.Get(caiYuan)
 		if err != nil {
@@ -718,7 +718,7 @@ func (r *Room) HandleRobot() {
 			log.Debug("rNum2:%v,rNum3:%v", rNum2, rNum3)
 			if rNum3 <= rNum2 {
 				r.ExitFromRoom(v)
-				time.Sleep(time.Millisecond)
+				time.Sleep(time.Millisecond * 10)
 			}
 		}
 	}
@@ -729,7 +729,7 @@ func (r *Room) HandleRobot() {
 		for {
 			robot := gRobotCenter.CreateRobot()
 			r.JoinGameRoom(robot)
-			time.Sleep(time.Millisecond)
+			time.Sleep(time.Millisecond * 10)
 			robotNum = r.RobotLength()
 			if robotNum == handleNum {
 				log.Debug("房间:%v,加机器人数量:%v", r.RoomId, r.RobotLength())
@@ -740,7 +740,7 @@ func (r *Room) HandleRobot() {
 		for _, v := range r.PlayerList {
 			if v != nil && v.IsRobot == true {
 				r.ExitFromRoom(v)
-				time.Sleep(time.Millisecond)
+				time.Sleep(time.Millisecond * 10)
 				robotNum = r.RobotLength()
 				if robotNum == handleNum {
 					log.Debug("房间:%v,减机器人数量:%v", r.RoomId, r.RobotLength())

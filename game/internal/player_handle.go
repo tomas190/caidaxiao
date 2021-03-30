@@ -170,6 +170,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 			// 广播房间更新注池金额
 			potChange := &msg.PotChangeMoney_S2C{}
+			potChange.PlayerData = p.RespPlayerData()
 			potChange.PotMoneyCount = new(msg.DownBetMoney)
 			potChange.PotMoneyCount.BigDownBet = room.PotMoneyCount.BigDownBet
 			potChange.PotMoneyCount.SmallDownBet = room.PotMoneyCount.SmallDownBet

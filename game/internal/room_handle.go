@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"fmt"
 	"github.com/name5566/leaf/log"
@@ -316,6 +317,18 @@ func (r *Room) ResultMoney() {
 		totalUserWin += r.PlayerTotalMoney.LeopardDownBet * WinLeopard
 	}
 
+	sur := &SurplusPoolDB{}
+	sur.UpdateTime = time.Now()
+	sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
+	sur.Rid = r.RoomId
+	sur.PlayerNum = GetPlayerCount()
+
+	surPool := FindSurplusPool()
+	if surPool != nil {
+		sur.HistoryWin = surPool.HistoryWin
+		sur.HistoryLose = surPool.HistoryLose
+	}
+
 	// 判断注池真实玩家总下注是否大于玩家所赢的钱,大于0庄家获利,否则庄家赔付
 	bankerRes := r.PotTotalMoney() - totalUserWin
 	log.Debug("房间玩家下注总和:%v,房间玩家赢钱总额:%v", r.PotTotalMoney(), totalUserWin)
@@ -334,6 +347,8 @@ func (r *Room) ResultMoney() {
 					v.ResultMoney = float64(bankerRes) - (float64(bankerRes) * taxRate)
 					v.BankerMoney += v.ResultMoney
 					v.Account += v.ResultMoney
+					sur.HistoryWin += v.WinResultMoney
+					sur.TotalWinMoney += v.WinResultMoney
 					log.Debug("庄家赢钱:%v", v.ResultMoney)
 				} else { // 庄家赔付
 					v.LoseResultMoney -= float64(bankerRes)
@@ -343,6 +358,8 @@ func (r *Room) ResultMoney() {
 					v.ResultMoney = v.LoseResultMoney
 					v.BankerMoney += v.ResultMoney
 					v.Account += v.ResultMoney
+					sur.HistoryLose -= v.LoseResultMoney
+					sur.TotalLoseMoney -= v.LoseResultMoney
 					log.Debug("庄家输钱:%v", v.ResultMoney)
 				}
 				r.BankerMoney = v.BankerMoney
@@ -381,6 +398,8 @@ func (r *Room) ResultMoney() {
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				if taxMoney > 0 {
 					v.WinResultMoney = float64(taxMoney)
+					sur.HistoryWin += v.WinResultMoney
+					sur.TotalWinMoney += v.WinResultMoney
 					reason := "ResultWinScore"
 					if v.IsRobot == false {
 						//同时同步赢分和输分
@@ -389,6 +408,8 @@ func (r *Room) ResultMoney() {
 				}
 				if totalLose > 0 {
 					v.LoseResultMoney = float64(-totalLose + totalWin)
+					sur.HistoryLose -= v.LoseResultMoney
+					sur.TotalLoseMoney -= v.LoseResultMoney
 					reason := "ResultLoseScore"
 					//同时同步赢分和输分
 					if v.IsRobot == false {
@@ -430,6 +451,38 @@ func (r *Room) ResultMoney() {
 				}
 				v.WinTotalCount = count
 				log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
+
+				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 {
+					data := &PlayerDownBetRecode{}
+					data.Id = v.Id
+					data.GameId = conf.Server.GameID
+					data.RoundId = v.RoundId
+					data.RoomId = r.RoomId
+					data.DownBetInfo = new(msg.DownBetMoney)
+					data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
+					data.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
+					data.DownBetInfo.SingleDownBet = v.DownBetMoney.SingleDownBet
+					data.DownBetInfo.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+					data.DownBetInfo.PairDownBet = v.DownBetMoney.PairDownBet
+					data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
+					data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+					data.DownBetTime = nowTime
+					data.StartTime = nowTime - 15
+					data.EndTime = nowTime + 10
+					data.CardResult = new(msg.PotWinList)
+					data.CardResult.ResultNum = r.LotteryResult.ResultNum
+					data.CardResult.BigSmall = r.LotteryResult.BigSmall
+					data.CardResult.SinDouble = r.LotteryResult.SinDouble
+					data.CardResult.CardType = r.LotteryResult.CardType
+					data.SettlementFunds = v.ResultMoney
+					data.SpareCash = v.Account
+					data.TaxRate = taxRate
+					InsertAccessData(data)
+				}
+
+				if sur.TotalWinMoney != 0 || sur.TotalLoseMoney != 0 {
+					InsertSurplusPool(sur)
+				}
 			}
 		}
 	}
@@ -505,7 +558,7 @@ func (r *Room) GetResultType() {
 	downBetHis.CardType = r.LotteryResult.CardType
 	downBetHis.Result = r.LotteryResult.ResultNum
 	for _, v := range r.PlayerList {
-		if v != nil && v.IsRobot == false && v.IsAction == true {
+		if v != nil && v.IsAction == true {
 			downBetHis.DownBetMoney = new(msg.DownBetMoney)
 			downBetHis.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
 			downBetHis.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet

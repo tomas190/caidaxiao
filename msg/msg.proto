@@ -208,7 +208,8 @@ message PlayerAction_S2C {
 
 // 广播注池金额变化
 message PotChangeMoney_S2C {
-    DownBetMoney potMoneyCount = 1; //房间注池金额总数量集合
+    PlayerData playerData = 1; // 玩家数据
+    DownBetMoney potMoneyCount = 2; //房间注池金额总数量集合
 }
 
 // 更新房间用户列表
