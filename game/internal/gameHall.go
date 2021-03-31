@@ -70,7 +70,7 @@ func (hall *GameHall) agentExist(a gate.Agent) bool {
 
 func (hall *GameHall) CreateGameRoom() {
 	for i := 0; i < 2; i++ {
-		time.Sleep(time.Millisecond)
+		time.Sleep(time.Second)
 		r := &Room{}
 		r.Init()
 		ri := i + 1

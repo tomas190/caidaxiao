@@ -596,7 +596,7 @@ func (c4c *Conn4Center) ServerLoginCenter() {
 //UserLoginCenter 用户登录
 func (c4c *Conn4Center) UserLoginCenter(userId string, password string, token string, callback func(data *Player)) {
 	if !c4c.LoginStat {
-		log.Debug("<-------- dezhoupoker not ready~!!! -------->")
+		log.Debug("<-------- caidaxiao not ready~!!! -------->")
 		return
 	}
 	baseData := &BaseMessage{}

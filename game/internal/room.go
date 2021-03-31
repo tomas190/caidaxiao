@@ -712,10 +712,10 @@ func (r *Room) HandleRobot() {
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsRobot == true {
 			rNum := 1 / float64((v.WinTotalCount+1)*2)
-			log.Debug("rNum:%v", rNum)
+			//log.Debug("rNum:%v", rNum)
 			rNum2 := int(rNum * 1000)
 			rNum3 := RandInRange(0, 1000)
-			log.Debug("rNum2:%v,rNum3:%v", rNum2, rNum3)
+			//log.Debug("rNum2:%v,rNum3:%v", rNum2, rNum3)
 			if rNum3 <= rNum2 {
 				r.ExitFromRoom(v)
 				time.Sleep(time.Millisecond * 10)
