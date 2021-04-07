@@ -91,14 +91,17 @@ func (r *Room) StartGameRun() {
 	num := len(r.PlayerList) - 6
 	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
 
-	// 游戏阶段行动
-	if r.IsConBanker == false {
-		// 庄家抢庄定时
-		r.BankerTimerTask()
-	} else {
-		// 庄家连庄定时
-		r.Banker2TimerTask()
-	}
+	//// 游戏阶段行动
+	//if r.IsConBanker == false {
+	//	// 庄家抢庄定时
+	//	r.BankerTimerTask()
+	//} else {
+	//	// 庄家连庄定时
+	//	r.Banker2TimerTask()
+	//}
+
+	BankerChannel <- true
+
 	// 下注阶段定时
 	r.DownBetTimerTask()
 	// 结算阶段定时
