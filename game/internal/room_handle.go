@@ -100,8 +100,6 @@ func (r *Room) StartGameRun() {
 	//	r.Banker2TimerTask()
 	//}
 
-	BankerChannel <- true
-
 	// 下注阶段定时
 	r.DownBetTimerTask()
 	// 结算阶段定时
@@ -183,11 +181,43 @@ func (r *Room) Banker2TimerTask() {
 
 //DownBetTimerTask 下注阶段定时器任务
 func (r *Room) DownBetTimerTask() {
+	//go func() {
+	//	select {
+	//	case t := <-BankerChannel:
+	//		if t == true {
+	//			r.DownBetTime()
+	//			r.counter = 0
+	//			DownBetChannel <- true
+	//			return
+	//		}
+	//	}
+	//}()
+
+	// 房间状态
+	r.GameStat = msg.GameStep_DownBet
+
+	log.Debug("庄家金额:%v", r.BankerMoney)
+	// 机器开始下注
+	r.RobotsDownBet()
+
+	// 下注时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_DownBet
+	data.RoomData = r.RespRoomData()
+	r.BroadCastMsg(data)
+
+	// 定时
+	t := time.NewTicker(time.Second)
 	go func() {
-		select {
-		case t := <-BankerChannel:
-			if t == true {
-				r.DownBetTime()
+		for range t.C {
+			r.counter++
+			// 发送时间
+			send := &msg.SendActTime_S2C{}
+			send.StartTime = r.counter
+			send.GameTime = DownBetTime
+			send.GameStep = msg.GameStep_DownBet
+			r.BroadCastMsg(send)
+			if r.counter >= DownBetTime {
 				r.counter = 0
 				DownBetChannel <- true
 				return
@@ -223,7 +253,7 @@ func (r *Room) DownBetTime() {
 		r.BroadCastMsg(send)
 		//log.Debug("DownBetTime :%v", r.counter)
 		if r.counter >= DownBetTime {
-			break
+			return
 		}
 	}
 }
@@ -412,8 +442,8 @@ func (r *Room) ResultMoney() {
 					sur.TotalWinMoney += v.WinResultMoney
 					reason := "ResultWinScore"
 					if v.IsRobot == false {
-					//同时同步赢分和输分
-					c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason)
+						//同时同步赢分和输分
+						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason)
 					}
 				}
 				if totalLose > 0 {
