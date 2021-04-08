@@ -197,14 +197,22 @@ func (r *Room) DownBetTimerTask() {
 	r.GameStat = msg.GameStep_DownBet
 
 	log.Debug("庄家金额:%v", r.BankerMoney)
-	// 机器开始下注
-	r.RobotsDownBet()
 
 	// 下注时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_DownBet
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
+
+	// 发送时间
+	send := &msg.SendActTime_S2C{}
+	send.StartTime = r.counter
+	send.GameTime = DownBetTime
+	send.GameStep = msg.GameStep_DownBet
+	r.BroadCastMsg(send)
+
+	// 机器开始下注
+	r.RobotsDownBet()
 
 	// 定时
 	t := time.NewTicker(time.Second)
@@ -365,7 +373,7 @@ func (r *Room) ResultMoney() {
 	// 判断注池真实玩家总下注是否大于玩家所赢的钱,大于0庄家获利,否则庄家赔付
 	bankerRes := r.PotTotalMoney() - totalUserWin
 	log.Debug("房间玩家下注总和:%v,房间玩家赢钱总额:%v", r.PotTotalMoney(), totalUserWin)
-	log.Debug("庄家结算金额:%v", bankerRes)
+	//log.Debug("庄家结算金额:%v", bankerRes)
 
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsAction == true {
@@ -433,8 +441,8 @@ func (r *Room) ResultMoney() {
 				nowTime := time.Now().Unix()
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				if v.IsRobot == false {
-					log.Debug("totalWin:%v", totalWin)
-					log.Debug("totalLose:%v", totalLose)
+					log.Debug("id:%v,totalWin:%v,totalLose:%v", v.Id, totalWin, totalLose)
+					log.Debug("downBet:%v", v.DownBetMoney)
 				}
 				if taxMoney > 0 {
 					v.WinResultMoney = float64(taxMoney)
@@ -509,12 +517,13 @@ func (r *Room) ResultMoney() {
 					InsertAccessData(data)
 				}
 
-				if sur.TotalWinMoney != 0 || sur.TotalLoseMoney != 0 {
+				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 {
 					InsertSurplusPool(sur)
 				}
 			}
 		}
 	}
+	log.Debug("result：%v", r.LotteryResult)
 }
 
 //GetResultType 获取结算数据和类型
@@ -563,17 +572,16 @@ func (r *Room) GetResultType() {
 	history.SinDouble = r.LotteryResult.SinDouble
 	history.CardType = r.LotteryResult.CardType
 	r.HistoryData = append(r.HistoryData, history)
-	// 判断数据大于10条就删除出一条
-	if len(r.HistoryData) > 70 {
-		r.HistoryData = append(r.HistoryData[:0], r.HistoryData[1:]...)
-	}
-
 	sort.Slice(r.HistoryData, func(i, j int) bool {
 		if r.HistoryData[i].TimeFmt > r.HistoryData[j].TimeFmt {
 			return true
 		}
 		return false
 	})
+	// 判断数据大于70条就删除出一条
+	if len(r.HistoryData) > 70 {
+		r.HistoryData = r.HistoryData[:len(r.HistoryData)-1]
+	}
 
 	// 存储下注记录
 	var downBetHis msg.DownBetHistory
@@ -597,15 +605,15 @@ func (r *Room) GetResultType() {
 			downBetHis.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
 			downBetHis.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
 			v.DownBetHistory = append(v.DownBetHistory, downBetHis)
-			if len(v.DownBetHistory) > 70 {
-				v.DownBetHistory = append(v.DownBetHistory[:0], v.DownBetHistory[1:]...)
-			}
 			sort.Slice(v.DownBetHistory, func(i, j int) bool {
 				if v.DownBetHistory[i].TimeFmt > v.DownBetHistory[j].TimeFmt {
 					return true
 				}
 				return false
 			})
+			if len(v.DownBetHistory) > 70 {
+				v.DownBetHistory = v.DownBetHistory[:len(v.DownBetHistory)-1]
+			}
 		}
 	}
 

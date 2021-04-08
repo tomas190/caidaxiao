@@ -119,7 +119,7 @@ func (r *Room) RobotsDownBet() {
 									r.PotMoneyCount.PairDownBet*WinPair +
 									r.PotMoneyCount.StraightDownBet*WinStraight +
 									r.PotMoneyCount.LeopardDownBet*WinLeopard
-								if float64(totalMoney)+downBetMoney > r.BankerMoney {
+								if float64(totalMoney)+downBetMoney > 20000 { // r.BankerMoney
 									//log.Debug("玩家下注已限红~")
 									continue
 								}
@@ -325,7 +325,7 @@ func (r *Room) RobotsDownBet() {
 								r.PotMoneyCount.PairDownBet*WinPair +
 								r.PotMoneyCount.StraightDownBet*WinStraight +
 								r.PotMoneyCount.LeopardDownBet*WinLeopard
-							if float64(totalMoney)+downBetMoney > r.BankerMoney {
+							if float64(totalMoney)+downBetMoney > 20000 { // r.BankerMoney
 								//log.Debug("玩家下注已限红~")
 								continue
 							}
