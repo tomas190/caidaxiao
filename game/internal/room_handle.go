@@ -11,7 +11,7 @@ import (
 
 //JoinGameRoom 加入游戏房间
 func (r *Room) JoinGameRoom(p *Player) {
-	// 插入玩家信息
+	//插入玩家信息   //todo
 	if p.IsRobot == false {
 		p.FindPlayerInfo()
 	}
@@ -362,7 +362,7 @@ func (r *Room) ResultMoney() {
 	sur.UpdateTime = time.Now()
 	sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
 	sur.Rid = r.RoomId
-	sur.PlayerNum = GetPlayerCount()
+	sur.PlayerNum = GetPlayerCount() //todo
 
 	surPool := FindSurplusPool()
 	if surPool != nil {
@@ -438,7 +438,7 @@ func (r *Room) ResultMoney() {
 					totalWin += v.DownBetMoney.LeopardDownBet
 					taxMoney += v.DownBetMoney.LeopardDownBet * WinLeopard
 				}
-				nowTime := time.Now().Unix()
+				nowTime := time.Now().Unix() //todo
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				if v.IsRobot == false {
 					log.Debug("id:%v,totalWin:%v,totalLose:%v", v.Id, totalWin, totalLose)
@@ -448,7 +448,7 @@ func (r *Room) ResultMoney() {
 					v.WinResultMoney = float64(taxMoney)
 					sur.HistoryWin += v.WinResultMoney
 					sur.TotalWinMoney += v.WinResultMoney
-					reason := "ResultWinScore"
+					reason := "ResultWinScore" //todo
 					if v.IsRobot == false {
 						//同时同步赢分和输分
 						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason)
@@ -458,7 +458,7 @@ func (r *Room) ResultMoney() {
 					v.LoseResultMoney = float64(-totalLose + totalWin)
 					sur.HistoryLose -= v.LoseResultMoney
 					sur.TotalLoseMoney -= v.LoseResultMoney
-					reason := "ResultLoseScore"
+					reason := "ResultLoseScore" //todo
 					//同时同步赢分和输分
 					if v.IsRobot == false {
 						if v.LoseResultMoney != 0 {
@@ -489,7 +489,7 @@ func (r *Room) ResultMoney() {
 				v.WinTotalCount = count
 				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
-				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 {
+				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 { //todo
 					data := &PlayerDownBetRecode{}
 					data.Id = v.Id
 					data.GameId = conf.Server.GameID

@@ -4,6 +4,7 @@
     <list default="true" id="d8b79f1e-14e6-4d2e-bcba-0431b68f5b19" name="默认更改列表" comment="默认更改列表">
       <change afterPath="$PROJECT_DIR$/../allGameCDX/allGame" afterDir="false" />
       <change afterPath="$PROJECT_DIR$" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/game/internal/websocket.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../243produceMail.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../243update.bat" beforeDir="false" />
@@ -1547,8 +1548,14 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.android-studio/res/values/strings.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.ios_mac/mac/Icon.icns" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/chanrpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/chanrpc.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/module.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/module.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/player_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/player_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/robot.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/robot.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/room_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket.go" beforeDir="false" afterPath="$PROJECT_DIR$/websocket.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../packages/ccc-png-auto-compress/CHANGELOG.md" beforeDir="false" />
@@ -3504,11 +3511,14 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Tomas\Desktop\caidaxiao" />
       <recent name="C:\Users\Tomas\Desktop\dezhoupoker\game\internal" />
       <recent name="C:\Users\Tomas\Desktop\dezhoupoker" />
       <recent name="C:\Users\tomas\go\src\dezhoupoker" />
       <recent name="C:\Users\tomas\go\src\dezhoupoker\game\internal" />
-      <recent name="C:\Users\tomas\go\src\dezhoupoker\msg" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Tomas\Desktop\caidaxiao\game\internal" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build caidaxiao (1)">
@@ -3640,22 +3650,22 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1611987221432" />
-    <state width="1237" height="305" key="GridCell.Tab.0.bottom" timestamp="1617810664930">
+    <state width="1237" height="305" key="GridCell.Tab.0.bottom" timestamp="1617890199962">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1617810664930" />
-    <state width="1237" height="305" key="GridCell.Tab.0.center" timestamp="1617810664930">
+    <state width="1237" height="305" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1617890199962" />
+    <state width="1237" height="305" key="GridCell.Tab.0.center" timestamp="1617890199962">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1617810664930" />
-    <state width="1237" height="305" key="GridCell.Tab.0.left" timestamp="1617810664930">
+    <state width="1237" height="305" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1617890199962" />
+    <state width="1237" height="305" key="GridCell.Tab.0.left" timestamp="1617890199961">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1617810664930" />
-    <state width="1237" height="305" key="GridCell.Tab.0.right" timestamp="1617810664930">
+    <state width="1237" height="305" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1617890199961" />
+    <state width="1237" height="305" key="GridCell.Tab.0.right" timestamp="1617890199962">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1617810664930" />
+    <state width="1237" height="305" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1617890199962" />
     <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1617201916749">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
@@ -3672,6 +3682,11 @@
           <url>file://$PROJECT_DIR$/game/internal/algorithm/tostring.go</url>
           <line>23</line>
           <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/websocket.go</url>
+          <line>23</line>
+          <option name="timeStamp" value="27" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

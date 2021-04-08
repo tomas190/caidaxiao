@@ -175,7 +175,7 @@ func handleLogin(args []interface{}) {
 		//		log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
 		//	}
 		//}
-		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) {
+		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
 			log.Debug("玩家首次登陆:%v", u.Id)
 			login := &msg.Login_S2C{}
 			login.PlayerInfo = new(msg.PlayerInfo)
@@ -294,7 +294,7 @@ func handlePlayerAction(args []interface{}) {
 		log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
 		p.PlayerAction(m)
 	}
-
+	//
 	//p, ok := a.UserData().(*Player)
 	//log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
 	//

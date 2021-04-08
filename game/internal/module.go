@@ -21,7 +21,7 @@ type Module struct {
 func (m *Module) OnInit() {
 	m.Skeleton = skeleton
 
-	// 初始连接数据库
+	// 初始连接数据库  //todo
 	InitMongoDB()
 
 	// 大厅初始化
@@ -33,6 +33,8 @@ func (m *Module) OnInit() {
 
 	// 监听接口
 	go StartHttpServer()
+
+	test()
 }
 
 func (m *Module) OnDestroy() {

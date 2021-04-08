@@ -41,9 +41,12 @@ func (p *Player) PlayerExitRoom() {
 func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 	rId := hall.UserRoom[p.Id]
 	v, _ := hall.RoomRecord.Load(rId)
+
+	log.Debug("进来了")
 	if v != nil {
 		room := v.(*Room)
 		// 不是下注阶段，不能进行下注
+		log.Debug("进来了0")
 		if room.GameStat != msg.GameStep_DownBet {
 			return
 		}
@@ -54,6 +57,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			return
 		}
 
+		log.Debug("进来了1")
 		// 判断玩家是否行动做相应处理
 		// 各注池下注金额加上对应的倍数
 		totalMoney := room.PotMoneyCount.BigDownBet*WinBig +
@@ -118,6 +122,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			}
 		}
 
+		log.Debug("进来了2")
 		p.IsAction = m.IsAction
 		if p.IsAction == true {
 			// 记录玩家在该房间总下注 和 房间注池的总金额
@@ -156,6 +161,8 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				room.PotMoneyCount.LeopardDownBet += m.DownBet
 				room.PlayerTotalMoney.LeopardDownBet += m.DownBet
 			}
+			log.Debug("进来了3")
+
 			p.Account -= float64(m.DownBet)
 			p.TotalDownBet += m.DownBet
 
