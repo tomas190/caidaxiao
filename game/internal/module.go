@@ -34,7 +34,6 @@ func (m *Module) OnInit() {
 	// 监听接口
 	go StartHttpServer()
 
-	test()
 }
 
 func (m *Module) OnDestroy() {

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"net/url"
 	"os"
 	"os/signal"
 	"time"
@@ -21,17 +20,12 @@ import (
 var addr = flag.String("addr", "localhost:1355", "http service address")
 
 func main() {
-	// 調用flag.Parse()解析命令行參數到定義的flag
-	//flag.Parse()
-
-	// SetFlags(flag int)可以用來自定義log的輸出格式
-	//log.SetFlags(0)
 
 	t := time.NewTicker(20 * time.Millisecond)
 	num := 0
 	for {
 		<-t.C
-		if num < 10 { //建立goroutine數量
+		if num < 10000 { //建立goroutine數量
 			num++
 			fmt.Printf("num:%v\n", num)
 
@@ -48,14 +42,14 @@ func main() {
 				// Notify函數讓signal包將輸入信號轉到interrupt
 				signal.Notify(interrupt, os.Interrupt)
 
-				// 處理連接的網址
-				u := url.URL{Scheme: "ws", Host: *addr, Path: "/"}
+				// 连接网址
+				//u := url.URL{Scheme: "ws", Host: *addr, Path: "/"}
 				// logger.Debug("connecting to %s", u.String())
 
-				// 連接服務器 本機
-				ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+				// 连接服务器
+				//ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 				// 連接服務器 PRE
-				//ws, _, err := websocket.DefaultDialer.Dial("ws://game.tampk.club/caidaxiao", nil)
+				ws, _, err := websocket.DefaultDialer.Dial("ws://game.tampk.club/caidaxiao", nil)
 				if err != nil {
 					log.Fatal("dial:", err)
 				}
@@ -200,7 +194,7 @@ func FirstLogin(ws *websocket.Conn) {
 	pkgID = uint16(msg.MessageID_MSG_Login_C2S)
 	buf := make([]byte, 100)
 	binary.BigEndian.PutUint16(buf[0:2], pkgID)
-	playerId := fmt.Sprintf("%09v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(800000000))
+	playerId := fmt.Sprintf("%08v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(80000000))
 	data := msg.Login_C2S{
 		Id:       playerId,
 		PassWord: "123456",
