@@ -1616,7 +1616,8 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/internal/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/Databases.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/Databases.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/websocket.go" beforeDir="false" afterPath="$PROJECT_DIR$/websocket.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../doudizhu-cocos/.idea/doudizhu-cocos.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
@@ -3719,26 +3720,26 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1611987221432" />
-    <state width="1237" height="305" key="GridCell.Tab.0.bottom" timestamp="1618204568399">
+    <state width="1237" height="305" key="GridCell.Tab.0.bottom" timestamp="1618211746535">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1618204568399" />
-    <state width="1237" height="305" key="GridCell.Tab.0.center" timestamp="1618204568398">
+    <state width="1237" height="305" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1618211746535" />
+    <state width="1237" height="305" key="GridCell.Tab.0.center" timestamp="1618211746535">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1618204568398" />
-    <state width="1237" height="305" key="GridCell.Tab.0.left" timestamp="1618204568398">
+    <state width="1237" height="305" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1618211746535" />
+    <state width="1237" height="305" key="GridCell.Tab.0.left" timestamp="1618211746534">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1618204568398" />
-    <state width="1237" height="305" key="GridCell.Tab.0.right" timestamp="1618204568398">
+    <state width="1237" height="305" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1618211746534" />
+    <state width="1237" height="305" key="GridCell.Tab.0.right" timestamp="1618211746535">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1618204568398" />
-    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1617201916749">
+    <state width="1237" height="305" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1618211746535" />
+    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1618211920703">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1617201916749" />
+    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1618211920703" />
     <state x="622" y="1" width="672" height="678" key="search.everywhere.popup" timestamp="1617777927382">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

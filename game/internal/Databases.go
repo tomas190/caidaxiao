@@ -201,13 +201,13 @@ func InsertAccessData(data *PlayerDownBetRecode) {
 	s, c := connect(dbName, accessDB)
 	defer s.Close()
 
-	log.Debug("AccessData 数据: %v", data)
+	//log.Debug("AccessData 数据: %v", data)
 	err := c.Insert(data)
 	if err != nil {
 		log.Error("<----- 运营接入数据插入失败 ~ ----->:%v", err)
 		return
 	}
-	log.Debug("<----- 运营接入数据插入成功 ~ ----->")
+	//log.Debug("<----- 运营接入数据插入成功 ~ ----->")
 }
 
 //GetDownRecodeList 获取运营数据接入
@@ -248,14 +248,14 @@ func InsertSurplusPool(sur *SurplusPoolDB) {
 	s, c := connect(dbName, surPlusDB)
 	defer s.Close()
 
-	log.Debug("surplusPoolDB 数据: %v", sur.PoolMoney)
+	//log.Debug("surplusPoolDB 数据: %v", sur.PoolMoney)
 
 	err := c.Insert(sur)
 	if err != nil {
 		log.Error("<----- 数据库插入SurplusPool数据失败 ~ ----->:%v", err)
 		return
 	}
-	log.Debug("<----- 数据库插入SurplusPool数据成功 ~ ----->")
+	//log.Debug("<----- 数据库插入SurplusPool数据成功 ~ ----->")
 
 	SurPool := &SurPool{}
 	SurPool.GameId = conf.Server.GameID
@@ -328,14 +328,14 @@ func InsertSurPool(sur *SurPool) {
 	s, c := connect(dbName, surPool)
 	defer s.Close()
 
-	log.Debug("SurPool 数据: %v", sur)
+	//log.Debug("SurPool 数据: %v", sur)
 
 	err := c.Insert(sur)
 	if err != nil {
 		log.Error("<----- 数据库插入SurPool数据失败 ~ ----->:%v", err)
 		return
 	}
-	log.Debug("<----- 数据库插入SurPool数据成功 ~ ----->")
+	//log.Debug("<----- 数据库插入SurPool数据成功 ~ ----->")
 }
 
 //UpdateSurPool 更新盈余池数据
@@ -348,7 +348,7 @@ func UpdateSurPool(sur *SurPool) {
 		log.Error("<----- 更新 SurPool数据失败 ~ ----->:%v", err)
 		return
 	}
-	log.Debug("<----- 更新SurPool数据成功 ~ ----->")
+	//log.Debug("<----- 更新SurPool数据成功 ~ ----->")
 }
 
 

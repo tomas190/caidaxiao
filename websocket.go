@@ -21,7 +21,7 @@ var addr = flag.String("addr", "localhost:1355", "http service address")
 
 func main() {
 
-	t := time.NewTicker(20 * time.Millisecond)
+	t := time.NewTicker(50 * time.Millisecond)
 	num := 0
 	for {
 		<-t.C
