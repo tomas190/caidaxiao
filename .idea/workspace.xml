@@ -2,13 +2,80 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d8b79f1e-14e6-4d2e-bcba-0431b68f5b19" name="默认更改列表" comment="默认更改列表">
-      <change afterPath="$PROJECT_DIR$/../allGameCDX/allGame" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.~lock.TOMAS技术测试模块 (3).xlsx#" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.~lock.TOMAS技术测试模块 (4).xlsx#" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../243produceMail.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../243update.bat" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../243update.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/image_2021_01_18T08_39_04_033Z.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/image_2021_01_19T03_43_20_290Z.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/image_2021_01_19T03_44_31_528Z.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_jianjiaoji_mofabiaoqing/cdx_jianjiaoji_mofabiaoqing.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_jianjiaoji_mofabiaoqing/cdx_jianjiaoji_mofabiaoqing.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_jianjiaoji_mofabiaoqing/cdx_jianjiaoji_mofabiaoqing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_meiguihua_mofabiaoqing/cdx_meiguihua_mofabiaoqing.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_meiguihua_mofabiaoqing/cdx_meiguihua_mofabiaoqing.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_meiguihua_mofabiaoqing/cdx_meiguihua_mofabiaoqing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_pijiu_mofabiaoqing/cdx_pijiu_mofabiaoqing.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_pijiu_mofabiaoqing/cdx_pijiu_mofabiaoqing.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_pijiu_mofabiaoqing/cdx_pijiu_mofabiaoqing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_tuoxie_mofabiaoqing/cdx_tuoxie_mofabiaoqing.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_tuoxie_mofabiaoqing/cdx_tuoxie_mofabiaoqing.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_biaoqing/cdx_tuoxie_mofabiaoqing/cdx_tuoxie_mofabiaoqing.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoDT.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoj_tu/cdx_emoji.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoj_tu/cdx_emoji.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_dahaqian_biaoqingdonghua/cdx_dahaqian_biaoqingdonghua_1.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_dahaqian_biaoqingdonghua/cdx_dahaqian_biaoqingdonghua_1.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_dahaqian_biaoqingdonghua/cdx_dahaqian_biaoqingdonghua_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_damuzhi_biaoqingdonghua/cdx_damuzhi_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_damuzhi_biaoqingdonghua/cdx_damuzhi_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_damuzhi_biaoqingdonghua/cdx_damuzhi_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_daxiao_biaoqingdonghua/cdx_daxiao_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_daxiao_biaoqingdonghua/cdx_daxiao_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_daxiao_biaoqingdonghua/cdx_daxiao_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanu_biaoqingdonghua/cdx_fanu_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanu_biaoqingdonghua/cdx_fanu_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanu_biaoqingdonghua/cdx_fanu_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanzao_biaoqingdonghua/cdx_fanzao_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanzao_biaoqingdonghua/cdx_fanzao_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_fanzao_biaoqingdonghua/cdx_fanzao_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_hanyan_biaoqingdonghua/cdx_hanyan_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_hanyan_biaoqingdonghua/cdx_hanyan_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_hanyan_biaoqingdonghua/cdx_hanyan_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_jiong_biaoqingdonghua/cdx_jiong_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_jiong_biaoqingdonghua/cdx_jiong_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_jiong_biaoqingdonghua/cdx_jiong_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_liukoushui_biaoqingdonghua/cdx_liukoushui_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_liukoushui_biaoqingdonghua/cdx_liukoushui_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_liukoushui_biaoqingdonghua/cdx_liukoushui_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shaogaoxiang_biaoqingdonghua/cdx_shaogaoxiang_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shaogaoxiang_biaoqingdonghua/cdx_shaogaoxiang_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shaogaoxiang_biaoqingdonghua/cdx_shaogaoxiang_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shihua_biaoqingdonghua/cdx_shihua_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shihua_biaoqingdonghua/cdx_shihua_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_shihua_biaoqingdonghua/cdx_shihua_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yaobaiqi_biaoqingdonghua/cdx_yaobaiqi_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yaobaiqi_biaoqingdonghua/cdx_yaobaiqi_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yaobaiqi_biaoqingdonghua/cdx_yaobaiqi_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yun_biaoqingdonghua/cdx_yun_biaoqingdonghua.atlas" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yun_biaoqingdonghua/cdx_yun_biaoqingdonghua.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_emoji/cdx_yun_biaoqingdonghua/cdx_yun_biaoqingdonghua.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_bindBg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_close.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_queren.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/切图/banker/cdx_infowar/cdx_spBg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/单纯背景图.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/开奖.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/彩源猜大小.rar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/规则1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/规则2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CDX临时文件/规则3.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOMAS技术测试模块 (3).xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOMAS技术测试模块 (4).xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../allGameCDX/allGame" beforeDir="false" afterPath="$PROJECT_DIR$/../allGameCDX/allGame" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../assets/base.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../assets/base/app.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../assets/base/app/appGlobal.js" beforeDir="false" />
@@ -1547,9 +1614,13 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.android-studio/res/values/strings.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.ios_mac/mac/Icon.icns" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/internal/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/configData.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/configData.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/room_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../doudizhu-cocos/.idea/doudizhu-cocos.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../packages/ccc-png-auto-compress/CHANGELOG.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../packages/ccc-png-auto-compress/LICENSE" beforeDir="false" />
@@ -3434,6 +3505,12 @@
       <change beforePath="$PROJECT_DIR$/../upgrade/ccc2.4.3/version.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../versionemail.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../versiontemp.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../临时文件夹/.idea/临时文件夹.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../多语言资源.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../德州闪屏问题.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../测试.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../茅台清单/茅台清单01.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../茅台清单/茅台清单02.xlsx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -3644,22 +3721,22 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1611987221432" />
-    <state width="1237" height="305" key="GridCell.Tab.0.bottom" timestamp="1617893964458">
+    <state width="1237" height="305" key="GridCell.Tab.0.bottom" timestamp="1618204568399">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1617893964458" />
-    <state width="1237" height="305" key="GridCell.Tab.0.center" timestamp="1617893964458">
+    <state width="1237" height="305" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1618204568399" />
+    <state width="1237" height="305" key="GridCell.Tab.0.center" timestamp="1618204568398">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1617893964458" />
-    <state width="1237" height="305" key="GridCell.Tab.0.left" timestamp="1617893964458">
+    <state width="1237" height="305" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1618204568398" />
+    <state width="1237" height="305" key="GridCell.Tab.0.left" timestamp="1618204568398">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1617893964458" />
-    <state width="1237" height="305" key="GridCell.Tab.0.right" timestamp="1617893964458">
+    <state width="1237" height="305" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1618204568398" />
+    <state width="1237" height="305" key="GridCell.Tab.0.right" timestamp="1618204568398">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="305" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1617893964458" />
+    <state width="1237" height="305" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1618204568398" />
     <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1617201916749">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

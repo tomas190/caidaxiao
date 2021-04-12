@@ -583,6 +583,9 @@ func (r *Room) GetResultType() {
 		r.HistoryData = r.HistoryData[:len(r.HistoryData)-1]
 	}
 
+	// 去重
+	r.HistoryData = removeDuplicate(r.HistoryData)
+
 	// 存储下注记录
 	var downBetHis msg.DownBetHistory
 	downBetHis.TimeFmt = r.resultTime
@@ -616,5 +619,4 @@ func (r *Room) GetResultType() {
 			}
 		}
 	}
-
 }

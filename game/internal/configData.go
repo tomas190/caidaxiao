@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"caidaxiao/msg"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -24,4 +25,21 @@ func RandFloatNum() float64 {
 	rand.Seed(time.Now().UnixNano())
 	n := rand.Intn(len(slice))
 	return slice[n]
+}
+
+func removeDuplicate(personList []msg.HistoryData) []msg.HistoryData {
+	result := []msg.HistoryData{}
+	for i := range personList {
+		flag := true
+		for j := range result {
+			if personList[i].TimeFmt == result[j].TimeFmt {
+				flag = false
+				break
+			}
+		}
+		if flag {
+			result = append(result, personList[i])
+		}
+	}
+	return result
 }
