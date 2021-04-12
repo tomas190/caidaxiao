@@ -5,6 +5,7 @@ import (
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -125,63 +126,15 @@ func handleLogin(args []interface{}) {
 			}
 		}
 	} else if !hall.agentExist(a) { // 玩家首次登入
-		//n := strings.Count(m.Id, "")
-		//if (n - 1) == 8 {
-		//	u := &Player{}
-		//	u.Id = m.Id
-		//	u.Password = m.PassWord
-		//	u.NickName = m.Id
-		//	u.Account = 10000
-		//	u.HeadImg = "3.png"
-		//	login := &msg.Login_S2C{}
-		//	login.PlayerInfo = new(msg.PlayerInfo)
-		//	login.PlayerInfo.Id = u.Id
-		//	login.PlayerInfo.NickName = u.NickName
-		//	login.PlayerInfo.HeadImg = u.HeadImg
-		//	login.PlayerInfo.Account = u.Account
-		//	for _, v := range hall.roomList {
-		//		if v != nil {
-		//			if v.RoomId == "1" {
-		//				login.PlayerNumR1 = v.PlayerLength()
-		//			}
-		//			if v.RoomId == "2" {
-		//				login.PlayerNumR2 = v.PlayerLength()
-		//			}
-		//		}
-		//	}
-		//	a.WriteMsg(login)
-		//
-		//	u.Init()
-		//	// 重新绑定信息
-		//	u.ConnAgent = a
-		//	a.SetUserData(u)
-		//
-		//	u.Password = m.GetPassWord()
-		//	u.Token = m.GetToken()
-		//
-		//	hall.UserRecord.Store(u.Id, u)
-		//
-		//	rId := hall.UserRoom[u.Id]
-		//	v, _ := hall.RoomRecord.Load(rId)
-		//	if v != nil {
-		//		// 玩家如果已在游戏中，则返回房间数据
-		//		room := v.(*Room)
-		//		for i, userId := range room.UserLeave {
-		//			log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
-		//			// 把玩家从掉线列表中移除
-		//			if userId == u.Id {
-		//				room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
-		//				log.Debug("AllocateUser 清除玩家记录~:%v", userId)
-		//				break
-		//			}
-		//			log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
-		//		}
-		//	}
-		//} else {
-		//
-		//}
-		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
-			log.Debug("玩家首次登陆:%v", u.Id)
+		n := strings.Count(m.Id, "")
+		if (n - 1) == 8 {
+			log.Debug("压测玩家进来~")
+			u := &Player{}
+			u.Id = m.Id
+			u.Password = m.PassWord
+			u.NickName = m.Id
+			u.Account = 10000
+			u.HeadImg = "3.png"
 			login := &msg.Login_S2C{}
 			login.PlayerInfo = new(msg.PlayerInfo)
 			login.PlayerInfo.Id = u.Id
@@ -226,7 +179,55 @@ func handleLogin(args []interface{}) {
 					log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
 				}
 			}
-		})
+		} else {
+			c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
+				log.Debug("玩家首次登陆:%v", u.Id)
+				login := &msg.Login_S2C{}
+				login.PlayerInfo = new(msg.PlayerInfo)
+				login.PlayerInfo.Id = u.Id
+				login.PlayerInfo.NickName = u.NickName
+				login.PlayerInfo.HeadImg = u.HeadImg
+				login.PlayerInfo.Account = u.Account
+				for _, v := range hall.roomList {
+					if v != nil {
+						if v.RoomId == "1" {
+							login.PlayerNumR1 = v.PlayerLength()
+						}
+						if v.RoomId == "2" {
+							login.PlayerNumR2 = v.PlayerLength()
+						}
+					}
+				}
+				a.WriteMsg(login)
+
+				u.Init()
+				// 重新绑定信息
+				u.ConnAgent = a
+				a.SetUserData(u)
+
+				u.Password = m.GetPassWord()
+				u.Token = m.GetToken()
+
+				hall.UserRecord.Store(u.Id, u)
+
+				rId := hall.UserRoom[u.Id]
+				v, _ := hall.RoomRecord.Load(rId)
+				if v != nil {
+					// 玩家如果已在游戏中，则返回房间数据
+					room := v.(*Room)
+					for i, userId := range room.UserLeave {
+						log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
+						// 把玩家从掉线列表中移除
+						if userId == u.Id {
+							room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
+							log.Debug("AllocateUser 清除玩家记录~:%v", userId)
+							break
+						}
+						log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
+					}
+				}
+			})
+		}
 	}
 }
 
@@ -291,21 +292,21 @@ func handleLeaveRoom(args []interface{}) {
 
 func handlePlayerAction(args []interface{}) {
 	m := args[0].(*msg.PlayerAction_C2S)
-	a := args[1].(gate.Agent)
+	//a := args[1].(gate.Agent)
 
-	//user, _ := hall.UserRecord.Load(m.Id)
-	//if user != nil {
-	//	p := user.(*Player)
-	//	log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
-	//	p.PlayerAction(m)
-	//}
-
-	p, ok := a.UserData().(*Player)
-	log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
-
-	if ok {
+	user, _ := hall.UserRecord.Load(m.Id)
+	if user != nil {
+		p := user.(*Player)
+		log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
 		p.PlayerAction(m)
 	}
+
+	//p, ok := a.UserData().(*Player)
+	//log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
+	//
+	//if ok {
+	//	p.PlayerAction(m)
+	//}
 }
 
 func handleBankerData(args []interface{}) {
