@@ -35,8 +35,8 @@ const (
 	WinSingle   int32 = 1  //单 1倍
 	WinDouble   int32 = 1  //双 1倍
 	WinPair     int32 = 2  //对 2倍
-	WinStraight int32 = 15 //顺 15倍
-	WinLeopard  int32 = 66 //豹 66倍
+	WinStraight int32 = 6  //顺 6倍
+	WinLeopard  int32 = 15 //豹 15倍
 )
 
 const (
@@ -60,6 +60,7 @@ type Room struct {
 	resultTime       string            // 结算时间
 	Lottery          []int             // 开奖数据
 	LotteryResult    msg.PotWinList    // 开奖结果
+	PeriodsNum       string            // 开奖期数
 	RoomStat         RoomStatus        // 房间状态
 	GameStat         msg.GameStep      // 游戏状态
 	PotMoneyCount    msg.DownBetMoney  // 注池下注总金额(用于客户端显示)
@@ -86,6 +87,7 @@ func (r *Room) Init() {
 	r.resultTime = ""
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
+	r.PeriodsNum = ""
 	r.RoomStat = RoomStatusNone
 	r.GameStat = msg.GameStep_XX_Step
 	r.PlayerTotalMoney = msg.DownBetMoney{}
@@ -403,6 +405,7 @@ func (r *Room) GetCaiYuan() {
 			log.Debug("中奖号码:%v", code)
 
 			r.resultTime = opendate.(string)
+			r.PeriodsNum = issue.(string)
 			codeString := code.(string)
 			codeSlice := strings.Split(codeString, `,`)
 			codeSlice = append(codeSlice[:0], codeSlice[2:]...)

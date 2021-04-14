@@ -47,7 +47,8 @@ type GameData struct {
 	BetInfo         interface{} `json:"bet_info"`         // 玩家下注信息
 	SettlementFunds interface{} `json:"settlement_funds"` // 结算信息 输赢结果
 	SpareCash       interface{} `json:"spare_cash"`       // 剩余金额
-	CreatedAt       int64       `json:"created_at"`
+	CreatedAt       int64       `json:"created_at"`       // 下注时间
+	PeriodsNum      string      `json:"periods_num"`      // 获奖期数
 }
 
 type GetSurPool struct {
@@ -113,6 +114,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/reqPlayerLeave", reqPlayerLeave)
 	// 获取机器人数据
 	http.HandleFunc("/api/getRobotData", getRobotData)
+	// 获取彩源玩家投注数据
+	http.HandleFunc("/api/getPlayerCaiYuan", getAccessData)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -197,6 +200,7 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		gd.SpareCash = pr.SpareCash
 		gd.TaxRate = pr.TaxRate
 		gd.CreatedAt = pr.DownBetTime
+		gd.PeriodsNum = pr.PeriodsNum
 		gameData = append(gameData, gd)
 	}
 

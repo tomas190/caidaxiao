@@ -514,6 +514,7 @@ func (r *Room) ResultMoney() {
 					data.SettlementFunds = v.ResultMoney
 					data.SpareCash = v.Account
 					data.TaxRate = taxRate
+					data.PeriodsNum = r.PeriodsNum
 					InsertAccessData(data)
 				}
 
