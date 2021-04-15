@@ -127,7 +127,7 @@ func handleLogin(args []interface{}) {
 		}
 	} else if !hall.agentExist(a) { // 玩家首次登入
 		n := strings.Count(m.Id, "")
-		if (n - 1) == 8 {
+		if (n - 1) == 8 { //todo
 			log.Debug("压测玩家进来~")
 			u := &Player{}
 			u.Id = m.Id
@@ -162,6 +162,7 @@ func handleLogin(args []interface{}) {
 			u.Token = m.GetToken()
 
 			hall.UserRecord.Store(u.Id, u)
+			hall.UserRoom[u.Id] = "1"
 
 			rId := hall.UserRoom[u.Id]
 			v, _ := hall.RoomRecord.Load(rId)
@@ -292,21 +293,22 @@ func handleLeaveRoom(args []interface{}) {
 
 func handlePlayerAction(args []interface{}) {
 	m := args[0].(*msg.PlayerAction_C2S)
-	a := args[1].(gate.Agent)
+	//a := args[1].(gate.Agent)
 
-	//user, _ := hall.UserRecord.Load(m.Id)
-	//if user != nil {
-	//	p := user.(*Player)
-	//	log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
-	//	p.PlayerAction(m)
-	//}
-
-	p, ok := a.UserData().(*Player)
-	log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
-
-	if ok {
+	//log.Debug("玩家行动:%v", m.Id)
+	user, _ := hall.UserRecord.Load(m.Id)
+	if user != nil {
+		p := user.(*Player)
+		log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
 		p.PlayerAction(m)
 	}
+
+	//p, ok := a.UserData().(*Player)
+	//log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
+	//
+	//if ok {
+	//	p.PlayerAction(m)
+	//}
 }
 
 func handleBankerData(args []interface{}) {

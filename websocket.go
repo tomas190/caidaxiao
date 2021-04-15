@@ -23,7 +23,7 @@ var addr = flag.String("addr", "localhost:1355", "http service address")
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	t := time.NewTicker(20 * time.Millisecond)
+	t := time.NewTicker(time.Millisecond)
 	for i := 0; i < 10000; i++ {
 		<-t.C
 		fmt.Println(i)
@@ -66,7 +66,7 @@ func clientbot(ctx context.Context) {
 	heartbeat := time.NewTicker(5 * time.Second)
 
 	// spin計時器
-	delayTime := 10
+	delayTime := 5
 	replay := time.NewTicker(time.Duration(delayTime) * time.Second)
 
 	// 登入後建立的虛擬id
@@ -81,8 +81,8 @@ func clientbot(ctx context.Context) {
 	// logger.Debug("connecting to %s", u.String())
 	_ = u
 	// 連接服務器 本機
-	//ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	ws, _, err := websocket.DefaultDialer.Dial("ws://game.539316.com/caidaxiao", nil)
+	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	//ws, _, err := websocket.DefaultDialer.Dial("ws://game.539316.com/caidaxiao", nil)
 	//ws, _, err := websocket.DefaultDialer.Dial("ws://game.tampk.club/caidaxiao", nil)
 	if err != nil {
 		log.Fatal("dial:", err)
@@ -133,6 +133,7 @@ func clientbot(ctx context.Context) {
 	}(slotCtx)
 
 	FirstLogin(ws)
+	//JoinRoom(ws)
 	time.Sleep(1) //確保玩家登入再傳心跳
 
 	// 計時器定時發任務
@@ -189,6 +190,29 @@ func clientbot(ctx context.Context) {
 		}
 	}
 }
+
+//func JoinRoom(ws *websocket.Conn) {
+//	var pkgID uint16
+//	pkgID = uint16(msg.MessageID_MSG_JoinRoom_C2S)
+//	buf := make([]byte, 100)
+//	binary.BigEndian.PutUint16(buf[0:2], pkgID)
+//	data := msg.JoinRoom_C2S{
+//		RoomId: "1",
+//	}
+//
+//	// 將資料編碼成 Protocol Buffer 格式（請注意是傳入 Pointer）。
+//	dataBuffer, _ := proto.Marshal(&data)
+//
+//	// 將消息ID與DATA整合，一起送出
+//	pkgData := [][]byte{buf[:2], dataBuffer}
+//	pkgDatas := bytes.Join(pkgData, []byte{})
+//	err := ws.WriteMessage(websocket.BinaryMessage, pkgDatas)
+//
+//	if err != nil {
+//		log.Println("write:", err)
+//		return
+//	}
+//}
 
 func RandInRange(min int, max int) int {
 	rand.Seed(time.Now().UnixNano())

@@ -71,7 +71,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		// 判断注池限红
 		if m.DownPot == msg.PotType_BigPot {
 			money := room.PotMoneyCount.SmallDownBet * WinSmall
-			if float64(totalMoney-money) > room.BankerMoney {
+			if float64(totalMoney-money) > 20000 {
 				//log.Debug("玩家下注已限红~")
 				return
 			}
