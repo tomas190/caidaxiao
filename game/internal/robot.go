@@ -497,7 +497,7 @@ func (r *Room) RobotsDownBet() {
 							//log.Debug("机器Id: %v,下注: %v", v.Id, v.DownBetMoney)
 						}
 					} else {
-						//InsertRobotData(rData) //todo
+						InsertRobotData(rData) //todo
 						return
 					}
 				}

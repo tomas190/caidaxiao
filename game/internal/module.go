@@ -22,17 +22,17 @@ func (m *Module) OnInit() {
 	m.Skeleton = skeleton
 
 	// 初始连接数据库  //todo
-	//InitMongoDB()
+	InitMongoDB()
 
 	// 大厅初始化
 	hall.Init()
 
-	//// 中心服初始化并创建链接
-	//c4c.Init()
-	//c4c.CreatConnect()
-	//
-	//// 监听接口
-	//go StartHttpServer()
+	// 中心服初始化并创建链接
+	c4c.Init()
+	c4c.CreatConnect()
+
+	// 监听接口
+	go StartHttpServer()
 
 }
 

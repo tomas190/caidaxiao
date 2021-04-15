@@ -293,22 +293,24 @@ func handleLeaveRoom(args []interface{}) {
 
 func handlePlayerAction(args []interface{}) {
 	m := args[0].(*msg.PlayerAction_C2S)
-	//a := args[1].(gate.Agent)
+	a := args[1].(gate.Agent)
 
-	//log.Debug("玩家行动:%v", m.Id)
-	user, _ := hall.UserRecord.Load(m.Id)
-	if user != nil {
-		p := user.(*Player)
+	n := strings.Count(m.Id, "")
+	if (n - 1) == 8 { //todo
+		user, _ := hall.UserRecord.Load(m.Id)
+		if user != nil {
+			p := user.(*Player)
+			log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
+			p.PlayerAction(m)
+		}
+	} else {
+		p, ok := a.UserData().(*Player)
 		log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
-		p.PlayerAction(m)
-	}
 
-	//p, ok := a.UserData().(*Player)
-	//log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
-	//
-	//if ok {
-	//	p.PlayerAction(m)
-	//}
+		if ok {
+			p.PlayerAction(m)
+		}
+	}
 }
 
 func handleBankerData(args []interface{}) {

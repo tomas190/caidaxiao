@@ -1619,7 +1619,6 @@
       <change beforePath="$PROJECT_DIR$/game/internal/chanrpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/chanrpc.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/handler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/module.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/module.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/internal/player_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/player_handle.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/robot.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/robot.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/room_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room_handle.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/websocket.go" beforeDir="false" afterPath="$PROJECT_DIR$/websocket.go" afterDir="false" />
@@ -3727,22 +3726,22 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1611987221432" />
-    <state width="1237" height="301" key="GridCell.Tab.0.bottom" timestamp="1618476698436">
+    <state width="1237" height="301" key="GridCell.Tab.0.bottom" timestamp="1618477494508">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="301" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1618476698436" />
-    <state width="1237" height="301" key="GridCell.Tab.0.center" timestamp="1618476698436">
+    <state width="1237" height="301" key="GridCell.Tab.0.bottom/0.0.1280.680@0.0.1280.680" timestamp="1618477494508" />
+    <state width="1237" height="301" key="GridCell.Tab.0.center" timestamp="1618477494508">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="301" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1618476698436" />
-    <state width="1237" height="301" key="GridCell.Tab.0.left" timestamp="1618476698435">
+    <state width="1237" height="301" key="GridCell.Tab.0.center/0.0.1280.680@0.0.1280.680" timestamp="1618477494508" />
+    <state width="1237" height="301" key="GridCell.Tab.0.left" timestamp="1618477494508">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="301" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1618476698435" />
-    <state width="1237" height="301" key="GridCell.Tab.0.right" timestamp="1618476698436">
+    <state width="1237" height="301" key="GridCell.Tab.0.left/0.0.1280.680@0.0.1280.680" timestamp="1618477494508" />
+    <state width="1237" height="301" key="GridCell.Tab.0.right" timestamp="1618477494508">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state width="1237" height="301" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1618476698436" />
+    <state width="1237" height="301" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1618477494508" />
     <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1618211920703">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
