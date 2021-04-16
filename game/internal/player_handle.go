@@ -68,31 +68,48 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			room.PotMoneyCount.StraightDownBet*WinStraight +
 			room.PotMoneyCount.LeopardDownBet*WinLeopard
 
-		// 判断注池限红
+		// 设定单个区域限红为1000
+		if m.DownPot == msg.PotType_PairPot {
+			if room.PotMoneyCount.PairDownBet + m.DownBet > 1000 {
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_StraightPot {
+			if room.PotMoneyCount.StraightDownBet + m.DownBet > 1000 {
+				return
+			}
+		}
+		if m.DownPot == msg.PotType_LeopardPot {
+			if room.PotMoneyCount.LeopardDownBet + m.DownBet > 1000 {
+				return
+			}
+		}
+
+		// 设定全区的最大限红为10000
 		if m.DownPot == msg.PotType_BigPot {
 			money := room.PotMoneyCount.SmallDownBet * WinSmall
-			if float64(totalMoney-money) > 20000 {
+			if float64(totalMoney-money) > 10000 {
 				//log.Debug("玩家下注已限红~")
 				return
 			}
 		}
 		if m.DownPot == msg.PotType_SmallPot {
 			money := room.PotMoneyCount.BigDownBet * WinBig
-			if float64(totalMoney-money) > 20000 { //room.BankerMoney
+			if float64(totalMoney-money) > 10000 { //room.BankerMoney
 				//log.Debug("玩家下注已限红~")
 				return
 			}
 		}
 		if m.DownPot == msg.PotType_SinglePot {
 			money := room.PotMoneyCount.DoubleDownBet * WinDouble
-			if float64(totalMoney-money) > 20000 { //room.BankerMoney
+			if float64(totalMoney-money) > 10000 { //room.BankerMoney
 				//log.Debug("玩家下注已限红~")
 				return
 			}
 		}
 		if m.DownPot == msg.PotType_DoublePot {
 			money := room.PotMoneyCount.SingleDownBet * WinSingle
-			if float64(totalMoney-money) > 20000 { //room.BankerMoney
+			if float64(totalMoney-money) > 10000 { //room.BankerMoney
 				//log.Debug("玩家下注已限红~")
 				return
 			}
@@ -100,7 +117,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		if m.DownPot == msg.PotType_PairPot {
 			money := room.PotMoneyCount.StraightDownBet * WinStraight
 			money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
-			if float64(totalMoney-money-money2) > 20000 { //room.BankerMoney
+			if float64(totalMoney-money-money2) > 10000 { //room.BankerMoney
 				//log.Debug("玩家下注已限红~")
 				return
 			}
@@ -108,7 +125,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		if m.DownPot == msg.PotType_StraightPot {
 			money := room.PotMoneyCount.PairDownBet * WinPair
 			money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
-			if float64(totalMoney-money-money2) > 20000 { //room.BankerMoney
+			if float64(totalMoney-money-money2) > 10000 { //room.BankerMoney
 				//log.Debug("玩家下注已限红~")
 				return
 			}
@@ -116,7 +133,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		if m.DownPot == msg.PotType_LeopardPot {
 			money2 := room.PotMoneyCount.PairDownBet * WinPair
 			money := room.PotMoneyCount.StraightDownBet * WinStraight
-			if float64(totalMoney-money-money2) > 20000 { //room.BankerMoney
+			if float64(totalMoney-money-money2) > 10000 { //room.BankerMoney
 				//log.Debug("玩家下注已限红~")
 				return
 			}

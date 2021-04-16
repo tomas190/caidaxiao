@@ -25,8 +25,8 @@ const (
 const (
 	BankerTime  = 8  // 庄家时间 8秒
 	Banker2Time = 3  // 庄家连庄 3秒
-	DownBetTime = 23 // 下注时间 23秒
-	SettleTime  = 29 // 结算时间 29秒
+	DownBetTime = 30 // 下注时间 23秒
+	SettleTime  = 30 // 结算时间 29秒
 )
 
 const (
@@ -35,8 +35,8 @@ const (
 	WinSingle   int32 = 1  //单 1倍
 	WinDouble   int32 = 1  //双 1倍
 	WinPair     int32 = 2  //对 2倍
-	WinStraight int32 = 6  //顺 6倍
-	WinLeopard  int32 = 15 //豹 15倍
+	WinStraight int32 = 5  //顺 5倍
+	WinLeopard  int32 = 66 //豹 66倍
 )
 
 const (
