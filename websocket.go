@@ -23,7 +23,7 @@ var addr = flag.String("addr", "localhost:1355", "http service address")
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	t := time.NewTicker(time.Millisecond)
+	t := time.NewTicker(  time.Millisecond)
 	for i := 0; i < 10000; i++ {
 		<-t.C
 		fmt.Println(i)

@@ -440,7 +440,7 @@ func (r *Room) ResultMoney() {
 					totalLose -= v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet
 					money := (v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet) / 2
 					totalLose += money
-					v.ResultMoney += float64(money)
+					v.Account += float64(money)
 				}
 				nowTime := time.Now().Unix() //todo
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
