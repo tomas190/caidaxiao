@@ -42,11 +42,9 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 	rId := hall.UserRoom[p.Id]
 	v, _ := hall.RoomRecord.Load(rId)
 
-	log.Debug("进来了")
 	if v != nil {
 		room := v.(*Room)
 		// 不是下注阶段，不能进行下注
-		log.Debug("进来了0")
 		if room.GameStat != msg.GameStep_DownBet {
 			return
 		}
@@ -57,28 +55,13 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			return
 		}
 
-		log.Debug("进来了1")
 		// 判断玩家是否行动做相应处理
 		// 各注池下注金额加上对应的倍数
 		totalMoney := room.PotMoneyCount.BigDownBet*WinBig +
 			room.PotMoneyCount.SmallDownBet*WinSmall +
-			room.PotMoneyCount.SingleDownBet*WinSingle +
-			room.PotMoneyCount.DoubleDownBet*WinDouble +
-			room.PotMoneyCount.PairDownBet*WinPair +
-			room.PotMoneyCount.StraightDownBet*WinStraight +
 			room.PotMoneyCount.LeopardDownBet*WinLeopard
 
 		// 设定单个区域限红为1000
-		if m.DownPot == msg.PotType_PairPot {
-			if room.PotMoneyCount.PairDownBet + m.DownBet > 1000 {
-				return
-			}
-		}
-		if m.DownPot == msg.PotType_StraightPot {
-			if room.PotMoneyCount.StraightDownBet + m.DownBet > 1000 {
-				return
-			}
-		}
 		if m.DownPot == msg.PotType_LeopardPot {
 			if room.PotMoneyCount.LeopardDownBet + m.DownBet > 1000 {
 				return
@@ -100,36 +83,6 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				return
 			}
 		}
-		if m.DownPot == msg.PotType_SinglePot {
-			money := room.PotMoneyCount.DoubleDownBet * WinDouble
-			if float64(totalMoney-money) > 10000 { //room.BankerMoney
-				//log.Debug("玩家下注已限红~")
-				return
-			}
-		}
-		if m.DownPot == msg.PotType_DoublePot {
-			money := room.PotMoneyCount.SingleDownBet * WinSingle
-			if float64(totalMoney-money) > 10000 { //room.BankerMoney
-				//log.Debug("玩家下注已限红~")
-				return
-			}
-		}
-		if m.DownPot == msg.PotType_PairPot {
-			money := room.PotMoneyCount.StraightDownBet * WinStraight
-			money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
-			if float64(totalMoney-money-money2) > 10000 { //room.BankerMoney
-				//log.Debug("玩家下注已限红~")
-				return
-			}
-		}
-		if m.DownPot == msg.PotType_StraightPot {
-			money := room.PotMoneyCount.PairDownBet * WinPair
-			money2 := room.PotMoneyCount.LeopardDownBet * WinLeopard
-			if float64(totalMoney-money-money2) > 10000 { //room.BankerMoney
-				//log.Debug("玩家下注已限红~")
-				return
-			}
-		}
 		if m.DownPot == msg.PotType_LeopardPot {
 			money2 := room.PotMoneyCount.PairDownBet * WinPair
 			money := room.PotMoneyCount.StraightDownBet * WinStraight
@@ -139,7 +92,6 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			}
 		}
 
-		log.Debug("进来了2")
 		p.IsAction = m.IsAction
 		if p.IsAction == true {
 			// 记录玩家在该房间总下注 和 房间注池的总金额
@@ -153,32 +105,11 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				room.PotMoneyCount.SmallDownBet += m.DownBet
 				room.PlayerTotalMoney.SmallDownBet += m.DownBet
 			}
-			if m.DownPot == msg.PotType_SinglePot {
-				p.DownBetMoney.SingleDownBet += m.DownBet
-				room.PotMoneyCount.SingleDownBet += m.DownBet
-				room.PlayerTotalMoney.SingleDownBet += m.DownBet
-			}
-			if m.DownPot == msg.PotType_DoublePot {
-				p.DownBetMoney.DoubleDownBet += m.DownBet
-				room.PotMoneyCount.DoubleDownBet += m.DownBet
-				room.PlayerTotalMoney.DoubleDownBet += m.DownBet
-			}
-			if m.DownPot == msg.PotType_PairPot {
-				p.DownBetMoney.PairDownBet += m.DownBet
-				room.PotMoneyCount.PairDownBet += m.DownBet
-				room.PlayerTotalMoney.PairDownBet += m.DownBet
-			}
-			if m.DownPot == msg.PotType_StraightPot {
-				p.DownBetMoney.StraightDownBet += m.DownBet
-				room.PotMoneyCount.StraightDownBet += m.DownBet
-				room.PlayerTotalMoney.StraightDownBet += m.DownBet
-			}
 			if m.DownPot == msg.PotType_LeopardPot {
 				p.DownBetMoney.LeopardDownBet += m.DownBet
 				room.PotMoneyCount.LeopardDownBet += m.DownBet
 				room.PlayerTotalMoney.LeopardDownBet += m.DownBet
 			}
-			log.Debug("进来了3")
 
 			p.Account -= float64(m.DownBet)
 			p.TotalDownBet += m.DownBet

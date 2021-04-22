@@ -22,6 +22,8 @@ const (
 	surPlusDB       = "surPlusDB"
 	surPool         = "surplus-pool"
 	robotData       = "robotData"
+	PlayerDownBetDB = "PlayerDownBetDB"
+	RoomTotalBetDB  = "RoomTotalBetDB"
 )
 
 // 连接数据库集合的函数 传入集合 默认连接IM数据库
@@ -364,4 +366,83 @@ func GetSurPoolData(selector bson.M) (SurPool, error) {
 		return wts, err
 	}
 	return wts, nil
+}
+
+type PlayerDownBet struct {
+	Id          string           `json:"id" bson:"id"`                       // 玩家Id
+	GameId      string           `json:"game_id" bson:"game_id"`             // gameId
+	RoomId      string           `json:"room_id" bson:"room_id"`             // 所在房间
+	PeriodsNum  string           `json:"periods_num" bson:"periods_num"`     // 奖期
+	LotteryType string           `json:"lottery_type" bson:"lottery_type"`   // 彩种
+	DownBetInfo msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 玩家各注池下注的金额
+}
+
+func InsertPlayerDownBet(sur *PlayerDownBet) {
+	s, c := connect(dbName, PlayerDownBetDB)
+	defer s.Close()
+
+	err := c.Insert(sur)
+	if err != nil {
+		log.Error("<----- 数据库插入PlayerDownBet数据失败 ~ ----->:%v", err)
+		return
+	}
+}
+
+//GetPlayerDownBet 获取玩家投注数据
+func GetPlayerDownBet(page, limit int, selector bson.M, sortBy string) ([]PlayerDownBet, int, error) {
+	s, c := connect(dbName, accessDB)
+	defer s.Close()
+
+	var wts []PlayerDownBet
+
+	n, err := c.Find(selector).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	log.Debug("获取 %v 条数据,limit:%v", n, limit)
+	skip := (page - 1) * limit
+	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+	if err != nil {
+		return nil, 0, err
+	}
+	return wts, n, nil
+}
+
+type RoomTotalBet struct {
+	GameId        string           `json:"game_id" bson:"game_id"`             // gameId
+	RoomId        string           `json:"room_id" bson:"room_id"`             // 所在房间
+	PeriodsNum    string           `json:"periods_num" bson:"periods_num"`     // 奖期
+	LotteryType   string           `json:"lottery_type" bson:"lottery_type"`   // 彩种
+	PotTotalMoney msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 注池玩家下注总金额
+}
+
+func InsertRoomTotalBet(sur *RoomTotalBet) {
+	s, c := connect(dbName, RoomTotalBetDB)
+	defer s.Close()
+
+	err := c.Insert(sur)
+	if err != nil {
+		log.Error("<----- 数据库插入RoomTotalBet数据失败 ~ ----->:%v", err)
+		return
+	}
+}
+
+//GetPlayerDownBet 获取玩家投注数据
+func GetRoomTotalBet(page, limit int, selector bson.M, sortBy string) ([]RoomTotalBet, int, error) {
+	s, c := connect(dbName, accessDB)
+	defer s.Close()
+
+	var wts []RoomTotalBet
+
+	n, err := c.Find(selector).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+	log.Debug("获取 %v 条数据,limit:%v", n, limit)
+	skip := (page - 1) * limit
+	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+	if err != nil {
+		return nil, 0, err
+	}
+	return wts, n, nil
 }

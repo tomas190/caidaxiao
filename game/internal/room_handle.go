@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/name5566/leaf/log"
 	"sort"
+	"strconv"
 	"time"
 )
 
@@ -294,6 +295,9 @@ func (r *Room) CompareSettlement() {
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
+	// 获取派奖前的玩家投注数据
+	r.SetPlayerDownBet()
+
 	// 获取彩源数据
 	r.GetCaiYuan()
 
@@ -318,6 +322,8 @@ func (r *Room) CompareSettlement() {
 		//log.Debug("SettleTime :%v", r.counter)
 		// 如果时间处理不及时,可以判断定时9秒的时候将处理这个数据然后发送给前端进行处理
 		if r.counter >= SettleTime {
+			// 获取投注统计
+			r.SeRoomTotalBet()
 			// 踢出房间断线玩家
 			r.KickOutPlayer()
 			// 处理庄家
@@ -345,16 +351,7 @@ func (r *Room) ResultMoney() {
 	} else if r.LotteryResult.BigSmall == 2 {
 		totalUserWin += r.PlayerTotalMoney.BigDownBet * WinBig
 	}
-	if r.LotteryResult.SinDouble == 1 {
-		totalUserWin += r.PlayerTotalMoney.SingleDownBet * WinSingle
-	} else if r.LotteryResult.SinDouble == 2 {
-		totalUserWin += r.PlayerTotalMoney.DoubleDownBet * WinDouble
-	}
-	if r.LotteryResult.CardType == msg.CardsType_Pair {
-		totalUserWin += r.PlayerTotalMoney.PairDownBet * WinPair
-	} else if r.LotteryResult.CardType == msg.CardsType_Straight {
-		totalUserWin += r.PlayerTotalMoney.StraightDownBet * WinStraight
-	} else if r.LotteryResult.CardType == msg.CardsType_Leopard {
+	if r.LotteryResult.CardType == msg.CardsType_Leopard {
 		totalUserWin += r.PlayerTotalMoney.LeopardDownBet * WinLeopard
 	}
 
@@ -370,161 +367,112 @@ func (r *Room) ResultMoney() {
 		sur.HistoryLose = surPool.HistoryLose
 	}
 
-	// 判断注池真实玩家总下注是否大于玩家所赢的钱,大于0庄家获利,否则庄家赔付
-	bankerRes := r.PotTotalMoney() - totalUserWin
 	log.Debug("房间玩家下注总和:%v,房间玩家赢钱总额:%v", r.PotTotalMoney(), totalUserWin)
-	//log.Debug("庄家结算金额:%v", bankerRes)
 
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsAction == true {
-			if v.IsBanker == true { // 庄家开奖（包括系统坐庄）
-				nowTime := time.Now().Unix()
-				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
-				reason := "庄家赢钱"
-				if bankerRes > 0 { // 庄家获利
-					v.WinResultMoney += float64(bankerRes)
-					if v.IsRobot == false {
-						c4c.BankerWinScore(v, nowTime, v.RoundId, reason)
-					}
-					sur.HistoryWin += v.WinResultMoney
-					sur.TotalWinMoney += v.WinResultMoney
+			var totalWin int32
+			var taxMoney int32
+			var totalLose int32
+			totalLose = v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet + v.DownBetMoney.LeopardDownBet
+			if r.LotteryResult.CardType == msg.CardsType_Leopard {
+				totalWin += v.DownBetMoney.LeopardDownBet
+				taxMoney += v.DownBetMoney.LeopardDownBet * WinLeopard
+				totalLose -= v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet
+				money := (v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet) / 2
+				totalLose += money
+				v.Account += float64(money)
+			} else if r.LotteryResult.BigSmall == 1 {
+				totalWin += v.DownBetMoney.SmallDownBet
+				taxMoney += v.DownBetMoney.SmallDownBet * WinSmall
+			} else if r.LotteryResult.BigSmall == 2 {
+				totalWin += v.DownBetMoney.BigDownBet
+				taxMoney += v.DownBetMoney.BigDownBet * WinBig
+			}
 
-					tax := float64(bankerRes) * taxRate
-					v.ResultMoney = float64(bankerRes) - tax
-					v.Account += v.ResultMoney
-					log.Debug("庄家Id:%v,庄家赢钱:%v", v.Id, v.ResultMoney)
-				} else { // 庄家赔付
-					v.LoseResultMoney -= float64(bankerRes)
-					if v.IsRobot == false {
-						c4c.BankerLoseScore(v, nowTime, v.RoundId, reason)
-					}
-					sur.HistoryLose -= v.LoseResultMoney
-					sur.TotalLoseMoney -= v.LoseResultMoney
+			if v.IsRobot == false {
+				log.Debug("id:%v,totalWin:%v,totalLose:%v", v.Id, totalWin, totalLose)
+				log.Debug("downBet:%v", v.DownBetMoney)
+			}
 
-					v.ResultMoney = v.LoseResultMoney
-					v.BankerMoney += v.ResultMoney
-					v.Account += v.ResultMoney
-					log.Debug("庄家Id:%v,庄家输钱:%v", v.Id, v.ResultMoney)
-				}
-				r.BankerMoney = v.BankerMoney
-			} else { // 玩家开奖
-				var totalWin int32
-				var taxMoney int32
-				var totalLose int32
-				totalLose = v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet +
-					v.DownBetMoney.SingleDownBet + v.DownBetMoney.DoubleDownBet +
-					v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet + v.DownBetMoney.LeopardDownBet
-				if r.LotteryResult.BigSmall == 1 {
-					totalWin += v.DownBetMoney.SmallDownBet
-					taxMoney += v.DownBetMoney.SmallDownBet * WinSmall
-				} else if r.LotteryResult.BigSmall == 2 {
-					totalWin += v.DownBetMoney.BigDownBet
-					taxMoney += v.DownBetMoney.BigDownBet * WinBig
-				}
-				if r.LotteryResult.SinDouble == 1 {
-					totalWin += v.DownBetMoney.SingleDownBet
-					taxMoney += v.DownBetMoney.SingleDownBet * WinSingle
-				} else if r.LotteryResult.SinDouble == 2 {
-					totalWin += v.DownBetMoney.DoubleDownBet
-					taxMoney += v.DownBetMoney.DoubleDownBet * WinDouble
-				}
-				if r.LotteryResult.CardType == msg.CardsType_Pair {
-					totalWin += v.DownBetMoney.PairDownBet
-					taxMoney += v.DownBetMoney.PairDownBet * WinPair
-				} else if r.LotteryResult.CardType == msg.CardsType_Straight {
-					totalWin += v.DownBetMoney.StraightDownBet
-					taxMoney += v.DownBetMoney.StraightDownBet * WinStraight
-				} else if r.LotteryResult.CardType == msg.CardsType_Leopard {
-					totalWin += v.DownBetMoney.LeopardDownBet
-					taxMoney += v.DownBetMoney.LeopardDownBet * WinLeopard
-					totalLose -= v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet
-					money := (v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet) / 2
-					totalLose += money
-					v.Account += float64(money)
-				}
-				nowTime := time.Now().Unix() //todo
-				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+			nowTime := time.Now().Unix() //todo
+			v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+			if taxMoney > 0 {
+				v.WinResultMoney = float64(taxMoney)
+				sur.HistoryWin += v.WinResultMoney
+				sur.TotalWinMoney += v.WinResultMoney
+				reason := "ResultWinScore" //todo
 				if v.IsRobot == false {
-					log.Debug("id:%v,totalWin:%v,totalLose:%v", v.Id, totalWin, totalLose)
-					log.Debug("downBet:%v", v.DownBetMoney)
-				}
-				if taxMoney > 0 {
-					v.WinResultMoney = float64(taxMoney)
-					sur.HistoryWin += v.WinResultMoney
-					sur.TotalWinMoney += v.WinResultMoney
-					reason := "ResultWinScore" //todo
-					if v.IsRobot == false {
-						//同时同步赢分和输分
-						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason)
-					}
-				}
-				if totalLose > 0 {
-					v.LoseResultMoney = float64(-totalLose + totalWin)
-					sur.HistoryLose -= v.LoseResultMoney
-					sur.TotalLoseMoney -= v.LoseResultMoney
-					reason := "ResultLoseScore" //todo
 					//同时同步赢分和输分
-					if v.IsRobot == false {
-						if v.LoseResultMoney != 0 {
-							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason)
-						}
+					c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason)
+				}
+			}
+			if totalLose > 0 {
+				v.LoseResultMoney = float64(-totalLose + totalWin)
+				sur.HistoryLose -= v.LoseResultMoney
+				sur.TotalLoseMoney -= v.LoseResultMoney
+				reason := "ResultLoseScore" //todo
+				//同时同步赢分和输分
+				if v.IsRobot == false {
+					if v.LoseResultMoney != 0 {
+						c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason)
 					}
 				}
+			}
 
-				tax := float64(taxMoney) * taxRate
-				v.ResultMoney = float64(totalWin+taxMoney) - tax
-				v.Account += v.ResultMoney
-				v.ResultMoney -= float64(totalLose)
-				// 记录玩家20句游戏Win次数
-				if v.ResultMoney > 0 {
-					v.TwentyData = append(v.TwentyData, 2)
-				} else {
-					v.TwentyData = append(v.TwentyData, 1)
+			tax := float64(taxMoney) * taxRate
+			v.ResultMoney = float64(totalWin+taxMoney) - tax
+			v.Account += v.ResultMoney
+			v.ResultMoney -= float64(totalLose)
+			// 记录玩家20句游戏Win次数
+			if v.ResultMoney > 0 {
+				v.TwentyData = append(v.TwentyData, 2)
+			} else {
+				v.TwentyData = append(v.TwentyData, 1)
+			}
+			if len(v.TwentyData) > 20 {
+				v.TwentyData = append(v.TwentyData[:0], v.TwentyData[1:]...)
+			}
+			var count int32
+			for _, n := range v.TwentyData {
+				if n == 2 {
+					count++
 				}
-				if len(v.TwentyData) > 20 {
-					v.TwentyData = append(v.TwentyData[:0], v.TwentyData[1:]...)
-				}
-				var count int32
-				for _, n := range v.TwentyData {
-					if n == 2 {
-						count++
-					}
-				}
-				v.WinTotalCount = count
-				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
+			}
+			v.WinTotalCount = count
+			//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
-				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 { //todo
-					data := &PlayerDownBetRecode{}
-					data.Id = v.Id
-					data.GameId = conf.Server.GameID
-					data.RoundId = v.RoundId
-					data.RoomId = r.RoomId
-					data.DownBetInfo = new(msg.DownBetMoney)
-					data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
-					data.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
-					data.DownBetInfo.SingleDownBet = v.DownBetMoney.SingleDownBet
-					data.DownBetInfo.DoubleDownBet = v.DownBetMoney.DoubleDownBet
-					data.DownBetInfo.PairDownBet = v.DownBetMoney.PairDownBet
-					data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
-					data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-					data.DownBetTime = nowTime
-					data.StartTime = nowTime - 15
-					data.EndTime = nowTime + 10
-					data.CardResult = new(msg.PotWinList)
-					data.CardResult.ResultNum = r.LotteryResult.ResultNum
-					data.CardResult.BigSmall = r.LotteryResult.BigSmall
-					data.CardResult.SinDouble = r.LotteryResult.SinDouble
-					data.CardResult.CardType = r.LotteryResult.CardType
-					data.SettlementFunds = v.ResultMoney
-					data.SpareCash = v.Account
-					data.TaxRate = taxRate
-					data.PeriodsNum = r.PeriodsNum
-					InsertAccessData(data)
-				}
+			if v.WinTotalCount != 0 || v.LoseResultMoney != 0 { //todo
+				data := &PlayerDownBetRecode{}
+				data.Id = v.Id
+				data.GameId = conf.Server.GameID
+				data.RoundId = v.RoundId
+				data.RoomId = r.RoomId
+				data.DownBetInfo = new(msg.DownBetMoney)
+				data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
+				data.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
+				data.DownBetInfo.SingleDownBet = v.DownBetMoney.SingleDownBet
+				data.DownBetInfo.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+				data.DownBetInfo.PairDownBet = v.DownBetMoney.PairDownBet
+				data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
+				data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+				data.DownBetTime = nowTime
+				data.StartTime = nowTime - 15
+				data.EndTime = nowTime + 10
+				data.CardResult = new(msg.PotWinList)
+				data.CardResult.ResultNum = r.LotteryResult.ResultNum
+				data.CardResult.BigSmall = r.LotteryResult.BigSmall
+				data.CardResult.SinDouble = r.LotteryResult.SinDouble
+				data.CardResult.CardType = r.LotteryResult.CardType
+				data.SettlementFunds = v.ResultMoney
+				data.SpareCash = v.Account
+				data.TaxRate = taxRate
+				data.PeriodsNum = r.PeriodsNum
+				InsertAccessData(data)
+			}
 
-				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 {
-					InsertSurplusPool(sur)
-				}
+			if v.WinTotalCount != 0 || v.LoseResultMoney != 0 {
+				InsertSurplusPool(sur)
 			}
 		}
 	}
@@ -536,23 +484,24 @@ func (r *Room) GetResultType() {
 	num1 := r.Lottery[0]
 	num2 := r.Lottery[1]
 	num3 := r.Lottery[2]
+	num4 := r.Lottery[3]
+	num5 := r.Lottery[4]
+
+	// 结算方式:（万位+十位）x（千位-个位）-百位
+	res := (num1+num4)*(num2-num5) - num3
+	data := strconv.Itoa(res)
+	data = data[len(data)-1:]
+	resNum, _ := strconv.Atoi(data)
 	// 开奖结果
-	r.LotteryResult.ResultNum = int32((num1 + num2 + num3) % 10)
+	r.LotteryResult.ResultNum = int32(resNum)
 	// 开奖大小
 	if r.LotteryResult.ResultNum <= 4 {
 		r.LotteryResult.BigSmall = 1
 	} else {
 		r.LotteryResult.BigSmall = 2
 	}
-	// 开奖单双
-	number := r.LotteryResult.ResultNum % 2
-	if number == 1 {
-		r.LotteryResult.SinDouble = 1
-	} else if number == 0 {
-		r.LotteryResult.SinDouble = 2
-	}
 	// 开奖类型
-	numSlice := r.Lottery
+	numSlice := r.Lottery[2:]
 	sort.Ints(numSlice)
 	r.GetType(numSlice)
 
@@ -584,7 +533,7 @@ func (r *Room) GetResultType() {
 		return false
 	})
 	// 判断数据大于70条就删除出一条
-	if len(r.HistoryData) > 70 {
+	if len(r.HistoryData) > 50 {
 		r.HistoryData = r.HistoryData[:len(r.HistoryData)-1]
 	}
 
@@ -619,7 +568,7 @@ func (r *Room) GetResultType() {
 				}
 				return false
 			})
-			if len(v.DownBetHistory) > 70 {
+			if len(v.DownBetHistory) > 50 {
 				v.DownBetHistory = v.DownBetHistory[:len(v.DownBetHistory)-1]
 			}
 		}

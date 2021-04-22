@@ -95,6 +95,14 @@ type GRobotData struct {
 	LeopardPot  *ChipDownBet `json:"leopard_pot" bson:"leopard_pot"`
 }
 
+type CaiYuanReq struct {
+	GameId     string `form:"game_id" json:"game_id"`
+	RoomId     string `form:"room_id" json:"room_id"`
+	PeriodsNum string `form:"periods_num" json:"periods_num"`
+	Page       string `form:"page" json:"page"`
+	Limit      string `form:"limit" json:"limit"`
+}
+
 const (
 	SuccCode = 0
 	ErrCode  = -1
@@ -115,7 +123,9 @@ func StartHttpServer() {
 	// 获取机器人数据
 	http.HandleFunc("/api/getRobotData", getRobotData)
 	// 获取彩源玩家投注数据
-	http.HandleFunc("/api/getPlayerCaiYuan", getAccessData)
+	http.HandleFunc("/api/getPlayerDownBet", getPlayerDownBet)
+	// 获取彩源房间投注统计
+	http.HandleFunc("/api/getRoomTotalBet", getRoomTotalBet)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -330,13 +340,7 @@ func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 		user, _ := hall.UserRecord.Load(Id)
 		if user != nil {
 			p := user.(*Player)
-			//if p.IsBanker == true {
 			room.IsConBanker = false
-			nowTime := time.Now().Unix()
-			p.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), room.RoomId)
-			reason := "庄家申请下庄"
-			c4c.BankerStatus(p, 0, nowTime, p.RoundId, reason)
-			//}
 			hall.UserRecord.Delete(p.Id)
 			p.PlayerExitRoom()
 			c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
@@ -351,23 +355,6 @@ func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 			w.Write(js)
 		}
 	}
-
-	//user, _ := hall.UserRecord.Load(Id)
-	//if user != nil {
-	//	u := user.(*Player)
-	//	u.IsAction = false
-	//	u.TotalDownBet = 0
-	//	if u.IsBanker == true {
-	//
-	//	}
-	//	u.PlayerExitRoom()
-	//	js, err := json.Marshal(NewResp(SuccCode, "", "已成功T出房间!"))
-	//	if err != nil {
-	//		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
-	//		return
-	//	}
-	//	w.Write(js)
-	//}
 }
 
 func getRobotData(w http.ResponseWriter, r *http.Request) {
@@ -402,6 +389,104 @@ func getRobotData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	js, err := json.Marshal(NewResp(SuccCode, "", rData))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func getPlayerDownBet(w http.ResponseWriter, r *http.Request) {
+	var req CaiYuanReq
+
+	req.GameId = r.FormValue("game_id")
+	req.RoomId = r.FormValue("room_id")
+	req.PeriodsNum = r.FormValue("periods_num")
+	req.Page = r.FormValue("page")
+	req.Limit = r.FormValue("limit")
+	log.Debug("获取分页数据:%v", req.Page)
+
+	selector := bson.M{}
+
+	if req.GameId != "" {
+		selector["game_id"] = req.GameId
+	}
+
+	if req.RoomId != "" {
+		selector["room_id"] = req.RoomId
+	}
+
+	if req.PeriodsNum != "" {
+		selector["periods_num"] = req.PeriodsNum
+	}
+
+	page, _ := strconv.Atoi(req.Page)
+
+	limits, _ := strconv.Atoi(req.Limit)
+	//if limits != 0 {
+	//	selector["limit"] = limits
+	//}
+
+	recodes, count, err := GetPlayerDownBet(page, limits, selector, "-down_bet_time")
+	if err != nil {
+		return
+	}
+
+	var result pageData
+	result.Total = count
+	result.List = recodes
+
+	js, err := json.Marshal(NewResp(SuccCode, "", result))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
+	var req CaiYuanReq
+
+	req.GameId = r.FormValue("game_id")
+	req.RoomId = r.FormValue("room_id")
+	req.PeriodsNum = r.FormValue("periods_num")
+	req.Page = r.FormValue("page")
+	req.Limit = r.FormValue("limit")
+	log.Debug("获取分页数据:%v", req.Page)
+
+	selector := bson.M{}
+
+	if req.GameId != "" {
+		selector["game_id"] = req.GameId
+	}
+
+	if req.RoomId != "" {
+		selector["room_id"] = req.RoomId
+	}
+
+	if req.PeriodsNum != "" {
+		selector["periods_num"] = req.PeriodsNum
+	}
+
+	page, _ := strconv.Atoi(req.Page)
+
+	limits, _ := strconv.Atoi(req.Limit)
+	//if limits != 0 {
+	//	selector["limit"] = limits
+	//}
+
+	recodes, count, err := GetRoomTotalBet(page, limits, selector, "-down_bet_time")
+	if err != nil {
+		return
+	}
+
+	var result pageData
+	result.Total = count
+	result.List = recodes
+
+	js, err := json.Marshal(NewResp(SuccCode, "", result))
 	if err != nil {
 		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
 		return

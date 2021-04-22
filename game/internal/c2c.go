@@ -679,6 +679,7 @@ func (c4c *Conn4Center) UserSyncWinScore(p *Player, timeUnix int64, roundId, rea
 	userWin.Info.ID = id
 	userWin.Info.LockMoney = 0
 	userWin.Info.Money = p.WinResultMoney
+	userWin.Info.BetMoney = p.DownBetMoney
 	userWin.Info.Order = bson.NewObjectId().Hex()
 
 	userWin.Info.PayReason = reason
@@ -701,6 +702,7 @@ func (c4c *Conn4Center) UserSyncLoseScore(p *Player, timeUnix int64, roundId, re
 	userLose.Info.ID = id
 	userLose.Info.LockMoney = 0
 	userLose.Info.Money = p.LoseResultMoney
+	userLose.Info.BetMoney = p.DownBetMoney
 	userLose.Info.Order = bson.NewObjectId().Hex()
 	userLose.Info.PayReason = reason
 	userLose.Info.PreMoney = 0
@@ -777,7 +779,7 @@ func (c4c *Conn4Center) NoticeWinMoreThan(playerId, playerName string, winGold f
 }
 
 //BankerStatus 庄家同步状态
-func (c4c *Conn4Center) BankerStatus(p *Player, status int,timeUnix int64, roundId, reason string) {
+func (c4c *Conn4Center) BankerStatus(p *Player, status int, timeUnix int64, roundId, reason string) {
 	baseData := &BaseMessage{}
 	baseData.Event = msgBankerStatus
 	id, _ := strconv.Atoi(p.Id)

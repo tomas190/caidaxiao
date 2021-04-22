@@ -408,7 +408,7 @@ func (r *Room) GetCaiYuan() {
 			r.PeriodsNum = issue.(string)
 			codeString := code.(string)
 			codeSlice := strings.Split(codeString, `,`)
-			codeSlice = append(codeSlice[:0], codeSlice[2:]...)
+			//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
 			var codeData []int
 			for _, v := range codeSlice {
 				num, _ := strconv.Atoi(v)
@@ -880,4 +880,39 @@ func (r *Room) ClearRobotBanker() {
 			}
 		}
 	}
+}
+
+// 获取派奖前玩家投注的数据
+func (r *Room) SetPlayerDownBet() {
+	for _, v := range r.PlayerList {
+		if v != nil && v.IsRobot == false {
+			data := &PlayerDownBet{}
+			data.Id = v.Id
+			data.RoomId = r.RoomId
+			data.GameId = conf.Server.GameID
+			data.PeriodsNum = r.PeriodsNum
+			if r.RoomId == "1" {
+				data.LotteryType = "河内分分彩"
+			} else if r.RoomId == "2" {
+				data.LotteryType = "奇趣分分彩"
+			}
+			data.DownBetInfo = v.DownBetMoney
+			InsertPlayerDownBet(data) //todo
+		}
+	}
+}
+
+// 获取投注统计
+func (r *Room) SeRoomTotalBet() {
+	data := &RoomTotalBet{}
+	data.RoomId = r.RoomId
+	data.GameId = conf.Server.GameID
+	data.PeriodsNum = r.PeriodsNum
+	if r.RoomId == "1" {
+		data.LotteryType = "河内分分彩"
+	} else if r.RoomId == "2" {
+		data.LotteryType = "奇趣分分彩"
+	}
+	data.PotTotalMoney = r.PlayerTotalMoney
+	InsertRoomTotalBet(data) //todo
 }
