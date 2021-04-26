@@ -892,7 +892,7 @@ func (r *Room) ClearRobotBanker() {
 // 获取派奖前玩家投注的数据
 func (r *Room) SetPlayerDownBet() {
 	for _, v := range r.PlayerList {
-		if v != nil && v.IsRobot == false {
+		if v != nil && v.IsRobot == false && v.IsAction == true {
 			data := &PlayerDownBet{}
 			data.Id = v.Id
 			data.RoomId = r.RoomId
