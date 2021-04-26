@@ -196,6 +196,19 @@ func handleLogin(args []interface{}) {
 			}
 			a.WriteMsg(login)
 
+			data := &msg.ChangeRoomType_S2C{}
+			for _, v := range hall.roomList {
+				if v != nil {
+					if v.RoomId == "1" {
+						data.Room01 = v.IsOpenRoom
+					}
+					if v.RoomId == "2" {
+						data.Room02 = v.IsOpenRoom
+					}
+				}
+			}
+			a.WriteMsg(data)
+			
 			u.Init()
 			// 重新绑定信息
 			u.ConnAgent = a

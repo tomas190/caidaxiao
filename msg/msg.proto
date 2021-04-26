@@ -167,7 +167,6 @@ message RoomData {
     repeated PotWinList potWinList = 7; // 游戏记录开奖列表
     repeated HistoryData historyData = 8; // 历史记录数据
     repeated PlayerData tablePlayer = 9; // 桌面玩家
-    bool IsOpenRoom = 10; // 是否开启房间
 }
 
 message JoinRoom_C2S {
@@ -261,5 +260,6 @@ message SendActTime_S2C {
 }
 
 message ChangeRoomType_S2C {
-    RoomData roomData = 1;
+    bool room01 = 1;
+    bool room02 = 2;
 }

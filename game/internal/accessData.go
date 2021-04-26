@@ -517,9 +517,6 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "1" {
 					v.IsOpenRoom = true
-					data := &msg.ChangeRoomType_S2C{}
-					data.RoomData = v.RespRoomData()
-					v.BroadCastMsg(data)
 				}
 			}
 		}
@@ -527,9 +524,6 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "1" {
 					v.IsOpenRoom = false
-					data := &msg.ChangeRoomType_S2C{}
-					data.RoomData = v.RespRoomData()
-					v.BroadCastMsg(data)
 				}
 			}
 		}
@@ -540,9 +534,6 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "2" {
 					v.IsOpenRoom = true
-					data := &msg.ChangeRoomType_S2C{}
-					data.RoomData = v.RespRoomData()
-					v.BroadCastMsg(data)
 				}
 			}
 		}
@@ -550,11 +541,25 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "2" {
 					v.IsOpenRoom = false
-					data := &msg.ChangeRoomType_S2C{}
-					data.RoomData = v.RespRoomData()
-					v.BroadCastMsg(data)
 				}
 			}
+		}
+	}
+
+	data := &msg.ChangeRoomType_S2C{}
+	for _, v := range hall.roomList {
+		if v != nil {
+			if v.RoomId == "1" {
+				data.Room01 = v.IsOpenRoom
+			}
+			if v.RoomId == "2" {
+				data.Room02 = v.IsOpenRoom
+			}
+		}
+	}
+	for _, v := range hall.roomList {
+		if v != nil {
+			v.BroadCastMsg(data)
 		}
 	}
 

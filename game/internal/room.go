@@ -172,7 +172,6 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	rd.RoomId = r.RoomId
 	rd.GameTime = r.counter
 	rd.GameStep = r.GameStat
-	rd.IsOpenRoom = r.IsOpenRoom
 	for _, v := range r.Lottery {
 		rd.ResultInt = append(rd.ResultInt, int32(v))
 	}
