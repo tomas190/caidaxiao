@@ -208,7 +208,7 @@ func handleLogin(args []interface{}) {
 				}
 			}
 			a.WriteMsg(data)
-			
+
 			u.Init()
 			// 重新绑定信息
 			u.ConnAgent = a

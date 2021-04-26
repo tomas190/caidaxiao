@@ -373,8 +373,10 @@ type PlayerDownBet struct {
 	GameId      string           `json:"game_id" bson:"game_id"`             // gameId
 	RoomId      string           `json:"room_id" bson:"room_id"`             // 所在房间
 	PeriodsNum  string           `json:"periods_num" bson:"periods_num"`     // 奖期
+	PeriodsTime string           `json:"periods_time" bson:"periods_time"`   // 奖期时间
 	LotteryType string           `json:"lottery_type" bson:"lottery_type"`   // 彩种
 	DownBetInfo msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 玩家各注池下注的金额
+	DownBetTime string           `json:"down_bet_time" bson:"down_bet_time"` // 下注时间
 }
 
 func InsertPlayerDownBet(sur *PlayerDownBet) {
@@ -412,6 +414,7 @@ type RoomTotalBet struct {
 	GameId        string           `json:"game_id" bson:"game_id"`             // gameId
 	RoomId        string           `json:"room_id" bson:"room_id"`             // 所在房间
 	PeriodsNum    string           `json:"periods_num" bson:"periods_num"`     // 奖期
+	PeriodsTime   string           `json:"periods_time" bson:"periods_time"`   // 奖期时间
 	LotteryType   string           `json:"lottery_type" bson:"lottery_type"`   // 彩种
 	PotTotalMoney msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 注池玩家下注总金额
 }

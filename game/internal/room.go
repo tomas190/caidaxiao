@@ -61,6 +61,7 @@ type Room struct {
 	Lottery          []int             // 开奖数据
 	LotteryResult    msg.PotWinList    // 开奖结果
 	PeriodsNum       string            // 开奖期数
+	PeriodsTime      string            // 开奖时间
 	RoomStat         RoomStatus        // 房间状态
 	GameStat         msg.GameStep      // 游戏状态
 	PotMoneyCount    msg.DownBetMoney  // 注池下注总金额(用于客户端显示)
@@ -90,6 +91,7 @@ func (r *Room) Init() {
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
 	r.PeriodsNum = ""
+	r.PeriodsTime = ""
 	r.RoomStat = RoomStatusNone
 	r.GameStat = msg.GameStep_XX_Step
 	r.PlayerTotalMoney = msg.DownBetMoney{}
@@ -410,6 +412,7 @@ func (r *Room) GetCaiYuan() {
 
 			r.resultTime = opendate.(string)
 			r.PeriodsNum = issue.(string)
+			r.PeriodsTime = opendate.(string)
 			codeString := code.(string)
 			codeSlice := strings.Split(codeString, `,`)
 			//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
@@ -895,12 +898,14 @@ func (r *Room) SetPlayerDownBet() {
 			data.RoomId = r.RoomId
 			data.GameId = conf.Server.GameID
 			data.PeriodsNum = r.PeriodsNum
+			data.PeriodsTime = r.PeriodsTime
 			if r.RoomId == "1" {
 				data.LotteryType = "河内分分彩"
 			} else if r.RoomId == "2" {
 				data.LotteryType = "奇趣分分彩"
 			}
 			data.DownBetInfo = v.DownBetMoney
+			data.DownBetTime = time.Now().Format("2006-01-02 15:04:05")
 			InsertPlayerDownBet(data) //todo
 		}
 	}
@@ -912,6 +917,7 @@ func (r *Room) SeRoomTotalBet() {
 	data.RoomId = r.RoomId
 	data.GameId = conf.Server.GameID
 	data.PeriodsNum = r.PeriodsNum
+	data.PeriodsTime = r.PeriodsTime
 	if r.RoomId == "1" {
 		data.LotteryType = "河内分分彩"
 	} else if r.RoomId == "2" {

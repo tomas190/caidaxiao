@@ -295,11 +295,11 @@ func (r *Room) CompareSettlement() {
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
-	// 获取派奖前的玩家投注数据
-	r.SetPlayerDownBet()
-
 	// 获取彩源数据
 	r.GetCaiYuan()
+
+	// 获取派奖前的玩家投注数据
+	r.SetPlayerDownBet()
 
 	// 结算数据
 	r.ResultMoney()
