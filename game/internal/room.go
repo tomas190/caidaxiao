@@ -71,6 +71,8 @@ type Room struct {
 	clock            *time.Ticker      // 计时器
 
 	UserLeave []string // 用户是否在房间
+
+	IsOpenRoom bool // 是否开启房间
 }
 
 func (r *Room) Init() {
@@ -99,6 +101,8 @@ func (r *Room) Init() {
 	r.clock = time.NewTicker(time.Second)
 
 	r.UserLeave = make([]string, 0)
+
+	r.IsOpenRoom = true
 
 	BankerChannel = make(chan bool)
 	DownBetChannel = make(chan bool)
@@ -168,6 +172,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	rd.RoomId = r.RoomId
 	rd.GameTime = r.counter
 	rd.GameStep = r.GameStat
+	rd.IsOpenRoom = r.IsOpenRoom
 	for _, v := range r.Lottery {
 		rd.ResultInt = append(rd.ResultInt, int32(v))
 	}

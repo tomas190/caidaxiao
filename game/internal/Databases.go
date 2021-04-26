@@ -390,7 +390,7 @@ func InsertPlayerDownBet(sur *PlayerDownBet) {
 
 //GetPlayerDownBet 获取玩家投注数据
 func GetPlayerDownBet(page, limit int, selector bson.M, sortBy string) ([]PlayerDownBet, int, error) {
-	s, c := connect(dbName, accessDB)
+	s, c := connect(dbName, PlayerDownBetDB)
 	defer s.Close()
 
 	var wts []PlayerDownBet
@@ -429,7 +429,7 @@ func InsertRoomTotalBet(sur *RoomTotalBet) {
 
 //GetPlayerDownBet 获取玩家投注数据
 func GetRoomTotalBet(page, limit int, selector bson.M, sortBy string) ([]RoomTotalBet, int, error) {
-	s, c := connect(dbName, accessDB)
+	s, c := connect(dbName, RoomTotalBetDB)
 	defer s.Close()
 
 	var wts []RoomTotalBet

@@ -26,6 +26,7 @@ enum MessageID {
     MSG_EmojiChat_C2S = 19;
     MSG_EmojiChat_S2C = 20;
     MSG_SendActTime_S2C = 21;
+    MSG_ChangeRoomType_S2C = 22;
 }
 
 // 游戏阶段
@@ -166,6 +167,7 @@ message RoomData {
     repeated PotWinList potWinList = 7; // 游戏记录开奖列表
     repeated HistoryData historyData = 8; // 历史记录数据
     repeated PlayerData tablePlayer = 9; // 桌面玩家
+    bool IsOpenRoom = 10; // 是否开启房间
 }
 
 message JoinRoom_C2S {
@@ -249,10 +251,15 @@ message BankerList {
     string Id = 1;
     int32 takeMoney = 2;
 }
+
 // 发送时间
 message SendActTime_S2C {
     int32 startTime = 1;
     int32 gameTime = 2;
     GameStep gameStep = 3; // 当前状态
     repeated BankerList bankerList = 4; // 庄家列表
+}
+
+message ChangeRoomType_S2C {
+    RoomData roomData = 1;
 }

@@ -103,6 +103,12 @@ type CaiYuanReq struct {
 	Limit      string `form:"limit" json:"limit"`
 }
 
+type RoomType struct {
+	GameId string `form:"game_id" json:"game_id"`
+	RoomId string `form:"room_id" json:"room_id"`
+	IsOpen string `form:"is_open" json:"is_open"`
+}
+
 const (
 	SuccCode = 0
 	ErrCode  = -1
@@ -126,6 +132,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/getPlayerDownBet", getPlayerDownBet)
 	// 获取彩源房间投注统计
 	http.HandleFunc("/api/getRoomTotalBet", getRoomTotalBet)
+	// 接口操作关闭或开启房源
+	http.HandleFunc("/api/HandleRoomType", HandleRoomType)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -487,6 +495,70 @@ func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
 	result.List = recodes
 
 	js, err := json.Marshal(NewResp(SuccCode, "", result))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func HandleRoomType(w http.ResponseWriter, r *http.Request) {
+	var req RoomType
+
+	req.GameId = r.FormValue("game_id")
+	req.RoomId = r.FormValue("room_id")
+	req.IsOpen = r.FormValue("is_open")
+
+	log.Debug("RoomId:%v, IsOpen:%v", req.RoomId, req.IsOpen)
+
+	if req.RoomId == "1" {
+		if req.IsOpen == "true" {
+			for _, v := range hall.roomList {
+				if v != nil && v.RoomId == "1" {
+					v.IsOpenRoom = true
+					data := &msg.ChangeRoomType_S2C{}
+					data.RoomData = v.RespRoomData()
+					v.BroadCastMsg(data)
+				}
+			}
+		}
+		if req.IsOpen == "false" {
+			for _, v := range hall.roomList {
+				if v != nil && v.RoomId == "1" {
+					v.IsOpenRoom = false
+					data := &msg.ChangeRoomType_S2C{}
+					data.RoomData = v.RespRoomData()
+					v.BroadCastMsg(data)
+				}
+			}
+		}
+	}
+
+	if req.RoomId == "2" {
+		if req.IsOpen == "true" {
+			for _, v := range hall.roomList {
+				if v != nil && v.RoomId == "2" {
+					v.IsOpenRoom = true
+					data := &msg.ChangeRoomType_S2C{}
+					data.RoomData = v.RespRoomData()
+					v.BroadCastMsg(data)
+				}
+			}
+		}
+		if req.IsOpen == "false" {
+			for _, v := range hall.roomList {
+				if v != nil && v.RoomId == "2" {
+					v.IsOpenRoom = false
+					data := &msg.ChangeRoomType_S2C{}
+					data.RoomData = v.RespRoomData()
+					v.BroadCastMsg(data)
+				}
+			}
+		}
+	}
+
+	js, err := json.Marshal(NewResp(SuccCode, "", ""))
 	if err != nil {
 		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
 		return
