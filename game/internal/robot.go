@@ -131,7 +131,6 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_BigPot) {
 									v.DownBetMoney.BigDownBet += bet
 									r.PotMoneyCount.BigDownBet += bet
-									r.PlayerTotalMoney.BigDownBet += bet
 									if bet == 1 {
 										rData.BigPot.Chip1 += 1
 									} else if bet == 5 {
@@ -151,7 +150,6 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_SmallPot) {
 									v.DownBetMoney.SmallDownBet += bet
 									r.PotMoneyCount.SmallDownBet += bet
-									r.PlayerTotalMoney.SmallDownBet += bet
 									if bet == 1 {
 										rData.SmallPot.Chip1 += 1
 									} else if bet == 5 {
@@ -171,7 +169,6 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_SinglePot) {
 									v.DownBetMoney.SingleDownBet += bet
 									r.PotMoneyCount.SingleDownBet += bet
-									r.PlayerTotalMoney.SingleDownBet += bet
 									if bet == 1 {
 										rData.SinglePot.Chip1 += 1
 									} else if bet == 5 {
@@ -191,7 +188,6 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_DoublePot) {
 									v.DownBetMoney.DoubleDownBet += bet
 									r.PotMoneyCount.DoubleDownBet += bet
-									r.PlayerTotalMoney.DoubleDownBet += bet
 									if bet == 1 {
 										rData.DoublePot.Chip1 += 1
 									} else if bet == 5 {
@@ -211,7 +207,6 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_PairPot) {
 									v.DownBetMoney.PairDownBet += bet
 									r.PotMoneyCount.PairDownBet += bet
-									r.PlayerTotalMoney.PairDownBet += bet
 									if bet == 1 {
 										rData.PairPot.Chip1 += 1
 									} else if bet == 5 {
@@ -231,7 +226,6 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_StraightPot) {
 									v.DownBetMoney.StraightDownBet += bet
 									r.PotMoneyCount.StraightDownBet += bet
-									r.PlayerTotalMoney.StraightDownBet += bet
 									if bet == 1 {
 										rData.StraightPot.Chip1 += 1
 									} else if bet == 5 {
@@ -251,7 +245,6 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_LeopardPot) {
 									v.DownBetMoney.LeopardDownBet += bet
 									r.PotMoneyCount.LeopardDownBet += bet
-									r.PlayerTotalMoney.LeopardDownBet += bet
 									if bet == 1 {
 										rData.LeopardPot.Chip1 += 1
 									} else if bet == 5 {
@@ -337,7 +330,6 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_BigPot) {
 								v.DownBetMoney.BigDownBet += bet
 								r.PotMoneyCount.BigDownBet += bet
-								r.PlayerTotalMoney.BigDownBet += bet
 								if bet == 1 {
 									rData.BigPot.Chip1 += 1
 								} else if bet == 5 {
@@ -357,7 +349,6 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_SmallPot) {
 								v.DownBetMoney.SmallDownBet += bet
 								r.PotMoneyCount.SmallDownBet += bet
-								r.PlayerTotalMoney.SmallDownBet += bet
 								if bet == 1 {
 									rData.SmallPot.Chip1 += 1
 								} else if bet == 5 {
@@ -377,7 +368,6 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_SinglePot) {
 								v.DownBetMoney.SingleDownBet += bet
 								r.PotMoneyCount.SingleDownBet += bet
-								r.PlayerTotalMoney.SingleDownBet += bet
 								if bet == 1 {
 									rData.SinglePot.Chip1 += 1
 								} else if bet == 5 {
@@ -397,7 +387,6 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_DoublePot) {
 								v.DownBetMoney.DoubleDownBet += bet
 								r.PotMoneyCount.DoubleDownBet += bet
-								r.PlayerTotalMoney.DoubleDownBet += bet
 								if bet == 1 {
 									rData.DoublePot.Chip1 += 1
 								} else if bet == 5 {
@@ -417,7 +406,6 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_PairPot) {
 								v.DownBetMoney.PairDownBet += bet
 								r.PotMoneyCount.PairDownBet += bet
-								r.PlayerTotalMoney.PairDownBet += bet
 								if bet == 1 {
 									rData.PairPot.Chip1 += 1
 								} else if bet == 5 {
@@ -437,7 +425,6 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_StraightPot) {
 								v.DownBetMoney.StraightDownBet += bet
 								r.PotMoneyCount.StraightDownBet += bet
-								r.PlayerTotalMoney.StraightDownBet += bet
 								if bet == 1 {
 									rData.StraightPot.Chip1 += 1
 								} else if bet == 5 {
@@ -457,7 +444,6 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_LeopardPot) {
 								v.DownBetMoney.LeopardDownBet += bet
 								r.PotMoneyCount.LeopardDownBet += bet
-								r.PlayerTotalMoney.LeopardDownBet += bet
 								if bet == 1 {
 									rData.LeopardPot.Chip1 += 1
 								} else if bet == 5 {
