@@ -404,7 +404,7 @@ func (r *Room) ResultMoney() {
 				reason := "ResultWinScore" //todo
 				if v.IsRobot == false {
 					//同时同步赢分和输分
-					c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason)
+					c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, float64(totalLose))
 				}
 			}
 			if totalLose > 0 {
@@ -415,7 +415,7 @@ func (r *Room) ResultMoney() {
 				//同时同步赢分和输分
 				if v.IsRobot == false {
 					if v.LoseResultMoney != 0 {
-						c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason)
+						c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, float64(totalLose))
 					}
 				}
 			}
