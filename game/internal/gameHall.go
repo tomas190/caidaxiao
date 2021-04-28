@@ -125,6 +125,8 @@ func (hall *GameHall) PlayerJoinRoom(rid string, p *Player) {
 	r, _ := hall.RoomRecord.Load(rid)
 	if r != nil {
 		room := r.(*Room)
-		room.JoinGameRoom(p)
+		if room.IsOpenRoom == true {
+			room.JoinGameRoom(p)
+		}
 	}
 }

@@ -344,17 +344,6 @@ func (r *Room) ResultMoney() {
 	// 获取开奖结果和类型
 	r.GetResultType()
 
-	// 获取所有玩家中奖的金额
-	var totalUserWin int32
-	if r.LotteryResult.BigSmall == 1 {
-		totalUserWin += r.PlayerTotalMoney.SmallDownBet * WinSmall
-	} else if r.LotteryResult.BigSmall == 2 {
-		totalUserWin += r.PlayerTotalMoney.BigDownBet * WinBig
-	}
-	if r.LotteryResult.CardType == msg.CardsType_Leopard {
-		totalUserWin += r.PlayerTotalMoney.LeopardDownBet * WinLeopard
-	}
-
 	sur := &SurplusPoolDB{}
 	sur.UpdateTime = time.Now()
 	sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
@@ -367,27 +356,26 @@ func (r *Room) ResultMoney() {
 		sur.HistoryLose = surPool.HistoryLose
 	}
 
-	log.Debug("房间玩家下注总和:%v,房间玩家赢钱总额:%v", r.PotTotalMoney(), totalUserWin)
-
 	for _, v := range r.PlayerList {
 		if v != nil && v.IsAction == true {
-			var totalWin int32
-			var taxMoney int32
-			var totalLose int32
-			totalLose = v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet + v.DownBetMoney.LeopardDownBet
+			var totalWin float64
+			var taxMoney float64
+			var totalLose float64
+
+			totalLose = float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet + v.DownBetMoney.LeopardDownBet)
 			if r.LotteryResult.CardType == msg.CardsType_Leopard {
-				totalWin += v.DownBetMoney.LeopardDownBet
-				taxMoney += v.DownBetMoney.LeopardDownBet * WinLeopard
-				totalLose -= v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet
-				money := (v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet) / 2
+				totalWin += float64(v.DownBetMoney.LeopardDownBet)
+				taxMoney += float64(v.DownBetMoney.LeopardDownBet * WinLeopard)
+				totalLose -= float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet)
+				money := float64(v.DownBetMoney.SmallDownBet+v.DownBetMoney.BigDownBet) / 2
 				totalLose += money
-				v.Account += float64(money)
+				v.Account += money
 			} else if r.LotteryResult.BigSmall == 1 {
-				totalWin += v.DownBetMoney.SmallDownBet
-				taxMoney += v.DownBetMoney.SmallDownBet * WinSmall
+				totalWin += float64(v.DownBetMoney.SmallDownBet)
+				taxMoney += float64(v.DownBetMoney.SmallDownBet * WinSmall)
 			} else if r.LotteryResult.BigSmall == 2 {
-				totalWin += v.DownBetMoney.BigDownBet
-				taxMoney += v.DownBetMoney.BigDownBet * WinBig
+				totalWin += float64(v.DownBetMoney.BigDownBet)
+				taxMoney += float64(v.DownBetMoney.BigDownBet * WinBig)
 			}
 
 			if v.IsRobot == false {
@@ -398,32 +386,32 @@ func (r *Room) ResultMoney() {
 			nowTime := time.Now().Unix() //todo
 			v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 			if taxMoney > 0 {
-				v.WinResultMoney = float64(taxMoney)
+				v.WinResultMoney = taxMoney
 				sur.HistoryWin += v.WinResultMoney
 				sur.TotalWinMoney += v.WinResultMoney
 				reason := "ResultWinScore" //todo
 				if v.IsRobot == false {
 					//同时同步赢分和输分
-					c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, float64(totalLose))
+					c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, totalWin)
 				}
 			}
 			if totalLose > 0 {
-				v.LoseResultMoney = float64(-totalLose + totalWin)
+				v.LoseResultMoney = -totalLose + totalWin
 				sur.HistoryLose -= v.LoseResultMoney
 				sur.TotalLoseMoney -= v.LoseResultMoney
 				reason := "ResultLoseScore" //todo
 				//同时同步赢分和输分
 				if v.IsRobot == false {
 					if v.LoseResultMoney != 0 {
-						c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, float64(totalLose))
+						c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, 0-v.LoseResultMoney)
 					}
 				}
 			}
 
-			tax := float64(taxMoney) * taxRate
-			v.ResultMoney = float64(totalWin+taxMoney) - tax
+			tax := (taxMoney) * taxRate
+			v.ResultMoney = (totalWin + taxMoney) - tax
 			v.Account += v.ResultMoney
-			v.ResultMoney -= float64(totalLose)
+			v.ResultMoney -= totalLose
 			// 记录玩家20句游戏Win次数
 			if v.ResultMoney > 0 {
 				v.TwentyData = append(v.TwentyData, 2)
@@ -500,10 +488,8 @@ func (r *Room) GetResultType() {
 	} else {
 		r.LotteryResult.BigSmall = 2
 	}
-	// 开奖类型
-	numSlice := r.Lottery[2:]
-	sort.Ints(numSlice)
-	r.GetType(numSlice)
+	// 开奖类型 豹子(千位、百位、个位)
+	r.GetType(r.Lottery)
 
 	var potWin msg.PotWinList
 	potWin.ResultNum = r.LotteryResult.ResultNum

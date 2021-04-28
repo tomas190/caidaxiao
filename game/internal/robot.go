@@ -96,28 +96,12 @@ func (r *Room) RobotsDownBet() {
 								if pot == int32(msg.PotType_SmallPot) {
 									downBetMoney = float64(bet * WinSmall)
 								}
-								if pot == int32(msg.PotType_SinglePot) {
-									downBetMoney = float64(bet * WinSingle)
-								}
-								if pot == int32(msg.PotType_DoublePot) {
-									downBetMoney = float64(bet * WinDouble)
-								}
-								if pot == int32(msg.PotType_PairPot) {
-									downBetMoney = float64(bet * WinPair)
-								}
-								if pot == int32(msg.PotType_StraightPot) {
-									downBetMoney = float64(bet * WinStraight)
-								}
 								if pot == int32(msg.PotType_LeopardPot) {
 									downBetMoney = float64(bet * WinLeopard)
 								}
 								// 各注池下注金额加上对应的倍数
 								totalMoney := r.PotMoneyCount.BigDownBet*WinBig +
 									r.PotMoneyCount.SmallDownBet*WinSmall +
-									r.PotMoneyCount.SingleDownBet*WinSingle +
-									r.PotMoneyCount.DoubleDownBet*WinDouble +
-									r.PotMoneyCount.PairDownBet*WinPair +
-									r.PotMoneyCount.StraightDownBet*WinStraight +
 									r.PotMoneyCount.LeopardDownBet*WinLeopard
 								if float64(totalMoney)+downBetMoney > 20000 { // r.BankerMoney
 									//log.Debug("玩家下注已限红~")
@@ -164,82 +148,6 @@ func (r *Room) RobotsDownBet() {
 										rData.SmallPot.Chip500 += 1
 									} else if bet == 1000 {
 										rData.SmallPot.Chip1000 += 1
-									}
-								}
-								if pot == int32(msg.PotType_SinglePot) {
-									v.DownBetMoney.SingleDownBet += bet
-									r.PotMoneyCount.SingleDownBet += bet
-									if bet == 1 {
-										rData.SinglePot.Chip1 += 1
-									} else if bet == 5 {
-										rData.SinglePot.Chip5 += 1
-									} else if bet == 10 {
-										rData.SinglePot.Chip10 += 1
-									} else if bet == 50 {
-										rData.SinglePot.Chip50 += 1
-									} else if bet == 100 {
-										rData.SinglePot.Chip100 += 1
-									} else if bet == 500 {
-										rData.SinglePot.Chip500 += 1
-									} else if bet == 1000 {
-										rData.SinglePot.Chip1000 += 1
-									}
-								}
-								if pot == int32(msg.PotType_DoublePot) {
-									v.DownBetMoney.DoubleDownBet += bet
-									r.PotMoneyCount.DoubleDownBet += bet
-									if bet == 1 {
-										rData.DoublePot.Chip1 += 1
-									} else if bet == 5 {
-										rData.DoublePot.Chip5 += 1
-									} else if bet == 10 {
-										rData.DoublePot.Chip10 += 1
-									} else if bet == 50 {
-										rData.DoublePot.Chip50 += 1
-									} else if bet == 100 {
-										rData.DoublePot.Chip100 += 1
-									} else if bet == 500 {
-										rData.DoublePot.Chip500 += 1
-									} else if bet == 1000 {
-										rData.DoublePot.Chip1000 += 1
-									}
-								}
-								if pot == int32(msg.PotType_PairPot) {
-									v.DownBetMoney.PairDownBet += bet
-									r.PotMoneyCount.PairDownBet += bet
-									if bet == 1 {
-										rData.PairPot.Chip1 += 1
-									} else if bet == 5 {
-										rData.PairPot.Chip5 += 1
-									} else if bet == 10 {
-										rData.PairPot.Chip10 += 1
-									} else if bet == 50 {
-										rData.PairPot.Chip50 += 1
-									} else if bet == 100 {
-										rData.PairPot.Chip100 += 1
-									} else if bet == 500 {
-										rData.PairPot.Chip500 += 1
-									} else if bet == 1000 {
-										rData.PairPot.Chip1000 += 1
-									}
-								}
-								if pot == int32(msg.PotType_StraightPot) {
-									v.DownBetMoney.StraightDownBet += bet
-									r.PotMoneyCount.StraightDownBet += bet
-									if bet == 1 {
-										rData.StraightPot.Chip1 += 1
-									} else if bet == 5 {
-										rData.StraightPot.Chip5 += 1
-									} else if bet == 10 {
-										rData.StraightPot.Chip10 += 1
-									} else if bet == 50 {
-										rData.StraightPot.Chip50 += 1
-									} else if bet == 100 {
-										rData.StraightPot.Chip100 += 1
-									} else if bet == 500 {
-										rData.StraightPot.Chip500 += 1
-									} else if bet == 1000 {
-										rData.StraightPot.Chip1000 += 1
 									}
 								}
 								if pot == int32(msg.PotType_LeopardPot) {
@@ -295,28 +203,12 @@ func (r *Room) RobotsDownBet() {
 							if pot == int32(msg.PotType_SmallPot) {
 								downBetMoney = float64(bet * WinSmall)
 							}
-							if pot == int32(msg.PotType_SinglePot) {
-								downBetMoney = float64(bet * WinSingle)
-							}
-							if pot == int32(msg.PotType_DoublePot) {
-								downBetMoney = float64(bet * WinDouble)
-							}
-							if pot == int32(msg.PotType_PairPot) {
-								downBetMoney = float64(bet * WinPair)
-							}
-							if pot == int32(msg.PotType_StraightPot) {
-								downBetMoney = float64(bet * WinStraight)
-							}
 							if pot == int32(msg.PotType_LeopardPot) {
 								downBetMoney = float64(bet * WinLeopard)
 							}
 							// 各注池下注金额加上对应的倍数
 							totalMoney := r.PotMoneyCount.BigDownBet*WinBig +
 								r.PotMoneyCount.SmallDownBet*WinSmall +
-								r.PotMoneyCount.SingleDownBet*WinSingle +
-								r.PotMoneyCount.DoubleDownBet*WinDouble +
-								r.PotMoneyCount.PairDownBet*WinPair +
-								r.PotMoneyCount.StraightDownBet*WinStraight +
 								r.PotMoneyCount.LeopardDownBet*WinLeopard
 							if float64(totalMoney)+downBetMoney > 20000 { // r.BankerMoney
 								//log.Debug("玩家下注已限红~")
@@ -363,82 +255,6 @@ func (r *Room) RobotsDownBet() {
 									rData.SmallPot.Chip500 += 1
 								} else if bet == 1000 {
 									rData.SmallPot.Chip1000 += 1
-								}
-							}
-							if pot == int32(msg.PotType_SinglePot) {
-								v.DownBetMoney.SingleDownBet += bet
-								r.PotMoneyCount.SingleDownBet += bet
-								if bet == 1 {
-									rData.SinglePot.Chip1 += 1
-								} else if bet == 5 {
-									rData.SinglePot.Chip5 += 1
-								} else if bet == 10 {
-									rData.SinglePot.Chip10 += 1
-								} else if bet == 50 {
-									rData.SinglePot.Chip50 += 1
-								} else if bet == 100 {
-									rData.SinglePot.Chip100 += 1
-								} else if bet == 500 {
-									rData.SinglePot.Chip500 += 1
-								} else if bet == 1000 {
-									rData.SinglePot.Chip1000 += 1
-								}
-							}
-							if pot == int32(msg.PotType_DoublePot) {
-								v.DownBetMoney.DoubleDownBet += bet
-								r.PotMoneyCount.DoubleDownBet += bet
-								if bet == 1 {
-									rData.DoublePot.Chip1 += 1
-								} else if bet == 5 {
-									rData.DoublePot.Chip5 += 1
-								} else if bet == 10 {
-									rData.DoublePot.Chip10 += 1
-								} else if bet == 50 {
-									rData.DoublePot.Chip50 += 1
-								} else if bet == 100 {
-									rData.DoublePot.Chip100 += 1
-								} else if bet == 500 {
-									rData.DoublePot.Chip500 += 1
-								} else if bet == 1000 {
-									rData.DoublePot.Chip1000 += 1
-								}
-							}
-							if pot == int32(msg.PotType_PairPot) {
-								v.DownBetMoney.PairDownBet += bet
-								r.PotMoneyCount.PairDownBet += bet
-								if bet == 1 {
-									rData.PairPot.Chip1 += 1
-								} else if bet == 5 {
-									rData.PairPot.Chip5 += 1
-								} else if bet == 10 {
-									rData.PairPot.Chip10 += 1
-								} else if bet == 50 {
-									rData.PairPot.Chip50 += 1
-								} else if bet == 100 {
-									rData.PairPot.Chip100 += 1
-								} else if bet == 500 {
-									rData.PairPot.Chip500 += 1
-								} else if bet == 1000 {
-									rData.PairPot.Chip1000 += 1
-								}
-							}
-							if pot == int32(msg.PotType_StraightPot) {
-								v.DownBetMoney.StraightDownBet += bet
-								r.PotMoneyCount.StraightDownBet += bet
-								if bet == 1 {
-									rData.StraightPot.Chip1 += 1
-								} else if bet == 5 {
-									rData.StraightPot.Chip5 += 1
-								} else if bet == 10 {
-									rData.StraightPot.Chip10 += 1
-								} else if bet == 50 {
-									rData.StraightPot.Chip50 += 1
-								} else if bet == 100 {
-									rData.StraightPot.Chip100 += 1
-								} else if bet == 500 {
-									rData.StraightPot.Chip500 += 1
-								} else if bet == 1000 {
-									rData.StraightPot.Chip1000 += 1
 								}
 							}
 							if pot == int32(msg.PotType_LeopardPot) {

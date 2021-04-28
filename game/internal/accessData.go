@@ -557,11 +557,13 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	for _, v := range hall.roomList {
-		if v != nil {
-			v.BroadCastMsg(data)
-		}
-	}
+
+	// 发送给所有玩家
+	hall.UserRecord.Range(func(key, value interface{}) bool {
+		u := value.(*Player)
+		u.SendMsg(data)
+		return true
+	})
 
 	js, err := json.Marshal(NewResp(SuccCode, "", ""))
 	if err != nil {
