@@ -91,9 +91,11 @@ func handleLogin(args []interface{}) {
 					if v != nil {
 						if v.RoomId == "1" {
 							login.PlayerNumR1 = v.PlayerLength()
+							login.Room01 = v.IsOpenRoom
 						}
 						if v.RoomId == "2" {
 							login.PlayerNumR2 = v.PlayerLength()
+							login.Room02 = v.IsOpenRoom
 						}
 					}
 				}
@@ -197,6 +199,7 @@ func handleLogin(args []interface{}) {
 					}
 				}
 			}
+			log.Debug("Room01:%v,Room02:%v", login.Room01, login.Room02)
 			a.WriteMsg(login)
 
 			u.Init()
