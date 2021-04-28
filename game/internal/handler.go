@@ -177,6 +177,7 @@ func handleLogin(args []interface{}) {
 		//	}
 		//}
 		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
+
 			log.Debug("玩家首次登陆:%v", u.Id)
 			login := &msg.Login_S2C{}
 			login.PlayerInfo = new(msg.PlayerInfo)
@@ -188,9 +189,11 @@ func handleLogin(args []interface{}) {
 				if v != nil {
 					if v.RoomId == "1" {
 						login.PlayerNumR1 = v.PlayerLength()
+						login.Room01 = v.IsOpenRoom
 					}
 					if v.RoomId == "2" {
 						login.PlayerNumR2 = v.PlayerLength()
+						login.Room02 = v.IsOpenRoom
 					}
 				}
 			}
@@ -222,20 +225,6 @@ func handleLogin(args []interface{}) {
 					log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
 				}
 			}
-
-			// 发送房间状态
-			data := &msg.ChangeRoomType_S2C{}
-			for _, v := range hall.roomList {
-				if v != nil {
-					if v.RoomId == "1" {
-						data.Room01 = v.IsOpenRoom
-					}
-					if v.RoomId == "2" {
-						data.Room02 = v.IsOpenRoom
-					}
-				}
-			}
-			a.WriteMsg(data)
 		})
 	}
 }
