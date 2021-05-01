@@ -12,11 +12,10 @@ import (
 
 //JoinGameRoom 加入游戏房间
 func (r *Room) JoinGameRoom(p *Player) {
-	//插入玩家信息   //todo
+	//插入玩家信息
 	if p.IsRobot == false {
 		p.FindPlayerInfo()
 	}
-
 	hall.UserRoom[p.Id] = r.RoomId
 
 	// 将用户添加到用户列表
@@ -92,89 +91,30 @@ func (r *Room) StartGameRun() {
 	num := len(r.PlayerList) - 6
 	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
 
-	//// 游戏阶段行动
-	//if r.IsConBanker == false {
-	//	// 庄家抢庄定时
-	//	r.BankerTimerTask()
-	//} else {
-	//	// 庄家连庄定时
-	//	r.Banker2TimerTask()
-	//}
-
-	// 下注阶段定时
-	r.DownBetTimerTask()
-	// 结算阶段定时
-	r.SettlerTimerTask()
-}
-
-//GrabDealTimerTask 庄家抢庄定时器任务
-func (r *Room) BankerTimerTask() {
-	r.GameStat = msg.GameStep_Banker
-
-	// 抢庄时间
-	data := &msg.ActionTime_S2C{}
-	data.GameStep = msg.GameStep_Banker
-	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
-
+	t := time.NewTicker(time.Second)
 	go func() {
-		for range r.clock.C {
-			r.counter++
-			// 发送时间
-			send := &msg.SendActTime_S2C{}
-			send.StartTime = r.counter
-			send.GameTime = BankerTime
-			send.GameStep = msg.GameStep_Banker
-			for k, v := range r.bankerList {
-				banker := &msg.BankerList{}
-				banker.Id = k
-				banker.TakeMoney = v
-				send.BankerList = append(send.BankerList, banker)
-			}
-			r.BroadCastMsg(send)
-			//log.Debug("BankerTime :%v", r.counter)
-			if r.counter == 5 {
-				// 产生庄家
-				r.PlayerUpBanker()
-			}
-			if r.counter >= BankerTime {
-				r.counter = 0
-				BankerChannel <- true
-				return
-			}
-		}
-	}()
-}
-
-//GrabDealTimerTask 庄家连庄定时器任务
-func (r *Room) Banker2TimerTask() {
-	r.GameStat = msg.GameStep_Banker2
-
-	for _, v := range r.PlayerList {
-		if v != nil && v.Id == r.BankerId {
-			v.BankerCount++
-		}
-	}
-	// 抢庄时间
-	data := &msg.ActionTime_S2C{}
-	data.GameStep = msg.GameStep_Banker2
-	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
-
-	go func() {
-		for range r.clock.C {
-			r.counter++
-			// 发送时间
-			send := &msg.SendActTime_S2C{}
-			send.StartTime = r.counter
-			send.GameTime = Banker2Time
-			send.GameStep = msg.GameStep_Banker2
-			r.BroadCastMsg(send)
-			//log.Debug("Banker2Time :%v", r.counter)
-			if r.counter >= Banker2Time {
-				r.counter = 0
-				BankerChannel <- true
-				return
+		for range t.C {
+			//log.Debug("当前时间:%v", time.Now().Second())
+			switch time.Now().Second() {
+			case 6: // 获取上期开奖记录,每0.5获取一次
+				log.Debug("开奖阶段")
+				r.GameStat = msg.GameStep_GetRes
+				r.GetResultTimer()
+			case 19: // 进行结算
+				log.Debug("结算阶段")
+				// 房间状态
+				r.GameStat = msg.GameStep_Settle
+				r.CompareSettlement()
+			case 25: // 玩家的投注时间
+				log.Debug("投注阶段")
+				// 房间状态
+				r.GameStat = msg.GameStep_DownBet
+				r.DownBetTimerTask()
+			case 45: // 封单
+				log.Debug("封单阶段")
+				// 房间状态
+				r.GameStat = msg.GameStep_Close
+				r.CloseOverTimer()
 			}
 		}
 	}()
@@ -182,27 +122,22 @@ func (r *Room) Banker2TimerTask() {
 
 //DownBetTimerTask 下注阶段定时器任务
 func (r *Room) DownBetTimerTask() {
-	//go func() {
-	//	select {
-	//	case t := <-BankerChannel:
-	//		if t == true {
-	//			r.DownBetTime()
-	//			r.counter = 0
-	//			DownBetChannel <- true
-	//			return
-	//		}
-	//	}
-	//}()
+	// 玩家列表更新
+	r.UpdatePlayerList()
+	uptPlayerList := &msg.UptPlayerList_S2C{}
+	uptPlayerList.PlayerList = r.RespUptPlayerList()
+	r.BroadCastMsg(uptPlayerList)
 
-	// 房间状态
-	r.GameStat = msg.GameStep_DownBet
-
-	log.Debug("庄家金额:%v", r.BankerMoney)
+	// 获取桌面显示的6个玩家
+	num := len(r.PlayerList) - 6
+	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
 
 	// 下注时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_DownBet
 	data.RoomData = r.RespRoomData()
+	log.Debug("下注阶段:%v", len(data.RoomData.PlayerData))
+	log.Debug("下注阶段:%v", len(data.RoomData.TablePlayer))
 	r.BroadCastMsg(data)
 
 	// 发送时间
@@ -216,6 +151,70 @@ func (r *Room) DownBetTimerTask() {
 	r.RobotsDownBet()
 
 	// 定时
+	//t := time.NewTicker(time.Second)
+	//go func() {
+	//	for range t.C {
+	//		r.counter++
+	//		// 发送时间
+	//		send := &msg.SendActTime_S2C{}
+	//		send.StartTime = r.counter
+	//		send.GameTime = DownBetTime
+	//		send.GameStep = msg.GameStep_DownBet
+	//		r.BroadCastMsg(send)
+	//		if r.GameStat == msg.GameStep_Close {
+	//			r.counter = 0
+	//			return
+	//		}
+	//	}
+	//}()
+}
+
+func (r *Room) CloseOverTimer() {
+	// 获取桌面显示的6个玩家
+	num := len(r.PlayerList) - 6
+	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
+
+	// 阶段状态
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_Close
+	data.RoomData = r.RespRoomData()
+	r.BroadCastMsg(data)
+
+	// 定时
+	//t := time.NewTicker(time.Second)
+	//go func() {
+	//	for range t.C {
+	//		r.counter++
+	//		// 发送时间
+	//		send := &msg.SendActTime_S2C{}
+	//		send.StartTime = r.counter
+	//		send.GameTime = CloseTime
+	//		send.GameStep = msg.GameStep_Close
+	//		r.BroadCastMsg(send)
+	//
+	//		if r.GameStat == msg.GameStep_GetRes {
+	//			r.counter = 0
+	//			return
+	//		}
+	//	}
+	//}()
+}
+
+func (r *Room) GetResultTimer() {
+	// 奖源时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_GetRes
+	data.RoomData = r.RespRoomData()
+	r.BroadCastMsg(data)
+
+	// 获取彩源
+	r.GetCaiYuan()
+
+	// 获取桌面显示的6个玩家
+	num := len(r.PlayerList) - 6
+	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
+
+	// 定时
 	t := time.NewTicker(time.Second)
 	go func() {
 		for range t.C {
@@ -223,80 +222,48 @@ func (r *Room) DownBetTimerTask() {
 			// 发送时间
 			send := &msg.SendActTime_S2C{}
 			send.StartTime = r.counter
-			send.GameTime = DownBetTime
-			send.GameStep = msg.GameStep_DownBet
+			send.GameTime = GetResTime
+			send.GameStep = msg.GameStep_GetRes
 			r.BroadCastMsg(send)
-			if r.counter >= DownBetTime {
+			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				r.counter = 0
-				DownBetChannel <- true
 				return
 			}
 		}
 	}()
-}
-
-//DownBetTime 下注计时
-func (r *Room) DownBetTime() {
-	// 房间状态
-	r.GameStat = msg.GameStep_DownBet
-
-	log.Debug("庄家金额:%v", r.BankerMoney)
-	// 机器开始下注
-	r.RobotsDownBet()
-
-	// 下注时间
-	data := &msg.ActionTime_S2C{}
-	data.GameStep = msg.GameStep_DownBet
-	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
-
-	// 定时
-	t := time.NewTicker(time.Second)
-	for range t.C {
-		r.counter++
-		// 发送时间
-		send := &msg.SendActTime_S2C{}
-		send.StartTime = r.counter
-		send.GameTime = DownBetTime
-		send.GameStep = msg.GameStep_DownBet
-		r.BroadCastMsg(send)
-		//log.Debug("DownBetTime :%v", r.counter)
-		if r.counter >= DownBetTime {
-			return
-		}
-	}
 }
 
 //SettlerTimerTask 结算阶段定时器任务
 func (r *Room) SettlerTimerTask() {
-	go func() {
-		select {
-		case t := <-DownBetChannel:
-			if t == true {
-				//开始比牌结算任务
-				r.CompareSettlement()
+	////开始比牌结算任务
+	//r.CompareSettlement()
 
-				//开始新一轮游戏,重复调用StartGameRun函数
-				defer r.StartGameRun()
-				return
-			}
-		}
-	}()
+	////开始新一轮游戏,重复调用StartGameRun函数
+	//defer r.StartGameRun()
 }
 
 //CompareSettlement 开始比牌结算
 func (r *Room) CompareSettlement() {
+	// 获取桌面显示的6个玩家
+	num := len(r.PlayerList) - 6
+	r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
 
-	r.GameStat = msg.GameStep_Settle
+	if r.NowMinute == 0 || r.NowMinute == 30 || r.Lottery == nil { // 流局处理
+		log.Debug("%v,%v,%v", r.NowMinute, r.NowMinute, r.Lottery)
+		r.GameStat = msg.GameStep_LiuJu
+		// 结算时间
+		data := &msg.ActionTime_S2C{}
+		data.GameStep = msg.GameStep_LiuJu
+		data.RoomData = r.RespRoomData()
+		r.BroadCastMsg(data)
+		return
+	}
 
 	// 结算时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Settle
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
-
-	// 获取彩源数据
-	r.GetCaiYuan()
 
 	// 获取派奖前的玩家投注数据
 	r.SetPlayerDownBet()
@@ -309,34 +276,35 @@ func (r *Room) CompareSettlement() {
 	resultData.RoomData = r.RespRoomData()
 	r.BroadCastMsg(resultData)
 
-	t := time.NewTicker(time.Second)
+	// 获取投注统计
+	r.SeRoomTotalBet()
+	// 踢出房间断线玩家
+	r.KickOutPlayer()
+	// 处理庄家
+	r.HandleBanker()
+	// 清理机器人
+	r.CleanRobot()
+	//根据时间来控制机器人数量
+	//r.HandleRobot()
+	// 清空房间数据,开始下局游戏
+	r.CleanRoomData()
 
-	for range t.C {
-		r.counter++
-		// 发送时间
-		send := &msg.SendActTime_S2C{}
-		send.StartTime = r.counter
-		send.GameTime = SettleTime
-		send.GameStep = msg.GameStep_Settle
-		r.BroadCastMsg(send)
-		//log.Debug("SettleTime :%v", r.counter)
-		// 如果时间处理不及时,可以判断定时9秒的时候将处理这个数据然后发送给前端进行处理
-		if r.counter >= SettleTime {
-			// 获取投注统计
-			r.SeRoomTotalBet()
-			// 踢出房间断线玩家
-			r.KickOutPlayer()
-			// 处理庄家
-			r.HandleBanker()
-			// 清理机器人
-			r.CleanRobot()
-			//根据时间来控制机器人数量
-			r.HandleRobot()
-			// 清空房间数据,开始下局游戏
-			r.CleanRoomData()
-			return
+	t := time.NewTicker(time.Second)
+	go func() {
+		for range t.C {
+			r.counter++
+			// 发送时间
+			send := &msg.SendActTime_S2C{}
+			send.StartTime = r.counter
+			send.GameTime = SettleTime
+			send.GameStep = msg.GameStep_Settle
+			r.BroadCastMsg(send)
+			if r.GameStat == msg.GameStep_DownBet {
+				r.counter = 0
+				return
+			}
 		}
-	}
+	}()
 }
 
 //ResultMoney 结算数据

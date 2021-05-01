@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -25,8 +26,10 @@ const (
 const (
 	BankerTime  = 8  // 庄家时间 8秒
 	Banker2Time = 3  // 庄家连庄 3秒
-	DownBetTime = 30 // 下注时间 23秒
-	SettleTime  = 30 // 结算时间 29秒
+	DownBetTime = 20 // 下注时间 20秒
+	SettleTime  = 5  // 结算时间 5秒
+	GetResTime  = 13 // 开奖时间 13秒
+	CloseTime   = 15 // 封单时间 15秒
 )
 
 const (
@@ -70,6 +73,10 @@ type Room struct {
 	HistoryData      []msg.HistoryData // 历史开奖数据
 	counter          int32             // 已经过去多少秒
 	clock            *time.Ticker      // 计时器
+	NowMinute        int               // 当前分钟
+	NowSecond        int               // 当前秒数
+
+	Lock sync.Mutex // 锁
 
 	UserLeave []string // 用户是否在房间
 
@@ -361,69 +368,84 @@ func (r *Room) UpdatePlayerList() {
 
 //GetCaiYuan 获取彩源开奖结果
 func (r *Room) GetCaiYuan() {
-	var dataRes *http.Response
-	if r.RoomId == "1" {
-		//caiYuan := "http://free.manycai.com/K2601968389c853/hn60-1.json"
-		res, err := http.Get(conf.Server.CaiYuan)
-		if err != nil {
-			log.Debug("再次获取随机数值失败: %v", err)
-			return
-		}
-		dataRes = res
-	} else if r.RoomId == "2" {
-		caiYuan := "http://free.manycai.com/K2601968389c853/PTXFFC-1.json"
-		res, err := http.Get(caiYuan)
-		if err != nil {
-			log.Debug("再次获取随机数值失败: %v", err)
-			return
-		}
-		dataRes = res
-	}
-
-	log.Debug("res:%v", dataRes)
-	result, err := ioutil.ReadAll(dataRes.Body)
-	defer dataRes.Body.Close()
-	if err != nil {
-		log.Error("解析随机数值失败: %v", err)
-		return
-	}
-
-	var users interface{}
-	err2 := json.Unmarshal(result, &users)
-	if err2 != nil {
-		log.Error("解码随机数值失败: %v", err)
-		return
-	}
-
-	log.Debug("读取的彩源数据: %v", users)
-
-	data, ok := users.([]interface{})
-	if ok {
-		for _, v := range data {
-			lottery := v.(map[string]interface{})
-			opendate := lottery["opendate"] // 开奖时间
-			log.Debug("开奖时间:%v", opendate)
-			issue := lottery["issue"] // 彩票期数
-			log.Debug("彩票期数:%v", issue)
-			lotterycode := lottery["lotterycode"] // 彩票代码
-			log.Debug("彩票代码:%v", lotterycode)
-			code := lottery["code"] // 中奖号码
-			log.Debug("中奖号码:%v", code)
-
-			r.resultTime = opendate.(string)
-			r.PeriodsNum = issue.(string)
-			r.PeriodsTime = opendate.(string)
-			codeString := code.(string)
-			codeSlice := strings.Split(codeString, `,`)
-			//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
-			var codeData []int
-			for _, v := range codeSlice {
-				num, _ := strconv.Atoi(v)
-				codeData = append(codeData, num)
+	go func() {
+		for {
+			var dataRes *http.Response
+			if r.RoomId == "1" {
+				//caiYuan := "http://free.manycai.com/K2601968389c853/hn60-1.json"
+				res, err := http.Get(conf.Server.CaiYuan)
+				if err != nil {
+					log.Debug("再次获取随机数值失败: %v", err)
+					return
+				}
+				dataRes = res
+			} else if r.RoomId == "2" {
+				caiYuan := "http://free.manycai.com/K2601968389c853/PTXFFC-1.json"
+				res, err := http.Get(caiYuan)
+				if err != nil {
+					log.Debug("再次获取随机数值失败: %v", err)
+					return
+				}
+				dataRes = res
 			}
-			r.Lottery = codeData
+
+			//log.Debug("res:%v", dataRes)
+			result, err := ioutil.ReadAll(dataRes.Body)
+			defer dataRes.Body.Close()
+			if err != nil {
+				log.Debug("解析随机数值失败: %v", err)
+				return
+			}
+
+			var users interface{}
+			err2 := json.Unmarshal(result, &users)
+			if err2 != nil {
+				log.Debug("解码随机数值失败: %v", err)
+				return
+			}
+
+			//log.Debug("读取的彩源数据: %v", users)
+
+			data, ok := users.([]interface{})
+			if ok {
+				for _, v := range data {
+					lottery := v.(map[string]interface{})
+					opendate := lottery["opendate"] // 开奖时间
+					//log.Debug("开奖时间:%v", opendate)
+					issue := lottery["issue"] // 彩票期数
+					//log.Debug("彩票期数:%v", issue)
+					lotterycode := lottery["lotterycode"] // 彩票代码
+					log.Debug("彩票代码:%v", lotterycode)
+					code := lottery["code"] // 中奖号码
+					//log.Debug("中奖号码:%v", code)
+
+					r.resultTime = opendate.(string)
+					r.PeriodsNum = issue.(string)
+					r.PeriodsTime = opendate.(string)
+					codeString := code.(string)
+					codeSlice := strings.Split(codeString, `,`)
+					//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
+					var codeData []int
+					for _, v := range codeSlice {
+						num, _ := strconv.Atoi(v)
+						codeData = append(codeData, num)
+					}
+					r.Lottery = codeData
+				}
+			}
+			if r.GameStat == msg.GameStep_Settle {
+				return
+			}
+			// 发送时间
+			send := &msg.SendActTime_S2C{}
+			send.StartTime = r.counter
+			send.GameTime = GetResTime
+			send.GameStep = msg.GameStep_GetRes
+			r.BroadCastMsg(send)
+
+			time.Sleep(time.Millisecond * 500)
 		}
-	}
+	}()
 }
 
 //CleanRoomData 清空房间数据,开始下一句游戏
@@ -925,4 +947,13 @@ func (r *Room) SeRoomTotalBet() {
 	}
 	data.PotTotalMoney = r.PlayerTotalMoney
 	InsertRoomTotalBet(data) //todo
+}
+
+func (r *Room) GetNowTimer() {
+	go func() {
+		for {
+			r.NowMinute = time.Now().Minute()
+			r.NowSecond = time.Now().Second()
+		}
+	}()
 }

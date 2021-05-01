@@ -36,6 +36,9 @@ enum GameStep {
     Banker2 = 2;
     DownBet = 3;
     Settle = 4;
+    Close = 5;
+    GetRes = 6;
+    LiuJu = 7;
 }
 
 enum PlayerStatus {

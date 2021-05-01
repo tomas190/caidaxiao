@@ -143,9 +143,11 @@ func handleLogin(args []interface{}) {
 		//	if v != nil {
 		//		if v.RoomId == "1" {
 		//			login.PlayerNumR1 = v.PlayerLength()
+		//			login.Room01 = v.IsOpenRoom
 		//		}
 		//		if v.RoomId == "2" {
 		//			login.PlayerNumR2 = v.PlayerLength()
+		//			login.Room02 = v.IsOpenRoom
 		//		}
 		//	}
 		//}

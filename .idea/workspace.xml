@@ -2,10 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d8b79f1e-14e6-4d2e-bcba-0431b68f5b19" name="默认更改列表" comment="默认更改列表">
+      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/新建文件夹/ani_tipDotDotDot (2).zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/新建文件夹/ani_tipDotDotDot.atlas" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/新建文件夹/ani_tipDotDotDot.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/banker/新建文件夹/ani_tipDotDotDot.png" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/dataBox/PotBoxEff2.zip" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/dataBox/cdx_potBoxEff.atlas" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/dataBox/cdx_potBoxEff.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/../CDX临时文件/切图/dataBox/cdx_potBoxEff.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../彩源龍虎鬥API文件.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../猜大小api文档.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.~lock.TOMAS技术测试模块 (3).xlsx#" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../.~lock.TOMAS技术测试模块 (4).xlsx#" beforeDir="false" />
@@ -1619,7 +1625,18 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.ios_mac/mac/Icon.icns" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/chanrpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/chanrpc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/gameHall.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/gameHall.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/module.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/module.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/player_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/player_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/robot.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/robot.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/room.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/room_handle.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/room_handle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/msg/msg.proto" beforeDir="false" afterPath="$PROJECT_DIR$/msg/msg.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../doudizhu-cocos/.idea/doudizhu-cocos.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
@@ -3567,7 +3584,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../CDX临时文件/切图/banker/cylhd" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -3581,16 +3598,16 @@
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\GoLand 2019.3.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Tomas\Desktop\caidaxiao" />
+      <recent name="C:\Users\Tomas\Desktop\caidaxiao\game\internal" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Tomas\Desktop\caidaxiao" />
       <recent name="C:\Users\Tomas\Desktop\dezhoupoker\game\internal" />
       <recent name="C:\Users\Tomas\Desktop\dezhoupoker" />
       <recent name="C:\Users\tomas\go\src\dezhoupoker" />
       <recent name="C:\Users\tomas\go\src\dezhoupoker\game\internal" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Tomas\Desktop\caidaxiao" />
-      <recent name="C:\Users\Tomas\Desktop\caidaxiao\game\internal" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build caidaxiao (1)">
@@ -3720,10 +3737,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="351" y="0" key="#go_build_caidaxiao_(2)/0.0.1280.680@0.0.1280.680" timestamp="1618468224553" />
-    <state x="421" y="96" key="FileChooserDialogImpl" timestamp="1611987221432">
+    <state x="421" y="96" key="FileChooserDialogImpl" timestamp="1619624950909">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1611987221432" />
+    <state x="421" y="96" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1619624950909" />
     <state width="1237" height="301" key="GridCell.Tab.0.bottom" timestamp="1618994579500">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
@@ -3740,10 +3757,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state width="1237" height="301" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1618994579500" />
-    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1619002215261">
+    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1619858996471">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1619002215261" />
+    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1619858996471" />
     <state x="622" y="1" width="672" height="678" key="search.everywhere.popup" timestamp="1618992783263">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

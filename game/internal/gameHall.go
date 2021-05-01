@@ -78,7 +78,7 @@ func (hall *GameHall) CreateGameRoom() {
 		hall.roomList = append(hall.roomList, r)
 		hall.RoomRecord.Store(r.RoomId, r)
 		log.Debug("CreateRoom 创建新的房间:%v,当前房间数量:%v", r.RoomId, len(hall.roomList))
-
+		r.GetNowTimer()
 	}
 	// 加载机器人
 	gRobotCenter.Start()

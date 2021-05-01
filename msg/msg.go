@@ -1,7 +1,6 @@
 package msg
 
 import (
-	"fmt"
 	"github.com/name5566/leaf/log"
 	"github.com/name5566/leaf/network/protobuf"
 )
@@ -10,7 +9,6 @@ import (
 var Processor = protobuf.NewProcessor()
 
 func init() {
-	test()
 	log.Debug("msg init ~~~")
 	Processor.Register(&Ping{})
 	Processor.Register(&Pong{})
@@ -35,11 +33,4 @@ func init() {
 	Processor.Register(&EmojiChat_S2C{})
 	Processor.Register(&SendActTime_S2C{})
 	Processor.Register(&ChangeRoomType_S2C{})
-}
-
-func test() {
-	a := 3
-	b := 6
-	c := float64(a + b) / 2
-	fmt.Println("a:", c)
 }

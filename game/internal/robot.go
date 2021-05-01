@@ -88,6 +88,7 @@ func (r *Room) RobotsDownBet() {
 									log.Debug("机器的下注金额不足~")
 									continue
 								}
+								// 机器人豹子限注5个
 								var downBetMoney float64
 								// 判断注池限红
 								if pot == int32(msg.PotType_BigPot) {
@@ -97,6 +98,9 @@ func (r *Room) RobotsDownBet() {
 									downBetMoney = float64(bet * WinSmall)
 								}
 								if pot == int32(msg.PotType_LeopardPot) {
+									if (r.PotMoneyCount.LeopardDownBet + bet) > 5 {
+										continue
+									}
 									downBetMoney = float64(bet * WinLeopard)
 								}
 								// 各注池下注金额加上对应的倍数
@@ -204,6 +208,9 @@ func (r *Room) RobotsDownBet() {
 								downBetMoney = float64(bet * WinSmall)
 							}
 							if pot == int32(msg.PotType_LeopardPot) {
+								if (r.PotMoneyCount.LeopardDownBet + bet) > 5 {
+									continue
+								}
 								downBetMoney = float64(bet * WinLeopard)
 							}
 							// 各注池下注金额加上对应的倍数
@@ -310,21 +317,13 @@ func (r *Room) RobotsDownBet() {
 
 //RobotRandPot 随机机器下注注池
 func RobotRandPot() int32 {
-	num := RandInRange(1, 10001)
+	num := RandInRange(1, 1001)
 	var pot int32
-	if num >= 1 && num <= 2074 {
+	if num >= 1 && num <= 495 {
 		pot = 1
-	} else if num >= 2075 && num <= 4148 {
+	} else if num >= 496 && num <= 900 {
 		pot = 2
-	} else if num >= 4149 && num <= 6222 {
-		pot = 3
-	} else if num >= 6223 && num <= 8296 {
-		pot = 4
-	} else if num >= 8297 && num <= 9679 {
-		pot = 5
-	} else if num >= 9680 && num <= 9938 {
-		pot = 6
-	} else if num >= 9939 && num <= 10000 {
+	} else if num >= 901 && num <= 1000 {
 		pot = 7
 	}
 	return pot

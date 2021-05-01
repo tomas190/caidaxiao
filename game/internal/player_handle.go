@@ -63,7 +63,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 		// 设定单个区域限红为1000
 		if m.DownPot == msg.PotType_LeopardPot {
-			if room.PotMoneyCount.LeopardDownBet + m.DownBet > 1000 {
+			if (room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard > 1000 {
 				return
 			}
 		}
