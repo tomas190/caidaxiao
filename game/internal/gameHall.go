@@ -11,10 +11,11 @@ import (
 )
 
 type GameHall struct {
-	UserRecord sync.Map          // 用户记录
-	RoomRecord sync.Map          // 房间记录
-	roomList   []*Room           // 房间列表
-	UserRoom   map[string]string // 用户房间
+	UserRecord sync.Map // 用户记录
+	RoomRecord sync.Map // 房间记录
+	roomList   []*Room  // 房间列表
+	//UserRoom   map[string]string // 用户房间
+	UserRoom sync.Map // 用户房间
 }
 
 func NewHall() *GameHall {
@@ -22,7 +23,7 @@ func NewHall() *GameHall {
 		UserRecord: sync.Map{},
 		RoomRecord: sync.Map{},
 		roomList:   make([]*Room, 0),
-		UserRoom:   make(map[string]string),
+		UserRoom:   sync.Map{},
 	}
 }
 
@@ -78,7 +79,7 @@ func (hall *GameHall) CreateGameRoom() {
 		hall.roomList = append(hall.roomList, r)
 		hall.RoomRecord.Store(r.RoomId, r)
 		log.Debug("CreateRoom 创建新的房间:%v,当前房间数量:%v", r.RoomId, len(hall.roomList))
-		r.GetNowTimer()
+		r.GetRoomType()
 	}
 	// 加载机器人
 	gRobotCenter.Start()

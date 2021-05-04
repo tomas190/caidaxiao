@@ -160,6 +160,7 @@ message HistoryData {
     int32 sinDouble = 4;
     int32 bigSmall = 5;
     CardsType cardType = 6; // 比牌类型 1对,2顺,3豹
+    bool IsLiuJu = 7; // 是否流局
 }
 
 message RoomData {

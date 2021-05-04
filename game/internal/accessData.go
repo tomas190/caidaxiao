@@ -341,7 +341,7 @@ func uptSurplusOne(w http.ResponseWriter, r *http.Request) {
 func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 	Id := r.FormValue("id")
 	log.Debug("reqPlayerLeave 踢出玩家:%v", Id)
-	rid := hall.UserRoom[Id]
+	rid, _ := hall.UserRoom.Load(Id)
 	v, _ := hall.RoomRecord.Load(rid)
 	if v != nil {
 		room := v.(*Room)

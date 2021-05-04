@@ -18,18 +18,19 @@ import (
 type RoomStatus int32
 
 const (
-	RoomStatusNone RoomStatus = 1 // 房间等待状态
-	RoomStatusRun  RoomStatus = 2 // 房间运行状态
-	RoomStatusOver RoomStatus = 3 // 房间结束状态
-)
-
-const (
 	BankerTime  = 8  // 庄家时间 8秒
 	Banker2Time = 3  // 庄家连庄 3秒
 	DownBetTime = 20 // 下注时间 20秒
 	SettleTime  = 5  // 结算时间 5秒
 	GetResTime  = 13 // 开奖时间 13秒
 	CloseTime   = 15 // 封单时间 15秒
+)
+
+const (
+	DownBetStep = 25 // 下注时间阶段
+	CloseStep   = 45 // 封单时间阶段
+	GetResStep  = 5  // 开奖时间阶段
+	SettleStep  = 19 // 结算时间阶段
 )
 
 const (
@@ -47,8 +48,9 @@ const (
 )
 
 // 游戏阶段channel
-var BankerChannel chan bool
 var DownBetChannel chan bool
+var CloseChannel chan bool
+var SettleChannel chan bool
 
 type Room struct {
 	RoomId      string    // 房间号
@@ -65,7 +67,6 @@ type Room struct {
 	LotteryResult    msg.PotWinList    // 开奖结果
 	PeriodsNum       string            // 开奖期数
 	PeriodsTime      string            // 开奖时间
-	RoomStat         RoomStatus        // 房间状态
 	GameStat         msg.GameStep      // 游戏状态
 	PotMoneyCount    msg.DownBetMoney  // 注池下注总金额(用于客户端显示)
 	PlayerTotalMoney msg.DownBetMoney  // 所有真实玩家注池下注(用于计算金额)
@@ -73,14 +74,14 @@ type Room struct {
 	HistoryData      []msg.HistoryData // 历史开奖数据
 	counter          int32             // 已经过去多少秒
 	clock            *time.Ticker      // 计时器
-	NowMinute        int               // 当前分钟
-	NowSecond        int               // 当前秒数
 
 	Lock sync.Mutex // 锁
 
 	UserLeave []string // 用户是否在房间
 
 	IsOpenRoom bool // 是否开启房间
+
+	userRoomMutex sync.RWMutex
 }
 
 func (r *Room) Init() {
@@ -99,7 +100,6 @@ func (r *Room) Init() {
 	r.LotteryResult = msg.PotWinList{}
 	r.PeriodsNum = ""
 	r.PeriodsTime = ""
-	r.RoomStat = RoomStatusNone
 	r.GameStat = msg.GameStep_XX_Step
 	r.PlayerTotalMoney = msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
@@ -113,8 +113,9 @@ func (r *Room) Init() {
 
 	r.IsOpenRoom = true
 
-	BankerChannel = make(chan bool)
 	DownBetChannel = make(chan bool)
+	CloseChannel = make(chan bool)
+	SettleChannel = make(chan bool)
 }
 
 //BroadCastExcept 向当前玩家之外的玩家广播
@@ -208,6 +209,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 		his.BigSmall = v.BigSmall
 		his.SinDouble = v.SinDouble
 		his.CardType = v.CardType
+		his.IsLiuJu = v.IsLiuJu
 		rd.HistoryData = append(rd.HistoryData, his)
 	}
 	// 这里只需要遍历桌面玩家，站起玩家不显示出来
@@ -368,6 +370,7 @@ func (r *Room) UpdatePlayerList() {
 
 //GetCaiYuan 获取彩源开奖结果
 func (r *Room) GetCaiYuan() {
+
 	go func() {
 		for {
 			var dataRes *http.Response
@@ -411,11 +414,11 @@ func (r *Room) GetCaiYuan() {
 				for _, v := range data {
 					lottery := v.(map[string]interface{})
 					opendate := lottery["opendate"] // 开奖时间
-					//log.Debug("开奖时间:%v", opendate)
+					log.Debug("开奖时间:%v", opendate)
 					issue := lottery["issue"] // 彩票期数
 					//log.Debug("彩票期数:%v", issue)
-					lotterycode := lottery["lotterycode"] // 彩票代码
-					log.Debug("彩票代码:%v", lotterycode)
+					//lotterycode := lottery["lotterycode"] // 彩票代码
+					//log.Debug("彩票代码:%v", lotterycode)
 					code := lottery["code"] // 中奖号码
 					//log.Debug("中奖号码:%v", code)
 
@@ -433,16 +436,9 @@ func (r *Room) GetCaiYuan() {
 					r.Lottery = codeData
 				}
 			}
-			if r.GameStat == msg.GameStep_Settle {
+			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				return
 			}
-			// 发送时间
-			send := &msg.SendActTime_S2C{}
-			send.StartTime = r.counter
-			send.GameTime = GetResTime
-			send.GameStep = msg.GameStep_GetRes
-			r.BroadCastMsg(send)
-
 			time.Sleep(time.Millisecond * 500)
 		}
 	}()
@@ -453,8 +449,7 @@ func (r *Room) CleanRoomData() {
 	r.TablePlayer = nil
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
-	r.RoomStat = RoomStatusOver
-	r.GameStat = msg.GameStep_XX_Step
+	//r.GameStat = msg.GameStep_XX_Step
 	r.PlayerTotalMoney = msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
 	r.counter = 0
@@ -566,7 +561,7 @@ func (r *Room) ExitFromRoom(p *Player) {
 	uptPlayerList.PlayerList = r.RespUptPlayerList()
 	r.BroadCastMsg(uptPlayerList)
 
-	delete(hall.UserRoom, p.Id)
+	r.DeleteUserRoom(p)
 }
 
 func (r *Room) HandleBanker() {
@@ -750,7 +745,6 @@ func (r *Room) HandleRobot() {
 			//log.Debug("rNum2:%v,rNum3:%v", rNum2, rNum3)
 			if rNum3 <= rNum2 {
 				r.ExitFromRoom(v)
-				time.Sleep(time.Millisecond * 10)
 			}
 		}
 	}
@@ -761,7 +755,6 @@ func (r *Room) HandleRobot() {
 		for {
 			robot := gRobotCenter.CreateRobot()
 			r.JoinGameRoom(robot)
-			time.Sleep(time.Millisecond * 10)
 			robotNum = r.RobotLength()
 			if robotNum == handleNum {
 				log.Debug("房间:%v,加机器人数量:%v", r.RoomId, r.RobotLength())
@@ -772,7 +765,6 @@ func (r *Room) HandleRobot() {
 		for _, v := range r.PlayerList {
 			if v != nil && v.IsRobot == true {
 				r.ExitFromRoom(v)
-				time.Sleep(time.Millisecond * 10)
 				robotNum = r.RobotLength()
 				if robotNum == handleNum {
 					log.Debug("房间:%v,减机器人数量:%v", r.RoomId, r.RobotLength())
@@ -800,7 +792,7 @@ func (r *Room) PlayerUpBanker() {
 		p.IsBanker = true
 		r.BankerId = p.Id
 		p.BankerCount++
-		hall.UserRoom[p.Id] = r.RoomId
+		hall.UserRoom.Store(p.Id, r.RoomId)
 		r.PlayerList = append(r.PlayerList, p)
 
 		bankerMoney := []int32{2000, 5000, 10000, 20000}
@@ -949,11 +941,14 @@ func (r *Room) SeRoomTotalBet() {
 	InsertRoomTotalBet(data) //todo
 }
 
-func (r *Room) GetNowTimer() {
-	go func() {
-		for {
-			r.NowMinute = time.Now().Minute()
-			r.NowSecond = time.Now().Second()
-		}
-	}()
+func (r *Room) SetUserRoom(p *Player) {
+	r.userRoomMutex.Lock()
+	hall.UserRoom.Store(p.Id, r.RoomId)
+	r.userRoomMutex.Unlock()
+}
+
+func (r *Room) DeleteUserRoom(p *Player) {
+	r.userRoomMutex.Lock()
+	defer r.userRoomMutex.Unlock()
+	hall.UserRoom.Delete(p.Id)
 }

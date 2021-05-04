@@ -34,3 +34,5 @@ func init() {
 	Processor.Register(&SendActTime_S2C{})
 	Processor.Register(&ChangeRoomType_S2C{})
 }
+
+

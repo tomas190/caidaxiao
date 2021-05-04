@@ -55,7 +55,7 @@ func handleLogin(args []interface{}) {
 				log.Error("用户链接替换错误", err)
 			}
 
-			rId := hall.UserRoom[p.Id]
+			rId, _ := hall.UserRoom.Load(p.Id)
 			v, _ := hall.RoomRecord.Load(rId)
 			if v != nil {
 				// 玩家如果已在游戏中，则返回房间数据
@@ -82,8 +82,8 @@ func handleLogin(args []interface{}) {
 				login.PlayerInfo.HeadImg = u.HeadImg
 				login.PlayerInfo.Account = u.Account
 
-				roomId := hall.UserRoom[p.Id]
-				rm, _ := hall.RoomRecord.Load(roomId)
+				rid, _ := hall.UserRoom.Load(p.Id)
+				rm, _ := hall.RoomRecord.Load(rid)
 				if rm != nil {
 					login.Backroom = true
 				}
@@ -162,9 +162,9 @@ func handleLogin(args []interface{}) {
 		//u.Token = m.GetToken()
 		//
 		//hall.UserRecord.Store(u.Id, u)
-		//hall.UserRoom[u.Id] = "1"
+		//hall.UserRoom.Store(u.Id, "1")
 		//
-		//rId := hall.UserRoom[u.Id]
+		//rId, _ := hall.UserRoom.Load(u.Id)
 		//v, _ := hall.RoomRecord.Load(rId)
 		//if v != nil {
 		//	// 玩家如果已在游戏中，则返回房间数据
@@ -180,6 +180,7 @@ func handleLogin(args []interface{}) {
 		//		log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
 		//	}
 		//}
+		
 		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
 
 			log.Debug("玩家首次登陆:%v", u.Id)
@@ -214,7 +215,7 @@ func handleLogin(args []interface{}) {
 
 			hall.UserRecord.Store(u.Id, u)
 
-			rId := hall.UserRoom[u.Id]
+			rId, _ := hall.UserRoom.Load(u.Id)
 			v, _ := hall.RoomRecord.Load(rId)
 			if v != nil {
 				// 玩家如果已在游戏中，则返回房间数据
@@ -242,7 +243,7 @@ func handleLogout(args []interface{}) {
 	if ok {
 		if p.IsAction == true {
 			var exist bool
-			rid := hall.UserRoom[p.Id]
+			rid, _ := hall.UserRoom.Load(p.Id)
 			v, _ := hall.RoomRecord.Load(rid)
 			if v != nil {
 				room := v.(*Room)
@@ -324,8 +325,8 @@ func handleEmojiChat(args []interface{}) {
 	p, ok := a.UserData().(*Player)
 	log.Debug("handleEmojiChat 玩家发送表情~ : %v", p.Id)
 	if ok {
-		roomId := hall.UserRoom[p.Id]
-		r, _ := hall.RoomRecord.Load(roomId)
+		rid, _ := hall.UserRoom.Load(p.Id)
+		r, _ := hall.RoomRecord.Load(rid)
 		if r != nil {
 			room := r.(*Room)
 			data := &msg.EmojiChat_S2C{}

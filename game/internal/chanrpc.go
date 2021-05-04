@@ -31,7 +31,7 @@ func rpcCloseAgent(args []interface{}) {
 
 		p.IsOnline = false
 		if p.IsAction == true || p.IsBanker == true {
-			rid := hall.UserRoom[p.Id]
+			rid, _ := hall.UserRoom.Load(p.Id)
 			v, _ := hall.RoomRecord.Load(rid)
 			if v != nil {
 				room := v.(*Room)
@@ -49,7 +49,7 @@ func rpcCloseAgent(args []interface{}) {
 				a.WriteMsg(leaveHall)
 			}
 		} else {
-			rid := hall.UserRoom[p.Id]
+			rid, _ := hall.UserRoom.Load(p.Id)
 			v, _ := hall.RoomRecord.Load(rid)
 			if v != nil {
 				room := v.(*Room)

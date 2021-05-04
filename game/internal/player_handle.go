@@ -7,8 +7,8 @@ import (
 
 //PlayerExitRoom 玩家退出房间
 func (p *Player) PlayerExitRoom() {
-	rId := hall.UserRoom[p.Id]
-	v, _ := hall.RoomRecord.Load(rId)
+	rid, _ := hall.UserRoom.Load(p.Id)
+	v, _ := hall.RoomRecord.Load(rid)
 	if v != nil {
 		room := v.(*Room)
 		if p.IsAction == true || p.IsBanker == true {
@@ -39,8 +39,8 @@ func (p *Player) PlayerExitRoom() {
 }
 
 func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
-	rId := hall.UserRoom[p.Id]
-	v, _ := hall.RoomRecord.Load(rId)
+	rid, _ := hall.UserRoom.Load(p.Id)
+	v, _ := hall.RoomRecord.Load(rid)
 
 	if v != nil {
 		room := v.(*Room)
@@ -142,8 +142,8 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 func (p *Player) BankerAction(m *msg.BankerData_C2S) {
 	if m.Status == 2 {
 		if p.Account > float64(m.TakeMoney) {
-			roomId := hall.UserRoom[p.Id]
-			r, _ := hall.RoomRecord.Load(roomId)
+			rid, _ := hall.UserRoom.Load(p.Id)
+			r, _ := hall.RoomRecord.Load(rid)
 			if r != nil {
 				room := r.(*Room)
 				room.bankerList[p.Id] = m.TakeMoney
