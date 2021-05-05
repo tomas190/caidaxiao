@@ -5,7 +5,6 @@ import (
 	"caidaxiao/msg"
 	"fmt"
 	"github.com/name5566/leaf/log"
-	"runtime"
 	"sort"
 	"strconv"
 	"time"
@@ -13,10 +12,10 @@ import (
 
 //JoinGameRoom 加入游戏房间
 func (r *Room) JoinGameRoom(p *Player) {
-	//插入玩家信息
-	//if p.IsRobot == false {
-	//	p.FindPlayerInfo()
-	//}
+	// 插入玩家信息
+	if p.IsRobot == false { //todo
+		p.FindPlayerInfo()
+	}
 
 	r.SetUserRoom(p)
 
@@ -61,8 +60,6 @@ func (r *Room) GetRoomType() {
 	t := time.NewTicker(time.Second)
 	go func() {
 		for {
-			fmt.Println("时间：", time.Now().Second())
-			fmt.Println("go数量:", runtime.NumGoroutine())
 			select {
 			case <-t.C:
 				if time.Now().Second() == DownBetStep {
@@ -283,8 +280,6 @@ func (r *Room) HandleLiuJu() {
 	r.SeRoomTotalBet()
 	// 踢出房间断线玩家
 	r.KickOutPlayer()
-	// 处理庄家
-	//r.HandleBanker()
 	// 清理机器人
 	r.CleanRobot()
 	//根据时间来控制机器人数量
@@ -338,8 +333,6 @@ func (r *Room) CompareSettlement() {
 	r.SeRoomTotalBet()
 	// 踢出房间断线玩家
 	r.KickOutPlayer()
-	// 处理庄家
-	//r.HandleBanker()
 	// 清理机器人
 	r.CleanRobot()
 	//根据时间来控制机器人数量
