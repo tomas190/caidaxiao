@@ -921,7 +921,7 @@ func (r *Room) SetPlayerDownBet() {
 			}
 			data.DownBetInfo = v.DownBetMoney
 			data.DownBetTime = time.Now().Format("2006-01-02 15:04:05")
-			//InsertPlayerDownBet(data) //todo
+			InsertPlayerDownBet(data) //todo
 		}
 	}
 }
@@ -939,7 +939,7 @@ func (r *Room) SeRoomTotalBet() {
 		data.LotteryType = "奇趣分分彩"
 	}
 	data.PotTotalMoney = r.PlayerTotalMoney
-	//InsertRoomTotalBet(data) //todo
+	InsertRoomTotalBet(data) //todo
 }
 
 func (r *Room) SetUserRoom(p *Player) {
