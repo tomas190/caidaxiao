@@ -43,7 +43,7 @@ type GameData struct {
 	RoundId         string      `json:"round_id"`
 	RoomId          string      `json:"room_id"`
 	TaxRate         float64     `json:"tax_rate"`
-	Lottery         []int       `json:"lottery"`          // 开奖号码
+	Lottery         interface{} `json:"lottery"`          // 开奖号码
 	Card            interface{} `json:"card"`             // 开牌信息
 	BetInfo         interface{} `json:"bet_info"`         // 玩家下注信息
 	SettlementFunds interface{} `json:"settlement_funds"` // 结算信息 输赢结果
