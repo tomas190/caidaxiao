@@ -33,6 +33,5 @@ func init() {
 	Processor.Register(&EmojiChat_S2C{})
 	Processor.Register(&SendActTime_S2C{})
 	Processor.Register(&ChangeRoomType_S2C{})
+	Processor.Register(&ErrorMsg_S2C{})
 }
-
-

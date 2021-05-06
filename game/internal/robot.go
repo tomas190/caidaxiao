@@ -88,28 +88,29 @@ func (r *Room) RobotsDownBet() {
 									log.Debug("机器的下注金额不足~")
 									continue
 								}
-								// 机器人豹子限注5个
-								var downBetMoney float64
-								// 判断注池限红
+
+								// 设定全区的最大限红为10000
 								if pot == int32(msg.PotType_BigPot) {
-									downBetMoney = float64(bet * WinBig)
+									if (r.PotMoneyCount.BigDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+										continue
+									}
 								}
 								if pot == int32(msg.PotType_SmallPot) {
-									downBetMoney = float64(bet * WinSmall)
+									if (r.PotMoneyCount.SmallDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+										continue
+									}
 								}
 								if pot == int32(msg.PotType_LeopardPot) {
+									// 机器人豹子限注5个
 									if (r.PotMoneyCount.LeopardDownBet + bet) > 5 {
 										continue
 									}
-									downBetMoney = float64(bet * WinLeopard)
-								}
-								// 各注池下注金额加上对应的倍数
-								totalMoney := r.PotMoneyCount.BigDownBet*WinBig +
-									r.PotMoneyCount.SmallDownBet*WinSmall +
-									r.PotMoneyCount.LeopardDownBet*WinLeopard
-								if float64(totalMoney)+downBetMoney > 20000 { // r.BankerMoney
-									//log.Debug("玩家下注已限红~")
-									continue
+									if r.PotMoneyCount.BigDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+										continue
+									}
+									if r.PotMoneyCount.SmallDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+										continue
+									}
 								}
 
 								v.Account -= float64(bet)
@@ -199,27 +200,28 @@ func (r *Room) RobotsDownBet() {
 							if v.Account < float64(bet) {
 								continue
 							}
-							var downBetMoney float64
-							// 判断注池限红
+							// 设定全区的最大限红为10000
 							if pot == int32(msg.PotType_BigPot) {
-								downBetMoney = float64(bet * WinBig)
+								if (r.PotMoneyCount.BigDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+									continue
+								}
 							}
 							if pot == int32(msg.PotType_SmallPot) {
-								downBetMoney = float64(bet * WinSmall)
+								if (r.PotMoneyCount.SmallDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+									continue
+								}
 							}
 							if pot == int32(msg.PotType_LeopardPot) {
+								// 机器人豹子限注5个
 								if (r.PotMoneyCount.LeopardDownBet + bet) > 5 {
 									continue
 								}
-								downBetMoney = float64(bet * WinLeopard)
-							}
-							// 各注池下注金额加上对应的倍数
-							totalMoney := r.PotMoneyCount.BigDownBet*WinBig +
-								r.PotMoneyCount.SmallDownBet*WinSmall +
-								r.PotMoneyCount.LeopardDownBet*WinLeopard
-							if float64(totalMoney)+downBetMoney > 20000 { // r.BankerMoney
-								//log.Debug("玩家下注已限红~")
-								continue
+								if r.PotMoneyCount.BigDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+									continue
+								}
+								if r.PotMoneyCount.SmallDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+									continue
+								}
 							}
 
 							v.Account -= float64(bet)

@@ -185,6 +185,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	for _, v := range r.Lottery {
 		rd.ResultInt = append(rd.ResultInt, int32(v))
 	}
+	rd.PeriodsNum = r.PeriodsNum
 	rd.PotMoneyCount = new(msg.DownBetMoney)
 	rd.PotMoneyCount.BigDownBet = r.PotMoneyCount.BigDownBet
 	rd.PotMoneyCount.SmallDownBet = r.PotMoneyCount.SmallDownBet

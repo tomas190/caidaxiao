@@ -60,28 +60,30 @@ func (r *Room) GetRoomType() {
 	t := time.NewTicker(time.Second)
 	go func() {
 		for {
+			//log.Debug("时间:%v", time.Now().Second())
+			//log.Debug("go数量:%v", runtime.NumGoroutine())
 			select {
 			case <-t.C:
 				if time.Now().Second() == DownBetStep {
-					fmt.Println("下注阶段")
+					log.Debug("----------下注阶段----------")
 					// 下注阶段定时
 					r.DownBetTimerTask()
 				}
 				if time.Now().Second() == CloseStep {
 					r.GameStat = msg.GameStep_Close
-					fmt.Println("封单阶段")
+					log.Debug("----------封单阶段----------")
 					// 封单时间
 					r.HandleCloseOver()
 				}
 				if time.Now().Second() == GetResStep {
 					r.GameStat = msg.GameStep_GetRes
-					fmt.Println("奖源阶段")
+					log.Debug("----------奖源阶段----------")
 					// 获取结算
 					r.HandleGetRes()
 				}
 				if time.Now().Second() == SettleStep {
 					r.GameStat = msg.GameStep_Settle
-					fmt.Println("开奖阶段")
+					log.Debug("----------开奖阶段----------")
 					if time.Now().Minute() == 0 || time.Now().Minute() == 30 || r.Lottery == nil { // 流局处理
 						log.Debug("当前分钟:%v,当前奖源:%v", time.Now().Minute(), r.Lottery)
 						// 当局游戏流局处理
@@ -262,7 +264,6 @@ func (r *Room) HandleLiuJu() {
 		return false
 	})
 
-
 	// 判断数据大于50条就删除出一条
 	if len(r.HistoryData) > 50 {
 		r.HistoryData = r.HistoryData[:len(r.HistoryData)-1]
@@ -286,6 +287,13 @@ func (r *Room) HandleLiuJu() {
 	r.HandleRobot()
 	// 清空房间数据,开始下局游戏
 	r.CleanRoomData()
+
+	// 发送时间
+	send := &msg.SendActTime_S2C{}
+	send.StartTime = r.counter
+	send.GameTime = SettleTime
+	send.GameStep = msg.GameStep_LiuJu
+	r.BroadCastMsg(send)
 
 	t := time.NewTicker(time.Second)
 	go func() {
@@ -339,6 +347,13 @@ func (r *Room) CompareSettlement() {
 	r.HandleRobot()
 	// 清空房间数据,开始下局游戏
 	r.CleanRoomData()
+
+	// 发送时间
+	send := &msg.SendActTime_S2C{}
+	send.StartTime = r.counter
+	send.GameTime = SettleTime
+	send.GameStep = msg.GameStep_LiuJu
+	r.BroadCastMsg(send)
 
 	t := time.NewTicker(time.Second)
 	go func() {
@@ -427,7 +442,7 @@ func (r *Room) ResultMoney() {
 					sur.HistoryLose -= v.LoseResultMoney
 					sur.TotalLoseMoney -= v.LoseResultMoney
 					reason := "ResultLoseScore" //todo
-					//同时同步赢分和输分
+					同时同步赢分和输分
 					if v.IsRobot == false {
 						if v.LoseResultMoney != 0 {
 							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, 0-v.LoseResultMoney)
@@ -455,7 +470,7 @@ func (r *Room) ResultMoney() {
 					}
 				}
 				v.WinTotalCount = count
-				log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
+				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
 				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 { //todo
 					data := &PlayerDownBetRecode{}
@@ -474,6 +489,7 @@ func (r *Room) ResultMoney() {
 					data.DownBetTime = nowTime
 					data.StartTime = nowTime - 15
 					data.EndTime = nowTime + 10
+					data.Lottery = r.Lottery
 					data.CardResult = new(msg.PotWinList)
 					data.CardResult.ResultNum = r.LotteryResult.ResultNum
 					data.CardResult.BigSmall = r.LotteryResult.BigSmall

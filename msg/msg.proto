@@ -27,6 +27,7 @@ enum MessageID {
     MSG_EmojiChat_S2C = 20;
     MSG_SendActTime_S2C = 21;
     MSG_ChangeRoomType_S2C = 22;
+    MSG_ErrorMsg_S2C = 23;
 }
 
 // 游戏阶段
@@ -173,6 +174,7 @@ message RoomData {
     repeated PotWinList potWinList = 7; // 游戏记录开奖列表
     repeated HistoryData historyData = 8; // 历史记录数据
     repeated PlayerData tablePlayer = 9; // 桌面玩家
+    string PeriodsNum = 10; // 当前奖期
 }
 
 message JoinRoom_C2S {
@@ -268,4 +270,8 @@ message SendActTime_S2C {
 message ChangeRoomType_S2C {
     bool room01 = 1;
     bool room02 = 2;
+}
+
+message ErrorMsg_S2C {
+    string msgData = 1; // 错误消息
 }

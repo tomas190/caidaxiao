@@ -43,6 +43,7 @@ type GameData struct {
 	RoundId         string      `json:"round_id"`
 	RoomId          string      `json:"room_id"`
 	TaxRate         float64     `json:"tax_rate"`
+	Lottery         []int       `json:"lottery"`          // 开奖号码
 	Card            interface{} `json:"card"`             // 开牌信息
 	BetInfo         interface{} `json:"bet_info"`         // 玩家下注信息
 	SettlementFunds interface{} `json:"settlement_funds"` // 结算信息 输赢结果
@@ -212,6 +213,7 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		gd.PlayerId = pr.Id
 		gd.RoomId = pr.RoomId
 		gd.RoundId = pr.RoundId
+		gd.Lottery = pr.Lottery
 		gd.BetInfo = *pr.DownBetInfo
 		gd.Card = *pr.CardResult
 		gd.SettlementFunds = pr.SettlementFunds
