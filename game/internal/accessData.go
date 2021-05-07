@@ -153,9 +153,9 @@ func StartHttpServer() {
 	// 分分彩包赔活动（河内分分彩）
 	http.HandleFunc("/api/HandleHeNeiPay", HandleHeNeiPay)
 	// 分分彩连赢活动（河内分分彩）
-	http.HandleFunc("/api/HandleHeNeiPay", HandleHeNeiWin)
+	http.HandleFunc("/api/HandleHeNeiWin", HandleHeNeiWin)
 	// 分分彩连赢活动（奇趣分分彩）
-	http.HandleFunc("/api/HandleHeNeiPay", HandleQiQuWin)
+	http.HandleFunc("/api/HandleQiQuWin", HandleQiQuWin)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
