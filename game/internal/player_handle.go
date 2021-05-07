@@ -99,26 +99,13 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				p.SendMsg(data)
 				return
 			}
-			if p.DownBetMoney.BigDownBet+((p.DownBetMoney.LeopardDownBet+m.DownBet)*WinLeopard)-p.DownBetMoney.SmallDownBet > 10000 {
-				data := &msg.ErrorMsg_S2C{}
-				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
-				return
-			}
 			if room.PotMoneyCount.SmallDownBet+((room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard)-room.PotMoneyCount.BigDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data)
 				return
 			}
-			if p.DownBetMoney.SmallDownBet+((p.DownBetMoney.LeopardDownBet+m.DownBet)*WinLeopard)-p.DownBetMoney.BigDownBet > 10000 {
-				data := &msg.ErrorMsg_S2C{}
-				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
-				return
-			}
 		}
-		// 判断玩家限红为10000
 
 		p.IsAction = m.IsAction
 		if p.IsAction == true {
