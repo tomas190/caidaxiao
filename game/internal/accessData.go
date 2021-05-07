@@ -110,6 +110,21 @@ type RoomType struct {
 	IsOpen string `form:"is_open" json:"is_open"`
 }
 
+type GamePayReq struct {
+	UserId    string `form:"user_id" json:"user_id"`
+	MinBet    string `form:"min_bet" json:"min_bet"`
+	MaxBet    string `form:"max_bet" json:"max_bet"`
+	StartTime string `form:"start_time" json:"start_time"`
+	EndTime   string `form:"end_time" json:"end_time"`
+	Limit     string `form:"limit" json:"limit"`
+}
+
+type GamePayResp struct {
+	GameCount int     `json:"game_count" bson:"game_count"`
+	TotalWin  float64 `json:"total_win" bson:"total_win"`
+	TotalLose float64 `json:"total_lose" bson:"total_lose"`
+}
+
 const (
 	SuccCode = 0
 	ErrCode  = -1
@@ -135,6 +150,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/getRoomTotalBet", getRoomTotalBet)
 	// 接口操作关闭或开启房源
 	http.HandleFunc("/api/HandleRoomType", HandleRoomType)
+	// 分分彩包赔活动（河内分分彩）
+	http.HandleFunc("/api/HandleHeNeiPay", HandleHeNeiPay)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -568,6 +585,91 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	})
 
 	js, err := json.Marshal(NewResp(SuccCode, "", ""))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
+	var req GamePayReq
+
+	req.UserId = r.FormValue("user_id")
+	req.MinBet = r.FormValue("min_bet")
+	req.MaxBet = r.FormValue("max_bet")
+	req.StartTime = r.FormValue("start_time")
+	req.EndTime = r.FormValue("end_time")
+	req.Limit = r.FormValue("limit")
+
+	selector := bson.M{}
+
+	if req.UserId != "" {
+		selector["user_id"] = req.UserId
+	}
+
+	minBet, _ := strconv.Atoi(req.MinBet)
+
+	maxBet, _ := strconv.Atoi(req.MaxBet)
+
+	sTime, _ := strconv.Atoi(req.StartTime)
+
+	eTime, _ := strconv.Atoi(req.EndTime)
+
+	if sTime != 0 && eTime != 0 {
+		selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
+	}
+
+	if sTime == 0 || eTime == 0 {
+		startTime := time.Now().Unix()
+		currentTime := time.Now()
+		oldTime := currentTime.AddDate(0, 0, -7)
+		endTime := oldTime.Unix()
+		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
+	}
+
+	limits, _ := strconv.Atoi(req.Limit)
+	if limits == 0 {
+		limits = 10
+	}
+
+	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
+
+	//2.  下注限制：  最小和最大
+	//3.  下注方式：  只能下注一个区域， 若是下注两个区域， 则为无效局数
+	data := &GamePayResp{}
+	for _, v := range recodes {
+		var num int
+		if v.DownBetInfo.BigDownBet > 0 {
+			num++
+		}
+		if v.DownBetInfo.SmallDownBet > 0 {
+			num++
+		}
+		if v.DownBetInfo.LeopardDownBet > 0 {
+			num++
+		}
+		if num > 1 {
+			continue
+		}
+		downBet := v.DownBetInfo.BigDownBet + v.DownBetInfo.SmallDownBet + v.DownBetInfo.LeopardDownBet
+		if downBet < int32(minBet) || downBet > int32(maxBet) {
+			continue
+		}
+		data.GameCount++
+		if v.SettlementFunds > 0 {
+			data.TotalWin += v.SettlementFunds
+		} else {
+			data.TotalLose += v.SettlementFunds
+		}
+	}
+
+	var result pageData
+	result.Total = limits
+	result.List = data
+
+	js, err := json.Marshal(NewResp(SuccCode, "", result))
 	if err != nil {
 		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
 		return

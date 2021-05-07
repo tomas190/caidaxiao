@@ -472,7 +472,8 @@ func (r *Room) ResultMoney() {
 				v.WinTotalCount = count
 				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
-				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 { //todo
+				if v.WinResultMoney != 0 || v.LoseResultMoney != 0 { //todo
+					// 插入玩家下注记录
 					data := &PlayerDownBetRecode{}
 					data.Id = v.Id
 					data.GameId = conf.Server.GameID
@@ -487,8 +488,8 @@ func (r *Room) ResultMoney() {
 					data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
 					data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
 					data.DownBetTime = nowTime
-					data.StartTime = nowTime - 15
-					data.EndTime = nowTime + 10
+					data.StartTime = nowTime - 55
+					data.EndTime = nowTime + 5
 					data.Lottery = r.Lottery
 					data.CardResult = new(msg.PotWinList)
 					data.CardResult.ResultNum = r.LotteryResult.ResultNum
@@ -500,10 +501,23 @@ func (r *Room) ResultMoney() {
 					data.TaxRate = taxRate
 					data.PeriodsNum = r.PeriodsNum
 					InsertAccessData(data)
-				}
 
-				if v.WinTotalCount != 0 || v.LoseResultMoney != 0 {
+					// 插入盈余池数据
 					InsertSurplusPool(sur)
+
+					// 插入玩家数据
+					gameData := &PlayerGameData{}
+					gameData.UserId = v.Id
+					gameData.RoomId = r.RoomId
+					gameData.DownBetInfo = new(msg.DownBetMoney)
+					gameData.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
+					gameData.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
+					gameData.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+					gameData.DownBetTime = nowTime
+					gameData.StartTime = nowTime - 55
+					gameData.EndTime = nowTime + 5
+					gameData.SettlementFunds = v.ResultMoney
+					InsertPlayerGame(gameData)
 				}
 			}
 		}

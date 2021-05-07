@@ -14,16 +14,17 @@ var (
 )
 
 const (
-	dbName          = "caidaxiao-Game"
-	playerInfo      = "playerInfo"
-	settleWinMoney  = "settleWinMoney"
-	settleLoseMoney = "settleLoseMoney"
-	accessDB        = "accessData"
-	surPlusDB       = "surPlusDB"
-	surPool         = "surplus-pool"
-	robotData       = "robotData"
-	PlayerDownBetDB = "PlayerDownBetDB"
-	RoomTotalBetDB  = "RoomTotalBetDB"
+	dbName           = "caidaxiao-Game"
+	playerInfo       = "playerInfo"
+	settleWinMoney   = "settleWinMoney"
+	settleLoseMoney  = "settleLoseMoney"
+	accessDB         = "accessData"
+	surPlusDB        = "surPlusDB"
+	surPool          = "surplus-pool"
+	robotData        = "robotData"
+	PlayerDownBetDB  = "PlayerDownBetDB"
+	PlayerGameDataDB = "PlayerGameDataDB"
+	RoomTotalBetDB   = "RoomTotalBetDB"
 )
 
 // 连接数据库集合的函数 传入集合 默认连接IM数据库
@@ -232,6 +233,44 @@ func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]Playe
 		return nil, 0, err
 	}
 	return wts, n, nil
+}
+
+// 玩家游戏数据
+type PlayerGameData struct {
+	UserId          string            `json:"user_id" bson:"user_id"`                   // 玩家Id
+	RoomId          string            `json:"room_id" bson:"room_id"`                   // 所在房间
+	DownBetInfo     *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"`       // 玩家各注池下注的金额
+	DownBetTime     int64             `json:"down_bet_time" bson:"down_bet_time"`       // 下注时间
+	StartTime       int64             `json:"start_time" bson:"start_time"`             // 开始时间
+	EndTime         int64             `json:"end_time" bson:"end_time"`                 // 结束时间
+	SettlementFunds float64           `json:"settlement_funds" bson:"settlement_funds"` // 当局输赢结果(税后)
+}
+
+//InsertPlayerGame 玩家游戏数据
+func InsertPlayerGame(data *PlayerGameData) {
+	s, c := connect(dbName, PlayerGameDataDB)
+	defer s.Close()
+
+	err := c.Insert(data)
+	if err != nil {
+		log.Error("<----- 玩家游戏数据插入失败 ~ ----->:%v", err)
+		return
+	}
+}
+
+//GetPlayerGameData 获取玩家游戏数据
+func GetPlayerGameData(selector bson.M, limit int, sortBy string) ([]PlayerGameData, error) {
+	s, c := connect(dbName, PlayerGameDataDB)
+	defer s.Close()
+
+	var wts []PlayerGameData
+
+	err := c.Find(selector).Sort(sortBy).Limit(limit).All(&wts)
+	if err != nil {
+		log.Debug("获取玩家游戏数据:%v", err)
+		return nil, err
+	}
+	return wts, nil
 }
 
 //盈余池数据存入数据库
