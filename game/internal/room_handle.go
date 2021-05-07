@@ -60,7 +60,7 @@ func (r *Room) GetRoomType() {
 	t := time.NewTicker(time.Second)
 	go func() {
 		for {
-			//log.Debug("时间:%v", time.Now().Second())
+			log.Debug("时间:%v", time.Now().Second())
 			//log.Debug("go数量:%v", runtime.NumGoroutine())
 			select {
 			case <-t.C:
@@ -326,11 +326,14 @@ func (r *Room) CompareSettlement() {
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
+	log.Debug("测试1")
 	// 获取开奖结果和类型
 	r.GetResultType()
+	log.Debug("测试2")
 
 	// 结算数据
 	r.ResultMoney()
+	log.Debug("测试3")
 
 	// 发送结算数据
 	resultData := &msg.ResultData_S2C{}
@@ -347,6 +350,7 @@ func (r *Room) CompareSettlement() {
 	r.HandleRobot()
 	// 清空房间数据,开始下局游戏
 	r.CleanRoomData()
+	log.Debug("测试4")
 
 	// 发送时间
 	send := &msg.SendActTime_S2C{}

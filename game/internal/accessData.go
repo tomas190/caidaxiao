@@ -152,6 +152,10 @@ func StartHttpServer() {
 	http.HandleFunc("/api/HandleRoomType", HandleRoomType)
 	// 分分彩包赔活动（河内分分彩）
 	http.HandleFunc("/api/HandleHeNeiPay", HandleHeNeiPay)
+	// 分分彩连赢活动（河内分分彩）
+	http.HandleFunc("/api/HandleHeNeiPay", HandleHeNeiWin)
+	// 分分彩连赢活动（奇趣分分彩）
+	http.HandleFunc("/api/HandleHeNeiPay", HandleQiQuWin)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -594,6 +598,178 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
+	var req GamePayReq
+
+	req.UserId = r.FormValue("user_id")
+	req.MinBet = r.FormValue("min_bet")
+	req.MaxBet = r.FormValue("max_bet")
+	req.StartTime = r.FormValue("start_time")
+	req.EndTime = r.FormValue("end_time")
+	req.Limit = r.FormValue("limit")
+
+	log.Debug("河内赔付数据:%v", req)
+
+	selector := bson.M{}
+
+	if req.UserId != "" {
+		selector["user_id"] = req.UserId
+	}
+
+	minBet, _ := strconv.Atoi(req.MinBet)
+
+	maxBet, _ := strconv.Atoi(req.MaxBet)
+
+	sTime, _ := strconv.Atoi(req.StartTime)
+
+	eTime, _ := strconv.Atoi(req.EndTime)
+
+	if sTime != 0 && eTime != 0 {
+		selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
+	}
+
+	if sTime == 0 || eTime == 0 {
+		startTime := time.Now().Unix()
+		currentTime := time.Now()
+		oldTime := currentTime.AddDate(0, 0, -7)
+		endTime := oldTime.Unix()
+		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
+	}
+
+	limits, _ := strconv.Atoi(req.Limit)
+	if limits == 0 {
+		limits = 10
+	}
+
+	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
+
+	//2.  下注限制：  最小和最大
+	//3.  下注方式：  只能下注一个区域， 若是下注两个区域， 则为无效局数
+	data := &GamePayResp{}
+	for _, v := range recodes {
+		var num int
+		if v.DownBetInfo.BigDownBet > 0 {
+			num++
+		}
+		if v.DownBetInfo.SmallDownBet > 0 {
+			num++
+		}
+		if v.DownBetInfo.LeopardDownBet > 0 {
+			num++
+		}
+		if num > 1 {
+			continue
+		}
+		downBet := v.DownBetInfo.BigDownBet + v.DownBetInfo.SmallDownBet + v.DownBetInfo.LeopardDownBet
+		if downBet < int32(minBet) || downBet > int32(maxBet) {
+			continue
+		}
+		data.GameCount++
+		if v.SettlementFunds > 0 {
+			data.TotalWin += v.SettlementFunds
+		} else {
+			data.TotalLose += v.SettlementFunds
+		}
+	}
+
+	var result pageData
+	result.Total = limits
+	result.List = data
+
+	js, err := json.Marshal(NewResp(SuccCode, "", result))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func HandleHeNeiWin(w http.ResponseWriter, r *http.Request) {
+	var req GamePayReq
+
+	req.UserId = r.FormValue("user_id")
+	req.MinBet = r.FormValue("min_bet")
+	req.MaxBet = r.FormValue("max_bet")
+	req.StartTime = r.FormValue("start_time")
+	req.EndTime = r.FormValue("end_time")
+	req.Limit = r.FormValue("limit")
+
+	selector := bson.M{}
+
+	if req.UserId != "" {
+		selector["user_id"] = req.UserId
+	}
+
+	minBet, _ := strconv.Atoi(req.MinBet)
+
+	maxBet, _ := strconv.Atoi(req.MaxBet)
+
+	sTime, _ := strconv.Atoi(req.StartTime)
+
+	eTime, _ := strconv.Atoi(req.EndTime)
+
+	if sTime != 0 && eTime != 0 {
+		selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
+	}
+
+	if sTime == 0 || eTime == 0 {
+		startTime := time.Now().Unix()
+		currentTime := time.Now()
+		oldTime := currentTime.AddDate(0, 0, -7)
+		endTime := oldTime.Unix()
+		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
+	}
+
+	limits, _ := strconv.Atoi(req.Limit)
+	if limits == 0 {
+		limits = 10
+	}
+
+	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
+
+	//2.  下注限制：  最小和最大
+	//3.  下注方式：  只能下注一个区域， 若是下注两个区域， 则为无效局数
+	data := &GamePayResp{}
+	for _, v := range recodes {
+		var num int
+		if v.DownBetInfo.BigDownBet > 0 {
+			num++
+		}
+		if v.DownBetInfo.SmallDownBet > 0 {
+			num++
+		}
+		if v.DownBetInfo.LeopardDownBet > 0 {
+			num++
+		}
+		if num > 1 {
+			continue
+		}
+		downBet := v.DownBetInfo.BigDownBet + v.DownBetInfo.SmallDownBet + v.DownBetInfo.LeopardDownBet
+		if downBet < int32(minBet) || downBet > int32(maxBet) {
+			continue
+		}
+		data.GameCount++
+		if v.SettlementFunds > 0 {
+			data.TotalWin += v.SettlementFunds
+		} else {
+			data.TotalLose += v.SettlementFunds
+		}
+	}
+
+	var result pageData
+	result.Total = limits
+	result.List = data
+
+	js, err := json.Marshal(NewResp(SuccCode, "", result))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
 	var req GamePayReq
 
 	req.UserId = r.FormValue("user_id")
