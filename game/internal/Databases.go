@@ -265,6 +265,7 @@ func GetPlayerGameData(selector bson.M, limit int, sortBy string) ([]PlayerGameD
 
 	var wts []PlayerGameData
 
+	log.Debug("获取玩家数据条件:%v", selector)
 	err := c.Find(selector).Sort(sortBy).Limit(limit).All(&wts)
 	if err != nil {
 		log.Debug("获取玩家游戏数据:%v", err)

@@ -641,7 +641,7 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
-
+	log.Debug("获取数据:%v", recodes)
 	//2.  下注限制：  最小和最大
 	//3.  下注方式：  只能下注一个区域， 若是下注两个区域， 则为无效局数
 	data := &GamePayResp{}

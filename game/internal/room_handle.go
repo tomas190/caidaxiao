@@ -355,6 +355,8 @@ func (r *Room) CompareSettlement() {
 	send.GameStep = msg.GameStep_Settle
 	r.BroadCastMsg(send)
 
+	log.Debug("发送结算数据~")
+
 	t := time.NewTicker(time.Second)
 	go func() {
 		for range t.C {
