@@ -60,7 +60,7 @@ func (r *Room) GetRoomType() {
 	t := time.NewTicker(time.Second)
 	go func() {
 		for {
-			//log.Debug("时间:%v", time.Now().Second())
+			log.Debug("时间:%v", time.Now().Second())
 			//log.Debug("go数量:%v", runtime.NumGoroutine())
 			select {
 			case <-t.C:
@@ -120,6 +120,9 @@ func (r *Room) DownBetTimerTask() {
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
 
+	//根据时间来控制机器人数量
+	r.HandleRobot()
+
 	// 发送时间
 	//send := &msg.SendActTime_S2C{}
 	//send.StartTime = 0
@@ -134,7 +137,7 @@ func (r *Room) DownBetTimerTask() {
 	t := time.NewTicker(time.Second)
 	go func() {
 		for range t.C {
-			log.Debug("下注时间:%v", r.counter)
+			//log.Debug("下注时间:%v", r.counter)
 			r.counter++
 			// 发送时间
 			send := &msg.SendActTime_S2C{}
@@ -176,7 +179,7 @@ func (r *Room) HandleCloseOver() {
 	go func() {
 		for range t.C {
 			r.counter++
-			log.Debug("封单时间:%v", r.counter)
+			//log.Debug("封单时间:%v", r.counter)
 			// 发送时间
 			send := &msg.SendActTime_S2C{}
 			send.StartTime = r.counter
@@ -219,7 +222,7 @@ func (r *Room) HandleGetRes() {
 	go func() {
 		for range t.C {
 			r.counter++
-			log.Debug("奖源时间:%v,房间状态:%v", r.counter, r.GameStat)
+			//log.Debug("奖源时间:%v,房间状态:%v", r.counter, r.GameStat)
 			// 发送时间
 			send := &msg.SendActTime_S2C{}
 			send.StartTime = r.counter
@@ -283,8 +286,6 @@ func (r *Room) HandleLiuJu() {
 	r.KickOutPlayer()
 	// 清理机器人
 	r.CleanRobot()
-	//根据时间来控制机器人数量
-	r.HandleRobot()
 	// 清空房间数据,开始下局游戏
 	r.CleanRoomData()
 
@@ -299,7 +300,7 @@ func (r *Room) HandleLiuJu() {
 	go func() {
 		for range t.C {
 			r.counter++
-			log.Debug("流局时间:%v", r.counter)
+			//log.Debug("流局时间:%v", r.counter)
 			// 发送时间
 			send := &msg.SendActTime_S2C{}
 			send.StartTime = r.counter
@@ -343,8 +344,6 @@ func (r *Room) CompareSettlement() {
 	r.KickOutPlayer()
 	// 清理机器人
 	r.CleanRobot()
-	//根据时间来控制机器人数量
-	r.HandleRobot()
 	// 清空房间数据,开始下局游戏
 	r.CleanRoomData()
 
@@ -355,13 +354,12 @@ func (r *Room) CompareSettlement() {
 	send.GameStep = msg.GameStep_Settle
 	r.BroadCastMsg(send)
 
-	log.Debug("发送结算数据~")
 
 	t := time.NewTicker(time.Second)
 	go func() {
 		for range t.C {
 			r.counter++
-			log.Debug("结算时间:%v", r.counter)
+			//log.Debug("结算时间:%v", r.counter)
 			// 发送时间
 			send := &msg.SendActTime_S2C{}
 			send.StartTime = r.counter
