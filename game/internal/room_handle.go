@@ -33,6 +33,7 @@ func (r *Room) JoinGameRoom(p *Player) {
 	// 获取桌面显示的6个玩家
 	if len(r.PlayerList) >= 6 {
 		num := len(r.PlayerList) - 6
+		r.TablePlayer = nil
 		r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
 	}
 
@@ -111,6 +112,7 @@ func (r *Room) DownBetTimerTask() {
 	// 获取桌面显示的6个玩家
 	if len(r.PlayerList) >= 6 {
 		num := len(r.PlayerList) - 6
+		r.TablePlayer = nil
 		r.TablePlayer = append(r.TablePlayer, r.PlayerList[:len(r.PlayerList)-num]...)
 	}
 

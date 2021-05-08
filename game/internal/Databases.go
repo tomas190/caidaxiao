@@ -274,6 +274,22 @@ func GetPlayerGameData(selector bson.M, limit int, sortBy string) ([]PlayerGameD
 	return wts, nil
 }
 
+//GetPlayerWinData 获取玩家游戏数据
+func GetPlayerWinData(selector bson.M) ([]PlayerGameData, error) {
+	s, c := connect(dbName, PlayerGameDataDB)
+	defer s.Close()
+
+	var wts []PlayerGameData
+
+	log.Debug("获取玩家数据条件:%v", selector)
+	err := c.Find(selector).All(&wts)
+	if err != nil {
+		log.Debug("获取玩家游戏数据:%v", err)
+		return nil, err
+	}
+	return wts, nil
+}
+
 //盈余池数据存入数据库
 type SurplusPoolDB struct {
 	UpdateTime     time.Time

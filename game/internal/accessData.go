@@ -119,6 +119,13 @@ type GamePayReq struct {
 	Limit     string `form:"limit" json:"limit"`
 }
 
+type GameWinReq struct {
+	UserId      string `form:"user_id" json:"user_id"`
+	LevelAmount string `form:"level_amount" json:"level_amount"`
+	StartTime   string `form:"start_time" json:"start_time"`
+	EndTime     string `form:"end_time" json:"end_time"`
+}
+
 type GamePayResp struct {
 	GameCount int     `json:"game_count" bson:"game_count"`
 	TotalWin  float64 `json:"total_win" bson:"total_win"`
@@ -632,7 +639,7 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 		currentTime := time.Now()
 		oldTime := currentTime.AddDate(0, 0, -7)
 		endTime := oldTime.Unix()
-		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
+		selector["down_bet_time"] = bson.M{"$gte": endTime, "$lte": startTime}
 	}
 
 	limits, _ := strconv.Atoi(req.Limit)
@@ -642,8 +649,7 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 
 	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
 	log.Debug("获取数据:%v", recodes)
-	//2.  下注限制：  最小和最大
-	//3.  下注方式：  只能下注一个区域， 若是下注两个区域， 则为无效局数
+
 	data := &GamePayResp{}
 	for _, v := range recodes {
 		var num int
@@ -672,7 +678,7 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var result pageData
-	result.Total = limits
+	result.Total = 1
 	result.List = data
 
 	js, err := json.Marshal(NewResp(SuccCode, "", result))
@@ -685,14 +691,12 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleHeNeiWin(w http.ResponseWriter, r *http.Request) {
-	var req GamePayReq
+	var req GameWinReq
 
 	req.UserId = r.FormValue("user_id")
-	req.MinBet = r.FormValue("min_bet")
-	req.MaxBet = r.FormValue("max_bet")
+	req.LevelAmount = r.FormValue("level_amount")
 	req.StartTime = r.FormValue("start_time")
 	req.EndTime = r.FormValue("end_time")
-	req.Limit = r.FormValue("limit")
 
 	selector := bson.M{}
 
@@ -700,9 +704,10 @@ func HandleHeNeiWin(w http.ResponseWriter, r *http.Request) {
 		selector["user_id"] = req.UserId
 	}
 
-	minBet, _ := strconv.Atoi(req.MinBet)
+	// 查询河内房间数据
+	selector["room_id"] = "1"
 
-	maxBet, _ := strconv.Atoi(req.MaxBet)
+	amount, _ := strconv.Atoi(req.LevelAmount)
 
 	sTime, _ := strconv.Atoi(req.StartTime)
 
@@ -713,51 +718,28 @@ func HandleHeNeiWin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if sTime == 0 || eTime == 0 {
-		startTime := time.Now().Unix()
-		currentTime := time.Now()
-		oldTime := currentTime.AddDate(0, 0, -7)
-		endTime := oldTime.Unix()
+		currentTime1 := time.Now()
+		startTime := time.Date(currentTime1.Year(), currentTime1.Month(), currentTime1.Day(), 0, 0, 0, 0, currentTime1.Location()).Unix()
+		currentTime2 := time.Now()
+		endTime := time.Date(currentTime2.Year(), currentTime2.Month(), currentTime2.Day(), 23, 59, 59, 0, currentTime2.Location()).Unix()
 		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
 	}
 
-	limits, _ := strconv.Atoi(req.Limit)
-	if limits == 0 {
-		limits = 10
-	}
+	recodes, err := GetPlayerWinData(selector)
 
-	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
-
-	//2.  下注限制：  最小和最大
-	//3.  下注方式：  只能下注一个区域， 若是下注两个区域， 则为无效局数
 	data := &GamePayResp{}
 	for _, v := range recodes {
-		var num int
-		if v.DownBetInfo.BigDownBet > 0 {
-			num++
-		}
-		if v.DownBetInfo.SmallDownBet > 0 {
-			num++
-		}
-		if v.DownBetInfo.LeopardDownBet > 0 {
-			num++
-		}
-		if num > 1 {
-			continue
-		}
-		downBet := v.DownBetInfo.BigDownBet + v.DownBetInfo.SmallDownBet + v.DownBetInfo.LeopardDownBet
-		if downBet < int32(minBet) || downBet > int32(maxBet) {
-			continue
-		}
-		data.GameCount++
-		if v.SettlementFunds > 0 {
+		if v.SettlementFunds >= float64(amount) {
+			data.GameCount++
 			data.TotalWin += v.SettlementFunds
 		} else {
-			data.TotalLose += v.SettlementFunds
+			data.GameCount = 0
+			data.TotalWin = 0
 		}
 	}
 
 	var result pageData
-	result.Total = limits
+	result.Total = 1
 	result.List = data
 
 	js, err := json.Marshal(NewResp(SuccCode, "", result))
@@ -770,14 +752,12 @@ func HandleHeNeiWin(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
-	var req GamePayReq
+	var req GameWinReq
 
 	req.UserId = r.FormValue("user_id")
-	req.MinBet = r.FormValue("min_bet")
-	req.MaxBet = r.FormValue("max_bet")
+	req.LevelAmount = r.FormValue("level_amount")
 	req.StartTime = r.FormValue("start_time")
 	req.EndTime = r.FormValue("end_time")
-	req.Limit = r.FormValue("limit")
 
 	selector := bson.M{}
 
@@ -785,9 +765,10 @@ func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
 		selector["user_id"] = req.UserId
 	}
 
-	minBet, _ := strconv.Atoi(req.MinBet)
+	// 查询河内房间数据
+	selector["room_id"] = "2"
 
-	maxBet, _ := strconv.Atoi(req.MaxBet)
+	amount, _ := strconv.Atoi(req.LevelAmount)
 
 	sTime, _ := strconv.Atoi(req.StartTime)
 
@@ -798,51 +779,28 @@ func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if sTime == 0 || eTime == 0 {
-		startTime := time.Now().Unix()
-		currentTime := time.Now()
-		oldTime := currentTime.AddDate(0, 0, -7)
-		endTime := oldTime.Unix()
+		currentTime1 := time.Now()
+		startTime := time.Date(currentTime1.Year(), currentTime1.Month(), currentTime1.Day(), 0, 0, 0, 0, currentTime1.Location()).Unix()
+		currentTime2 := time.Now()
+		endTime := time.Date(currentTime2.Year(), currentTime2.Month(), currentTime2.Day(), 23, 59, 59, 0, currentTime2.Location()).Unix()
 		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
 	}
 
-	limits, _ := strconv.Atoi(req.Limit)
-	if limits == 0 {
-		limits = 10
-	}
+	recodes, err := GetPlayerWinData(selector)
 
-	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
-
-	//2.  下注限制：  最小和最大
-	//3.  下注方式：  只能下注一个区域， 若是下注两个区域， 则为无效局数
 	data := &GamePayResp{}
 	for _, v := range recodes {
-		var num int
-		if v.DownBetInfo.BigDownBet > 0 {
-			num++
-		}
-		if v.DownBetInfo.SmallDownBet > 0 {
-			num++
-		}
-		if v.DownBetInfo.LeopardDownBet > 0 {
-			num++
-		}
-		if num > 1 {
-			continue
-		}
-		downBet := v.DownBetInfo.BigDownBet + v.DownBetInfo.SmallDownBet + v.DownBetInfo.LeopardDownBet
-		if downBet < int32(minBet) || downBet > int32(maxBet) {
-			continue
-		}
-		data.GameCount++
-		if v.SettlementFunds > 0 {
+		if v.SettlementFunds >= float64(amount) {
+			data.GameCount++
 			data.TotalWin += v.SettlementFunds
 		} else {
-			data.TotalLose += v.SettlementFunds
+			data.GameCount = 0
+			data.TotalWin = 0
 		}
 	}
 
 	var result pageData
-	result.Total = limits
+	result.Total = 1
 	result.List = data
 
 	js, err := json.Marshal(NewResp(SuccCode, "", result))
