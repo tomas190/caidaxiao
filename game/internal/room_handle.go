@@ -239,12 +239,6 @@ func (r *Room) HandleLiuJu() {
 
 	r.GameStat = msg.GameStep_LiuJu
 
-	// 结算时间
-	data := &msg.ActionTime_S2C{}
-	data.GameStep = msg.GameStep_LiuJu
-	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
-
 	// 添加流局历史数据
 	var history msg.HistoryData
 	history.TimeFmt = r.resultTime
@@ -276,6 +270,12 @@ func (r *Room) HandleLiuJu() {
 	resultData := &msg.ResultData_S2C{}
 	resultData.RoomData = r.RespRoomData()
 	r.BroadCastMsg(resultData)
+
+	// 结算时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_LiuJu
+	data.RoomData = r.RespRoomData()
+	r.BroadCastMsg(data)
 
 	// 获取投注统计
 	r.SeRoomTotalBet()
@@ -320,12 +320,6 @@ func (r *Room) CompareSettlement() {
 
 	r.GameStat = msg.GameStep_Settle
 
-	// 结算时间
-	data := &msg.ActionTime_S2C{}
-	data.GameStep = msg.GameStep_Settle
-	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
-
 	// 获取开奖结果和类型
 	r.GetResultType()
 
@@ -336,6 +330,12 @@ func (r *Room) CompareSettlement() {
 	resultData := &msg.ResultData_S2C{}
 	resultData.RoomData = r.RespRoomData()
 	r.BroadCastMsg(resultData)
+
+	// 结算时间
+	data := &msg.ActionTime_S2C{}
+	data.GameStep = msg.GameStep_Settle
+	data.RoomData = r.RespRoomData()
+	r.BroadCastMsg(data)
 
 	// 获取投注统计
 	r.SeRoomTotalBet()
