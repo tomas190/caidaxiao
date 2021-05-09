@@ -551,11 +551,6 @@ func (r *Room) ExitFromRoom(p *Player) {
 	leave.PlayerInfo.Account = p.Account
 	p.SendMsg(leave)
 
-	// 玩家列表更新
-	uptPlayerList := &msg.UptPlayerList_S2C{}
-	uptPlayerList.PlayerList = r.RespUptPlayerList()
-	r.BroadCastMsg(uptPlayerList)
-
 	r.DeleteUserRoom(p)
 }
 

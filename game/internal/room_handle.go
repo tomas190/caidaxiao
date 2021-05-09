@@ -22,11 +22,6 @@ func (r *Room) JoinGameRoom(p *Player) {
 	// 将用户添加到用户列表
 	r.PlayerList = append(r.PlayerList, p)
 
-	// 玩家列表更新
-	uptPlayerList := &msg.UptPlayerList_S2C{}
-	uptPlayerList.PlayerList = r.RespUptPlayerList()
-	r.BroadCastMsg(uptPlayerList)
-
 	// 只要不小于两人,就属于游戏状态
 	p.Status = msg.PlayerStatus_PlayGame
 
@@ -104,10 +99,8 @@ func (r *Room) DownBetTimerTask() {
 
 	r.GameStat = msg.GameStep_DownBet
 
-	// 玩家列表更新
-	uptPlayerList := &msg.UptPlayerList_S2C{}
-	uptPlayerList.PlayerList = r.RespUptPlayerList()
-	r.BroadCastMsg(uptPlayerList)
+	// 更新玩家列表
+	r.UpdatePlayerList()
 
 	// 获取桌面显示的6个玩家
 	if len(r.PlayerList) >= 6 {
@@ -121,9 +114,6 @@ func (r *Room) DownBetTimerTask() {
 	data.GameStep = msg.GameStep_DownBet
 	data.RoomData = r.RespRoomData()
 	r.BroadCastMsg(data)
-
-	//根据时间来控制机器人数量
-	r.HandleRobot()
 
 	// 发送时间
 	//send := &msg.SendActTime_S2C{}
@@ -300,6 +290,8 @@ func (r *Room) HandleLiuJu() {
 	r.KickOutPlayer()
 	// 清理机器人
 	r.CleanRobot()
+	//根据时间来控制机器人数量
+	r.HandleRobot()
 	// 清空房间数据,开始下局游戏
 	r.CleanRoomData()
 
@@ -360,6 +352,8 @@ func (r *Room) CompareSettlement() {
 	r.KickOutPlayer()
 	// 清理机器人
 	r.CleanRobot()
+	//根据时间来控制机器人数量
+	r.HandleRobot()
 	// 清空房间数据,开始下局游戏
 	r.CleanRoomData()
 
