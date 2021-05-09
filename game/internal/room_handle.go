@@ -219,6 +219,18 @@ func (r *Room) HandleGetRes() {
 	send.GameStep = msg.GameStep_GetRes
 	r.BroadCastMsg(send)
 
+	sur = &SurplusPoolDB{}
+	sur.UpdateTime = time.Now()
+	sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
+	sur.Rid = r.RoomId
+	sur.PlayerNum = GetPlayerCount() //todo
+
+	surPool := FindSurplusPool()
+	if surPool != nil {
+		sur.HistoryWin = surPool.HistoryWin
+		sur.HistoryLose = surPool.HistoryLose
+	}
+
 	// 定时
 	t := time.NewTicker(time.Second)
 	go func() {
@@ -358,7 +370,6 @@ func (r *Room) CompareSettlement() {
 	send.GameStep = msg.GameStep_Settle
 	r.BroadCastMsg(send)
 
-
 	t := time.NewTicker(time.Second)
 	go func() {
 		for range t.C {
@@ -391,20 +402,7 @@ func (r *Room) ResultMoney() {
 		}
 		log.Debug("玩家流局结算~")
 	} else { // 正常结算
-		sur := &SurplusPoolDB{}
-		sur.UpdateTime = time.Now()
-		sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
-		sur.Rid = r.RoomId
-		sur.PlayerNum = GetPlayerCount() //todo
-
-		surPool := FindSurplusPool()
-		if surPool != nil {
-			sur.HistoryWin = surPool.HistoryWin
-			sur.HistoryLose = surPool.HistoryLose
-		}
-
-		log.Debug("查询盈余池数据~")
-
+		log.Debug("开始处理玩家结算~")
 		for _, v := range r.PlayerList {
 			if v != nil && v.IsAction == true {
 				var totalWin float64
@@ -480,6 +478,9 @@ func (r *Room) ResultMoney() {
 				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
 				if v.WinResultMoney != 0 || v.LoseResultMoney != 0 { //todo
+					// 插入盈余池数据
+					InsertSurplusPool(sur)
+
 					// 插入玩家下注记录
 					data := &PlayerDownBetRecode{}
 					data.Id = v.Id
@@ -508,9 +509,6 @@ func (r *Room) ResultMoney() {
 					data.TaxRate = taxRate
 					data.PeriodsNum = r.PeriodsNum
 					InsertAccessData(data)
-
-					// 插入盈余池数据
-					InsertSurplusPool(sur)
 
 					// 插入玩家数据
 					gameData := &PlayerGameData{}

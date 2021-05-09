@@ -47,6 +47,7 @@ const (
 	taxRate float64 = 0.06 //税率
 )
 
+var sur *SurplusPoolDB
 
 type Room struct {
 	RoomId      string    // 房间号
