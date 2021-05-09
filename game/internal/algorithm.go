@@ -88,68 +88,6 @@ func (r *Room) GetType(numSlice []int) {
 			}
 		}
 	}
-	//// 判断顺子
-	//if numSlice[0] == 1 {
-	//	if numSlice[1] == 2 {
-	//		if numSlice[2] == 3 {
-	//			r.LotteryResult.CardType = msg.CardsType_Straight
-	//			return
-	//		}
-	//	}
-	//}
-	//if numSlice[0] == 2 {
-	//	if numSlice[1] == 3 {
-	//		if numSlice[2] == 4 {
-	//			r.LotteryResult.CardType = msg.CardsType_Straight
-	//			return
-	//		}
-	//	}
-	//}
-	//if numSlice[0] == 3 {
-	//	if numSlice[1] == 4 {
-	//		if numSlice[2] == 5 {
-	//			r.LotteryResult.CardType = msg.CardsType_Straight
-	//			return
-	//		}
-	//	}
-	//}
-	//if numSlice[0] == 4 {
-	//	if numSlice[1] == 5 {
-	//		if numSlice[2] == 6 {
-	//			r.LotteryResult.CardType = msg.CardsType_Straight
-	//			return
-	//		}
-	//	}
-	//}
-	//if numSlice[0] == 5 {
-	//	if numSlice[1] == 6 {
-	//		if numSlice[2] == 7 {
-	//			r.LotteryResult.CardType = msg.CardsType_Straight
-	//			return
-	//		}
-	//	}
-	//}
-	//if numSlice[0] == 6 {
-	//	if numSlice[1] == 7 {
-	//		if numSlice[2] == 8 {
-	//			r.LotteryResult.CardType = msg.CardsType_Straight
-	//			return
-	//		}
-	//	}
-	//}
-	//if numSlice[0] == 7 {
-	//	if numSlice[1] == 8 {
-	//		if numSlice[2] == 9 {
-	//			r.LotteryResult.CardType = msg.CardsType_Straight
-	//			return
-	//		}
-	//	}
-	//}
-	//// 判断对子
-	//if findRepeatNumber(numSlice) != -1 {
-	//	r.LotteryResult.CardType = msg.CardsType_Pair
-	//	return
-	//}
 }
 
 func findRepeatNumber(nums []int) int {

@@ -44,13 +44,9 @@ const (
 )
 
 const (
-	taxRate float64 = 0.05 //税率
+	taxRate float64 = 0.06 //税率
 )
 
-// 游戏阶段channel
-var DownBetChannel chan bool
-var CloseChannel chan bool
-var SettleChannel chan bool
 
 type Room struct {
 	RoomId      string    // 房间号
@@ -113,9 +109,6 @@ func (r *Room) Init() {
 
 	r.IsOpenRoom = true
 
-	DownBetChannel = make(chan bool)
-	CloseChannel = make(chan bool)
-	SettleChannel = make(chan bool)
 }
 
 //BroadCastExcept 向当前玩家之外的玩家广播

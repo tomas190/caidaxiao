@@ -326,6 +326,8 @@ func (r *Room) CompareSettlement() {
 	// 获取开奖结果和类型
 	r.GetResultType()
 
+	log.Debug("开始进行结算数据~")
+
 	// 结算数据
 	r.ResultMoney()
 
@@ -387,6 +389,7 @@ func (r *Room) ResultMoney() {
 				v.Account += downBet
 			}
 		}
+		log.Debug("玩家流局结算~")
 	} else { // 正常结算
 		sur := &SurplusPoolDB{}
 		sur.UpdateTime = time.Now()
@@ -399,6 +402,8 @@ func (r *Room) ResultMoney() {
 			sur.HistoryWin = surPool.HistoryWin
 			sur.HistoryLose = surPool.HistoryLose
 		}
+
+		log.Debug("查询盈余池数据~")
 
 		for _, v := range r.PlayerList {
 			if v != nil && v.IsAction == true {
@@ -551,6 +556,8 @@ func (r *Room) GetResultType() {
 	// 开奖类型 豹子(千位、百位、个位)
 	r.GetType(r.Lottery)
 
+	log.Debug("获取开奖类型~")
+
 	var potWin msg.PotWinList
 	potWin.ResultNum = r.LotteryResult.ResultNum
 	potWin.BigSmall = r.LotteryResult.BigSmall
@@ -620,4 +627,5 @@ func (r *Room) GetResultType() {
 			}
 		}
 	}
+	log.Debug("获取历史下注记录~")
 }
