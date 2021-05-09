@@ -9,13 +9,14 @@ type Player struct {
 	// 玩家代理链接
 	ConnAgent gate.Agent
 
-	Id       string
-	NickName string
-	HeadImg  string
-	Account  float64
-	Password string
-	Token    string
-	RoundId  string
+	Id        string
+	NickName  string
+	HeadImg   string
+	Account   float64
+	Password  string
+	Token     string
+	RoundId   string
+	PackageId uint16
 
 	Status          msg.PlayerStatus     // 玩家状态
 	BankerMoney     float64              // 庄家金额

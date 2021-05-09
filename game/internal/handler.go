@@ -180,7 +180,7 @@ func handleLogin(args []interface{}) {
 		//		log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
 		//	}
 		//}
-		
+
 		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
 
 			log.Debug("玩家首次登陆:%v", u.Id)

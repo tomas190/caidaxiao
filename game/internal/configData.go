@@ -39,6 +39,10 @@ func getNextTime() string {
 	return datetime + ":00"
 }
 
+func SetPackageTaxM(packageT uint16, tax uint8) {
+	packageTax[packageT] = tax
+}
+
 func removeDuplicate(personList []msg.HistoryData) []msg.HistoryData {
 	result := []msg.HistoryData{}
 	for i := range personList {

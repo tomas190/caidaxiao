@@ -49,6 +49,8 @@ const (
 
 var sur *SurplusPoolDB
 
+var packageTax map[uint16]uint8
+
 type Room struct {
 	RoomId      string    // 房间号
 	PlayerList  []*Player // 玩家列表

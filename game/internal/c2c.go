@@ -249,14 +249,44 @@ func (c4c *Conn4Center) onServerLogin(msgBody interface{}) {
 		log.Error(err.Error())
 	}
 
-	if code != 200 {
-		log.Debug("同步中心服服务器登录失败:%v", data)
-		return
-	}
 
 	if data["status"] == "SUCCESS" && code == 200 {
 		log.Debug("<-------- serverLogin SUCCESS~!!! -------->")
 		c4c.LoginStat = true
+
+		msginfo := data["msg"].(map[string]interface{})
+		fmt.Println("globals:", msginfo["globals"], reflect.TypeOf(msginfo["globals"]))
+
+		globals := msginfo["globals"].([]interface{})
+		fmt.Println("allList", globals)
+		for k, v := range globals {
+			fmt.Println(k, v)
+			info := v.(map[string]interface{})
+			fmt.Println("package_id", info["package_id"])
+
+			var nPackage uint16
+			var nTax uint8
+
+			jsonPackageId, err := info["package_id"].(json.Number).Int64()
+			if err != nil {
+				log.Fatal(err.Error())
+			} else {
+				fmt.Println("nPackage", uint16(jsonPackageId))
+				nPackage = uint16(jsonPackageId)
+			}
+			jsonTax, err := info["platform_tax_percent"].(json.Number).Int64()
+
+			if err != nil {
+				log.Fatal(err.Error())
+			} else {
+				fmt.Println("tax", uint8(jsonTax))
+				nTax = uint8(jsonTax)
+			}
+
+			SetPackageTaxM(nPackage, nTax)
+
+			log.Debug("packageId:%v,tax:%v", nPackage, nTax)
+		}
 	}
 
 }
@@ -290,6 +320,7 @@ func (c4c *Conn4Center) onUserLogin(msgBody interface{}) {
 				nick := gameUser["game_nick"]
 				headImg := gameUser["game_img"]
 				userId := gameUser["id"]
+				packageId := gameUser["package_id"]
 
 				intID, err := userId.(json.Number).Int64()
 				if err != nil {
@@ -297,11 +328,17 @@ func (c4c *Conn4Center) onUserLogin(msgBody interface{}) {
 				}
 				strId = strconv.Itoa(int(intID))
 
+				pckId, err2 := packageId.(json.Number).Int64()
+				if err2 != nil {
+					log.Fatal(err2.Error())
+				}
+
 				//找到等待登录玩家
 				userData, ok = c4c.waitUser[strId]
 				if ok {
 					userData.Data.HeadImg = headImg.(string)
 					userData.Data.NickName = nick.(string)
+					userData.Data.PackageId = uint16(pckId)
 				}
 			}
 			gameAccount, okA := userInfo["game_account"].(map[string]interface{})

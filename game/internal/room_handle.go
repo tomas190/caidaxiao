@@ -452,7 +452,10 @@ func (r *Room) ResultMoney() {
 					}
 				}
 
-				tax := (taxMoney) * taxRate
+				pac := packageTax[v.PackageId] //todo
+				taxR := float64(pac) / 100
+				tax := (taxMoney) * taxR
+				//tax := (taxMoney) * taxRate
 				v.ResultMoney = (totalWin + taxMoney) - tax
 				v.Account += v.ResultMoney
 				v.ResultMoney -= totalLose

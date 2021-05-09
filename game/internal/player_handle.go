@@ -65,13 +65,16 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		}
 		// 设定全区的最大限红为10000
 		if m.DownPot == msg.PotType_BigPot {
-			if (room.PotMoneyCount.BigDownBet+m.DownBet)+(room.PotMoneyCount.LeopardDownBet*WinLeopard)-room.PotMoneyCount.SmallDownBet > 10000 {
+			log.Debug("当前限制金额为1:%v", room.PotMoneyCount.BigDownBet+m.DownBet)
+			log.Debug("当前限制金额为2:%v", room.PotMoneyCount.SmallDownBet)
+			log.Debug("当前限制金额为3:%v", (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet)
+			if (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data)
 				return
 			}
-			if (p.DownBetMoney.BigDownBet+m.DownBet)+(p.DownBetMoney.LeopardDownBet*WinLeopard)-p.DownBetMoney.SmallDownBet > 10000 {
+			if (p.DownBetMoney.BigDownBet+m.DownBet)-p.DownBetMoney.SmallDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data)
@@ -79,27 +82,13 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			}
 		}
 		if m.DownPot == msg.PotType_SmallPot {
-			if (room.PotMoneyCount.SmallDownBet+m.DownBet)+(room.PotMoneyCount.LeopardDownBet*WinLeopard)-room.PotMoneyCount.BigDownBet > 10000 {
+			if (room.PotMoneyCount.SmallDownBet+m.DownBet)-room.PotMoneyCount.BigDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data)
 				return
 			}
-			if (p.DownBetMoney.SmallDownBet+m.DownBet)+(p.DownBetMoney.LeopardDownBet*WinLeopard)-p.DownBetMoney.BigDownBet > 10000 {
-				data := &msg.ErrorMsg_S2C{}
-				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
-				return
-			}
-		}
-		if m.DownPot == msg.PotType_LeopardPot {
-			if room.PotMoneyCount.BigDownBet+((room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard)-room.PotMoneyCount.SmallDownBet > 10000 {
-				data := &msg.ErrorMsg_S2C{}
-				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
-				return
-			}
-			if room.PotMoneyCount.SmallDownBet+((room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard)-room.PotMoneyCount.BigDownBet > 10000 {
+			if (p.DownBetMoney.SmallDownBet+m.DownBet)-p.DownBetMoney.BigDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data)
