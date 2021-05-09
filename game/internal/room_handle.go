@@ -157,11 +157,11 @@ func (r *Room) HandleCloseOver() {
 	r.BroadCastMsg(data)
 
 	// 发送时间
-	//send := &msg.SendActTime_S2C{}
-	//send.StartTime = r.counter
-	//send.GameTime = CloseTime
-	//send.GameStep = msg.GameStep_Close
-	//r.BroadCastMsg(send)
+	send := &msg.SendActTime_S2C{}
+	send.StartTime = r.counter
+	send.GameTime = CloseTime
+	send.GameStep = msg.GameStep_Close
+	r.BroadCastMsg(send)
 
 	// 获取派奖前的玩家投注数据
 	r.SetPlayerDownBet()
@@ -248,6 +248,9 @@ func (r *Room) HandleLiuJu() {
 
 	// 添加流局历史数据
 	var history msg.HistoryData
+	if r.resultTime == "" {
+		r.resultTime = getNextTime()
+	}
 	history.TimeFmt = r.resultTime
 	for _, v := range r.Lottery {
 		history.ResNum = append(history.ResNum, int32(v))

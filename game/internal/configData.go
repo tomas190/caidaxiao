@@ -10,9 +10,8 @@ import (
 
 const (
 	RECODE_CHAOCHUXIANHONG  = "4444"
-	RECODE_DOWNBETMONEYFULL = "1001"  // 房间限红
+	RECODE_DOWNBETMONEYFULL = "1001" // 房间限红
 )
-
 
 func Decimal(value float64) float64 {
 	value, _ = strconv.ParseFloat(fmt.Sprintf("%.6f", value), 64)
@@ -31,6 +30,13 @@ func RandFloatNum() float64 {
 	rand.Seed(time.Now().UnixNano())
 	n := rand.Intn(len(slice))
 	return slice[n]
+}
+
+func getNextTime() string {
+	timeLayout := "2006-01-02 15:04" //转化所需模板
+	timestamp := time.Now().Unix()
+	datetime := time.Unix(timestamp, 0).Format(timeLayout)
+	return datetime + ":00"
 }
 
 func removeDuplicate(personList []msg.HistoryData) []msg.HistoryData {
