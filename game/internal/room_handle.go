@@ -506,7 +506,7 @@ func (r *Room) ResultMoney() {
 					data.CardResult.CardType = r.LotteryResult.CardType
 					data.SettlementFunds = v.ResultMoney
 					data.SpareCash = v.Account
-					data.TaxRate = taxRate
+					data.TaxRate = taxR
 					data.PeriodsNum = r.PeriodsNum
 					InsertAccessData(data)
 
