@@ -36,17 +36,16 @@ func (r *Room) JoinGameRoom(p *Player) {
 	data := &msg.JoinRoom_S2C{}
 	roomData := r.RespRoomData()
 	data.RoomData = roomData
-	if r.GameStat == msg.GameStep_Banker {
-		data.RoomData.GameTime = BankerTime - r.counter
-		//log.Debug("加入房间 BankerTime: %v", msg.GameTime)
-	} else if r.GameStat == msg.GameStep_Banker2 {
-		data.RoomData.GameTime = Banker2Time - r.counter
-	} else if r.GameStat == msg.GameStep_DownBet {
+	if r.GameStat == msg.GameStep_DownBet {
 		data.RoomData.GameTime = DownBetTime - r.counter
-		//log.Debug("加入房间 DownBetTime: %v", msg.GameTime)
+	} else if r.GameStat == msg.GameStep_Close {
+		data.RoomData.GameTime = CloseTime - r.counter
+	} else if r.GameStat == msg.GameStep_GetRes {
+		data.RoomData.GameTime = GetResTime - r.counter
 	} else if r.GameStat == msg.GameStep_Settle {
 		data.RoomData.GameTime = SettleTime - r.counter
-		//log.Debug("加入房间 SettleTime: %v", msg.GameTime)
+	} else if r.GameStat == msg.GameStep_LiuJu {
+		data.RoomData.GameTime = SettleTime - r.counter
 	}
 	p.SendMsg(data)
 
@@ -220,6 +219,8 @@ func (r *Room) HandleGetRes() {
 		sur.HistoryWin = surPool.HistoryWin
 		sur.HistoryLose = surPool.HistoryLose
 	}
+
+	log.Debug("获取盈余数据~")
 
 	// 定时
 	t := time.NewTicker(time.Second)
