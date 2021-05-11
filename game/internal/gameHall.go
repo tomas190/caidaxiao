@@ -86,47 +86,46 @@ func (hall *GameHall) CreateGameRoom() {
 }
 
 func (hall *GameHall) PlayerJoinRoom(rid string, p *Player) {
-	v, _ := hall.RoomRecord.Load(rid)
-	if v != nil {
-		r := v.(*Room)
-		for i, userId := range r.UserLeave {
-			// 把玩家从掉线列表中移除
+
+	roomId, _ := hall.UserRoom.Load(p.Id)
+	if roomId != nil {
+		room := roomId.(*Room)
+		// 把玩家从掉线列表中移除
+		for i, userId := range room.UserLeave {
 			if userId == p.Id {
-				log.Debug("AllocateUser 清除玩家记录~:%v", len(r.UserLeave))
-				r.UserLeave = append(r.UserLeave[:i], r.UserLeave[i+1:]...)
-				log.Debug("AllocateUser 清除玩家记录~:%v", userId)
-				log.Debug("AllocateUser 清除玩家记录~:%v", len(r.UserLeave))
+				room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
 				break
 			}
 		}
-	}
-
-	// 处理重连
-	for _, r := range hall.roomList {
-		for _, v := range r.PlayerList {
-			if v != nil && v.Id == p.Id {
-				roomData := r.RespRoomData()
-				enter := &msg.EnterRoom_S2C{}
-				enter.RoomData = roomData
-				if r.GameStat == msg.GameStep_Banker {
-					enter.RoomData.GameTime = BankerTime - r.counter
-				} else if r.GameStat == msg.GameStep_Banker2 {
-					enter.RoomData.GameTime = Banker2Time - r.counter
-				} else if r.GameStat == msg.GameStep_DownBet {
-					enter.RoomData.GameTime = DownBetTime - r.counter
-				} else if r.GameStat == msg.GameStep_Settle {
-					enter.RoomData.GameTime = SettleTime - r.counter
-				}
-				p.SendMsg(enter)
-
-			}
+		enter := &msg.EnterRoom_S2C{}
+		roomData := room.RespRoomData()
+		enter.RoomData = roomData
+		if room.GameStat == msg.GameStep_DownBet {
+			enter.RoomData.GameTime = DownBetTime - room.counter
+		} else if room.GameStat == msg.GameStep_Close {
+			enter.RoomData.GameTime = CloseTime - room.counter
+		} else if room.GameStat == msg.GameStep_GetRes {
+			enter.RoomData.GameTime = GetResTime - room.counter
+		} else if room.GameStat == msg.GameStep_Settle {
+			enter.RoomData.GameTime = SettleTime - room.counter
+		} else if room.GameStat == msg.GameStep_LiuJu {
+			enter.RoomData.GameTime = SettleTime - room.counter
 		}
+		p.SendMsg(enter)
+		return
 	}
 
 	r, _ := hall.RoomRecord.Load(rid)
 	if r != nil {
 		room := r.(*Room)
 		if room.IsOpenRoom == true {
+			// 把玩家从掉线列表中移除
+			for i, userId := range room.UserLeave {
+				if userId == p.Id {
+					room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
+					break
+				}
+			}
 			room.JoinGameRoom(p)
 		}
 	}

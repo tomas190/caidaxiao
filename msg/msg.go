@@ -9,7 +9,6 @@ import (
 var Processor = protobuf.NewProcessor()
 
 func init() {
-
 	log.Debug("msg init ~~~")
 	Processor.Register(&Ping{})
 	Processor.Register(&Pong{})
@@ -37,3 +36,4 @@ func init() {
 	Processor.Register(&ErrorMsg_S2C{})
 
 }
+

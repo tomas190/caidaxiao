@@ -53,6 +53,11 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			log.Debug("玩家金额不足,不能进行下注~")
 			return
 		}
+		if m.DownBet != 1 && m.DownBet != 5 && m.DownBet != 10 && m.DownBet != 50 &&
+			m.DownBet != 100 && m.DownBet != 500 && m.DownBet != 1000 {
+			log.Debug("玩家下注筹码错误!")
+			return
+		}
 
 		// 当下玩家下注限红设定
 		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
@@ -103,6 +108,9 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				return
 			}
 		}
+
+		room.userRoomMutex.Lock()
+		defer room.userRoomMutex.Unlock()
 
 		p.IsAction = m.IsAction
 		if p.IsAction == true {

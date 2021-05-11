@@ -372,15 +372,15 @@ func (r *Room) GetCaiYuan() {
 		for {
 			var dataRes *http.Response
 			if r.RoomId == "1" {
-				//caiYuan := "http://free.manycai.com/K2601968389c853/hn60-1.json"
-				res, err := http.Get(conf.Server.CaiYuan)
+				caiYuan := "https://manycai.com/K2601968389c853/hn60-1.json"
+				res, err := http.Get(caiYuan)
 				if err != nil {
 					log.Debug("再次获取随机数值失败: %v", err)
 					return
 				}
 				dataRes = res
 			} else if r.RoomId == "2" {
-				caiYuan := "http://free.manycai.com/K2601968389c853/PTXFFC-1.json"
+				caiYuan := "https://manycai.com/K2601968389c853/PTXFFC-1.json"
 				res, err := http.Get(caiYuan)
 				if err != nil {
 					log.Debug("再次获取随机数值失败: %v", err)

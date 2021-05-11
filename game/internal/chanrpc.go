@@ -28,7 +28,7 @@ func rpcCloseAgent(args []interface{}) {
 		log.Debug("<-------------%v 主动断开链接--------------->", p.Id)
 
 		p.IsOnline = false
-		if p.IsAction == true || p.IsBanker == true {
+		if p.IsAction == true {
 			rid, _ := hall.UserRoom.Load(p.Id)
 			v, _ := hall.RoomRecord.Load(rid)
 			if v != nil {
