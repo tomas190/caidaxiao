@@ -113,7 +113,7 @@ func (c4c *Conn4Center) CreatConnect() {
 	log.Debug("<--- Dial rsp --->: %v", rsp)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("CreatConnect:%v", err.Error())
 	} else {
 		c4c.Run()
 	}
@@ -249,7 +249,6 @@ func (c4c *Conn4Center) onServerLogin(msgBody interface{}) {
 		log.Error(err.Error())
 	}
 
-
 	if data["status"] == "SUCCESS" && code == 200 {
 		log.Debug("<-------- serverLogin SUCCESS~!!! -------->")
 		c4c.LoginStat = true
@@ -269,15 +268,15 @@ func (c4c *Conn4Center) onServerLogin(msgBody interface{}) {
 
 			jsonPackageId, err := info["package_id"].(json.Number).Int64()
 			if err != nil {
-				log.Fatal(err.Error())
+				log.Debug("jsonPackageId:%v", err.Error())
 			} else {
-				fmt.Println("nPackage", uint16(jsonPackageId))
+				//fmt.Println("nPackage", uint16(jsonPackageId))
 				nPackage = uint16(jsonPackageId)
 			}
 			jsonTax, err := info["platform_tax_percent"].(json.Number).Int64()
 
 			if err != nil {
-				log.Fatal(err.Error())
+				log.Debug("jsonTax:%v", err.Error())
 			} else {
 				//fmt.Println("tax", uint8(jsonTax))
 				nTax = uint8(jsonTax)
@@ -324,13 +323,13 @@ func (c4c *Conn4Center) onUserLogin(msgBody interface{}) {
 
 				intID, err := userId.(json.Number).Int64()
 				if err != nil {
-					log.Fatal(err.Error())
+					log.Fatal("onUserLogin intID:%v", err.Error())
 				}
 				strId = strconv.Itoa(int(intID))
 
 				pckId, err2 := packageId.(json.Number).Int64()
 				if err2 != nil {
-					log.Fatal(err2.Error())
+					log.Fatal("onUserLogin pckId:%v", err2.Error())
 				}
 
 				//找到等待登录玩家
@@ -392,7 +391,7 @@ func (c4c *Conn4Center) onUserLogout(msgBody interface{}) {
 
 				intID, err := userId.(json.Number).Int64()
 				if err != nil {
-					log.Fatal(err.Error())
+					log.Fatal("onUserLogout:%v", err.Error())
 				}
 				strId = strconv.Itoa(int(intID))
 				//找到等待登录玩家
@@ -485,7 +484,7 @@ func (c4c *Conn4Center) onLockSettlement(msgBody interface{}) {
 	if ok {
 		code, err := data["code"].(json.Number).Int64()
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatal("onLockSettlement:%v", err.Error())
 		}
 
 		fmt.Println(code, reflect.TypeOf(code))
@@ -501,7 +500,7 @@ func (c4c *Conn4Center) onUnlockSettlement(msgBody interface{}) {
 	if ok {
 		code, err := data["code"].(json.Number).Int64()
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatal("onUnlockSettlement:%v", err.Error())
 		}
 
 		fmt.Println(code, reflect.TypeOf(code))
@@ -605,7 +604,7 @@ func (c4c *Conn4Center) onWinMoreThanNotice(msgBody interface{}) {
 	if ok {
 		code, err := data["code"].(json.Number).Int64()
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatal("onWinMoreThanNotice:%v", err.Error())
 		}
 
 		fmt.Println(code, reflect.TypeOf(code))
@@ -699,7 +698,7 @@ func (c4c *Conn4Center) SendMsg2Center(data interface{}) {
 
 	err2 := c4c.conn.WriteMessage(websocket.TextMessage, []byte(codeData))
 	if err2 != nil {
-		log.Fatal(err2.Error())
+		log.Fatal("SendMsg2Center:%v", err2.Error())
 	}
 }
 

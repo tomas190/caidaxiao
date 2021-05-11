@@ -1624,6 +1624,7 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/json.go" beforeDir="false" afterPath="$PROJECT_DIR$/conf/json.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/internal/c2c.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/c2c.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../doudizhu-cocos/.idea/doudizhu-cocos.iml" beforeDir="false" />
@@ -3746,10 +3747,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state width="1237" height="301" key="GridCell.Tab.0.right/0.0.1280.680@0.0.1280.680" timestamp="1618994579500" />
-    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1620720460540">
+    <state x="321" y="73" width="638" height="534" key="find.popup" timestamp="1620722910421">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
-    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1620720460540" />
+    <state x="321" y="73" width="638" height="534" key="find.popup/0.0.1280.680@0.0.1280.680" timestamp="1620722910421" />
     <state x="331" y="92" width="672" height="678" key="search.everywhere.popup" timestamp="1620716216913">
       <screen x="0" y="0" width="1280" height="680" />
     </state>

@@ -38,10 +38,10 @@ var Server struct {
 func init() {
 	data, err := ioutil.ReadFile("conf/server.json")
 	if err != nil {
-		log.Fatal("%v", err)
+		log.Fatal("init ReadFile:%v", err)
 	}
 	err = json.Unmarshal(data, &Server)
 	if err != nil {
-		log.Fatal("%v", err)
+		log.Fatal("init Unmarshal:%v", err)
 	}
 }
