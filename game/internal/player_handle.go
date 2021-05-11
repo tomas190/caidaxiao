@@ -54,6 +54,17 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			return
 		}
 
+		// 当下玩家下注限红设定
+		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
+		if p.MaxBet > 0 {
+			if totalBet+m.DownBet > p.MaxBet {
+				data := &msg.ErrorMsg_S2C{}
+				data.MsgData = RECODE_DOWNBETLIMITBET
+				p.SendMsg(data)
+				return
+			}
+		}
+
 		// 设定单个区域限红为1000
 		if m.DownPot == msg.PotType_LeopardPot {
 			if (room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard > 1000 {
@@ -65,9 +76,6 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		}
 		// 设定全区的最大限红为10000
 		if m.DownPot == msg.PotType_BigPot {
-			log.Debug("当前限制金额为1:%v", room.PotMoneyCount.BigDownBet+m.DownBet)
-			log.Debug("当前限制金额为2:%v", room.PotMoneyCount.SmallDownBet)
-			log.Debug("当前限制金额为3:%v", (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet)
 			if (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL

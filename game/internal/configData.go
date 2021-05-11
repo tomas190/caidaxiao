@@ -11,6 +11,8 @@ import (
 const (
 	RECODE_CHAOCHUXIANHONG  = "4444"
 	RECODE_DOWNBETMONEYFULL = "1001" // 房间限红
+	RECODE_DOWNBETLIMITBET  = "1002" // 投注无效
+
 )
 
 func Decimal(value float64) float64 {

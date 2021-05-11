@@ -2,10 +2,8 @@ package internal
 
 import (
 	"caidaxiao/msg"
-	"fmt"
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
-	"time"
 )
 
 func init() {
@@ -49,24 +47,12 @@ func rpcCloseAgent(args []interface{}) {
 				a.WriteMsg(leaveHall)
 			}
 		} else {
-			rid, _ := hall.UserRoom.Load(p.Id)
-			v, _ := hall.RoomRecord.Load(rid)
-			if v != nil {
-				room := v.(*Room)
-				if p.IsBanker == true {
-					room.IsConBanker = false
-					nowTime := time.Now().Unix()
-					p.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), room.RoomId)
-					reason := "庄家申请下庄"
-					c4c.BankerStatus(p, 0, nowTime, p.RoundId, reason)
-				}
-				hall.UserRecord.Delete(p.Id)
-				p.PlayerExitRoom()
-				c4c.UserLogoutCenter(p.Id, p.Password, p.Token)  //todo
-				leaveHall := &msg.Logout_S2C{}
-				a.WriteMsg(leaveHall)
-				a.Close()
-			}
+			hall.UserRecord.Delete(p.Id)
+			p.PlayerExitRoom()
+			c4c.UserLogoutCenter(p.Id, p.Password, p.Token) //todo
+			leaveHall := &msg.Logout_S2C{}
+			a.WriteMsg(leaveHall)
+			a.Close()
 		}
 	}
 }

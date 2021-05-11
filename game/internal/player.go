@@ -36,6 +36,8 @@ type Player struct {
 	IsRobot         bool                 // 是否机器人
 	IsOnline        bool                 // 玩家是否在线
 
+	MinBet int32 // 限定下注最小金额
+	MaxBet int32 // 限定下注最大金额
 }
 
 func (p *Player) Init() {
@@ -56,6 +58,8 @@ func (p *Player) Init() {
 	p.IsAction = false
 	p.IsRobot = false
 	p.IsOnline = true
+	p.MinBet = 0
+	p.MaxBet = 0
 }
 
 //SendMsg 玩家向客户端发送消息

@@ -25,6 +25,7 @@ const (
 	PlayerDownBetDB  = "PlayerDownBetDB"
 	PlayerGameDataDB = "PlayerGameDataDB"
 	RoomTotalBetDB   = "RoomTotalBetDB"
+	UserLimitBetDB   = "UserLimitBetDB"
 )
 
 // 连接数据库集合的函数 传入集合 默认连接IM数据库
@@ -501,6 +502,37 @@ func GetRoomTotalBet(page, limit int, selector bson.M, sortBy string) ([]RoomTot
 	log.Debug("获取 %v 条数据,limit:%v", n, limit)
 	skip := (page - 1) * limit
 	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+	if err != nil {
+		return nil, 0, err
+	}
+	return wts, n, nil
+}
+
+//InsertUserLimitBet 设定玩家下注限红
+func InsertUserLimitBet(sur *GameLimitBet) {
+	s, c := connect(dbName, UserLimitBetDB)
+	defer s.Close()
+
+	err := c.Insert(sur)
+	if err != nil {
+		log.Error("<----- 数据库插入UserLimitBet数据失败 ~ ----->:%v", err)
+		return
+	}
+}
+
+//GetUserLimitBet 获取玩家下注限红数据
+func GetUserLimitBet(selector bson.M) ([]GameLimitBet, int, error) {
+	s, c := connect(dbName, UserLimitBetDB)
+	defer s.Close()
+
+	var wts []GameLimitBet
+
+	n, err := c.Find(selector).Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	err = c.Find(selector).All(&wts)
 	if err != nil {
 		return nil, 0, err
 	}

@@ -132,6 +132,14 @@ type GamePayResp struct {
 	TotalLose float64 `json:"total_lose" bson:"total_lose"`
 }
 
+type GameLimitBet struct {
+	UserId  string `form:"user_id" bson:"user_id" json:"user_id"`
+	GameId  string `form:"game_id" bson:"game_id" json:"game_id"`
+	MinBet  string `form:"min_bet" bson:"min_bet" json:"min_bet"`
+	MaxBet  string `form:"max_bet" bson:"max_bet" json:"max_bet"`
+	TimeFmt string `form:"time_fmt" bson:"time_fmt" json:"time_fmt"`
+}
+
 const (
 	SuccCode = 0
 	ErrCode  = -1
@@ -163,6 +171,10 @@ func StartHttpServer() {
 	http.HandleFunc("/api/HandleHeNeiWin", HandleHeNeiWin)
 	// 分分彩连赢活动（奇趣分分彩）
 	http.HandleFunc("/api/HandleQiQuWin", HandleQiQuWin)
+	// 设定玩家下注限紅
+	http.HandleFunc("/api/setUserLimitBet", setUserLimitBet)
+	// 获取玩家下注限紅
+	http.HandleFunc("/api/getUserLimitBet", getUserLimitBet)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -802,6 +814,69 @@ func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
 	var result pageData
 	result.Total = 1
 	result.List = data
+
+	js, err := json.Marshal(NewResp(SuccCode, "", result))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
+	var req GameLimitBet
+
+	req.UserId = r.PostFormValue("user_id")
+	req.GameId = r.PostFormValue("game_id")
+	req.MinBet = r.PostFormValue("min_bet")
+	req.MaxBet = r.PostFormValue("max_bet")
+	req.TimeFmt = time.Now().Format("2006-01-02_15:04:05")
+
+	minBet, _ := strconv.Atoi(req.MinBet)
+	maxBet, _ := strconv.Atoi(req.MaxBet)
+
+	hall.UserRecord.Range(func(key, value interface{}) bool {
+		u := value.(*Player)
+		if u.Id == req.UserId {
+			u.MinBet = int32(minBet)
+			u.MaxBet = int32(maxBet)
+		}
+		return true
+	})
+
+	// 插入玩家限定下注数据
+	InsertUserLimitBet(&req)
+
+	js, err := json.Marshal(NewResp(SuccCode, "", "设定玩家下注限红成功"))
+	if err != nil {
+		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
+}
+
+func getUserLimitBet(w http.ResponseWriter, r *http.Request) {
+	var req GameLimitBet
+
+	req.UserId = r.FormValue("user_id")
+	req.GameId = r.FormValue("game_id")
+
+	selector := bson.M{}
+
+	if req.UserId != "" {
+		selector["user_id"] = req.UserId
+	}
+	if req.GameId != "" {
+		selector["game_id"] = req.GameId
+	}
+
+	recodes, count, err := GetUserLimitBet(selector)
+
+	var result pageData
+	result.Total = count
+	result.List = recodes
 
 	js, err := json.Marshal(NewResp(SuccCode, "", result))
 	if err != nil {
