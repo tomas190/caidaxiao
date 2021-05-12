@@ -49,7 +49,7 @@ const (
 
 var sur *SurplusPoolDB
 
-var packageTax map[uint16]uint8
+var packageTax map[uint16]float64
 
 type Room struct {
 	RoomId      string    // 房间号

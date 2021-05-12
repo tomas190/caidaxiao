@@ -61,6 +61,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 		// 当下玩家下注限红设定
 		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
+		log.Debug("玩家最大限注:%v", p.MaxBet)
 		if p.MaxBet > 0 {
 			if totalBet+m.DownBet > p.MaxBet {
 				data := &msg.ErrorMsg_S2C{}

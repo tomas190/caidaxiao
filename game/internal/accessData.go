@@ -833,12 +833,14 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 	req.MaxBet = r.PostFormValue("max_bet")
 	req.TimeFmt = time.Now().Format("2006-01-02_15:04:05")
 
+	log.Debug("限制玩家下注:%v", req)
 	minBet, _ := strconv.Atoi(req.MinBet)
 	maxBet, _ := strconv.Atoi(req.MaxBet)
 
 	hall.UserRecord.Range(func(key, value interface{}) bool {
 		u := value.(*Player)
 		if u.Id == req.UserId {
+			log.Debug("玩家id:%v,限制:%v,%v", u.Id, minBet, maxBet)
 			u.MinBet = int32(minBet)
 			u.MaxBet = int32(maxBet)
 		}
@@ -848,7 +850,7 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 	// 插入玩家限定下注数据
 	InsertUserLimitBet(&req)
 
-	js, err := json.Marshal(NewResp(SuccCode, "", "设定玩家下注限红成功"))
+	js, err := json.Marshal(NewResp(SuccCode, "", req))
 	if err != nil {
 		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
 		return

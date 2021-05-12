@@ -5,17 +5,22 @@ import (
 	"caidaxiao/conf"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/name5566/leaf/log"
-	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"net/http"
 	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/name5566/leaf/log"
+	"gopkg.in/mgo.v2/bson"
 )
+
+// 防止并发写Websocket用的锁
+var syncWrite sync.Mutex
 
 //CGTokenRsp 接受Token结构体
 type CGTokenRsp struct {
@@ -177,10 +182,12 @@ func (c4c *Conn4Center) Run() {
 
 //onBreath 中心服心跳
 func (c4c *Conn4Center) onBreath() {
+	syncWrite.Lock()
 	err := c4c.conn.WriteMessage(websocket.TextMessage, []byte(""))
 	if err != nil {
 		log.Error(err.Error())
 	}
+	syncWrite.Unlock()
 }
 
 //onReceive 接收消息
@@ -264,7 +271,7 @@ func (c4c *Conn4Center) onServerLogin(msgBody interface{}) {
 			//fmt.Println("package_id", info["package_id"])
 
 			var nPackage uint16
-			var nTax uint8
+			var nTax float64
 
 			jsonPackageId, err := info["package_id"].(json.Number).Int64()
 			if err != nil {
@@ -273,13 +280,13 @@ func (c4c *Conn4Center) onServerLogin(msgBody interface{}) {
 				//fmt.Println("nPackage", uint16(jsonPackageId))
 				nPackage = uint16(jsonPackageId)
 			}
-			jsonTax, err := info["platform_tax_percent"].(json.Number).Int64()
+			jsonTax, err := info["platform_tax_percent"].(json.Number).Float64()
 
 			if err != nil {
 				log.Debug("jsonTax:%v", err.Error())
 			} else {
 				//fmt.Println("tax", uint8(jsonTax))
-				nTax = uint8(jsonTax)
+				nTax = jsonTax
 			}
 
 			SetPackageTaxM(nPackage, nTax)
@@ -689,13 +696,15 @@ func (c4c *Conn4Center) UserLogoutCenter(userId string, password string, token s
 
 //SendMsg2Center 发送消息到中心服
 func (c4c *Conn4Center) SendMsg2Center(data interface{}) {
+	syncWrite.Lock()
+	defer syncWrite.Unlock()
 	// Json序列化
 	codeData, err1 := json.Marshal(data)
 	if err1 != nil {
 		log.Error(err1.Error())
 	}
 	log.Debug("Msg to Send Center:%v", string(codeData))
-
+	//TODO LOCK
 	err2 := c4c.conn.WriteMessage(websocket.TextMessage, []byte(codeData))
 	if err2 != nil {
 		log.Fatal("SendMsg2Center:%v", err2.Error())

@@ -5,6 +5,7 @@ import (
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
 	"reflect"
+	"strconv"
 	"time"
 )
 
@@ -212,6 +213,12 @@ func handleLogin(args []interface{}) {
 
 			u.Password = m.GetPassWord()
 			u.Token = m.GetToken()
+
+			limitData := LoadUserLimitBet(u)
+			minBet, _ := strconv.Atoi(limitData.MinBet)
+			maxBet, _ := strconv.Atoi(limitData.MaxBet)
+			u.MinBet = int32(minBet)
+			u.MaxBet = int32(maxBet)
 
 			hall.UserRecord.Store(u.Id, u)
 
