@@ -491,13 +491,6 @@ func (r *Room) KickOutPlayer() {
 				if v.IsOnline == true {
 					v.PlayerExitRoom()
 				} else {
-					if v.IsBanker == true {
-						r.IsConBanker = false
-						nowTime := time.Now().Unix()
-						v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
-						reason := "庄家申请下庄"
-						c4c.BankerStatus(v, 0, nowTime, v.RoundId, reason)
-					}
 					v.PlayerExitRoom()
 					hall.UserRecord.Delete(v.Id)
 					c4c.UserLogoutCenter(v.Id, v.Password, v.Token) //, p.PassWord
