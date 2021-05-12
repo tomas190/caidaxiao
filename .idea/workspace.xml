@@ -1623,6 +1623,8 @@
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.ios_mac/mac/Icon.icns" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../build-templates/jsb-link/frameworks/runtime-src/proj.win32/res/game.ico" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$" beforeDir="false" afterPath="$PROJECT_DIR$" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/internal/Databases.go" beforeDir="false" afterPath="$PROJECT_DIR$/game/internal/Databases.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../creator.d.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../doudizhu-cocos/.idea/doudizhu-cocos.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../jsconfig.json" beforeDir="false" />
