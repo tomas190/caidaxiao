@@ -177,9 +177,6 @@ func (r *Room) HandleCloseOver() {
 			send.GameTime = CloseTime
 			send.GameStep = msg.GameStep_Close
 			r.BroadCastMsg(send)
-			if time.Now().Second() == 0 {
-				r.resultTime = time.Now().Format("2006-01-02 15:04:05")
-			}
 			if r.GameStat == msg.GameStep_GetRes {
 				r.counter = 0
 				return

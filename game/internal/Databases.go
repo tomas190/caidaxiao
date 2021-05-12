@@ -525,12 +525,12 @@ func LoadUserLimitBet(player *Player) GameLimitBet {
 	s, c := connect(dbName, UserLimitBetDB)
 	defer s.Close()
 
-	var game GameLimitBet
-	err := c.Find(bson.M{"id": player.Id}).One(game)
+	game := &GameLimitBet{}
+	err := c.Find(bson.M{"user_id": player.Id}).One(game)
 	if err != nil {
 		log.Error("<----- 数据库读取LoadUserLimitBet数据失败 ~ ----->:%v", err)
 	}
-	return game
+	return *game
 }
 
 //GetUserLimitBet 获取玩家下注限红数据
