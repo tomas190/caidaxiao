@@ -526,7 +526,7 @@ func LoadUserLimitBet(player *Player) GameLimitBet {
 	defer s.Close()
 
 	game := &GameLimitBet{}
-	err := c.Find(bson.M{"user_id": player.Id}).One(game)
+	err := c.Find(bson.M{"user_id": player.Id}).Sort("-updatetime").One(game)
 	if err != nil {
 		log.Error("<----- 数据库读取LoadUserLimitBet数据失败 ~ ----->:%v", err)
 	}
