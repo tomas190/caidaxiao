@@ -431,7 +431,7 @@ func (r *Room) ResultMoney() {
 					v.WinResultMoney = taxMoney
 					sur.HistoryWin += v.WinResultMoney
 					sur.TotalWinMoney += v.WinResultMoney
-					reason := "ResultWinScore" //todo
+					reason := "猜大小赢钱" //todo
 					if v.IsRobot == false {
 						//同时同步赢分和输分
 						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, totalWin)
@@ -441,7 +441,7 @@ func (r *Room) ResultMoney() {
 					v.LoseResultMoney = -totalLose + totalWin
 					sur.HistoryLose -= v.LoseResultMoney
 					sur.TotalLoseMoney -= v.LoseResultMoney
-					reason := "ResultLoseScore" //todo
+					reason := "猜大小输钱" //todo
 					//同时同步赢分和输分
 					if v.IsRobot == false {
 						if v.LoseResultMoney != 0 {
@@ -449,14 +449,19 @@ func (r *Room) ResultMoney() {
 						}
 					}
 				}
-
 				pac := packageTax[v.PackageId] //todo
-				taxR := float64(pac) / 100
-				tax := (taxMoney) * taxR
-				//tax := (taxMoney) * taxRate
+				taxR := pac / 100
+				var tax float64
+				if v.IsRobot == false {
+					tax = (taxMoney) * taxR // todo
+					//tax = (taxMoney) * taxRate
+				} else {
+					tax = (taxMoney) * taxRate
+				}
 				v.ResultMoney = (totalWin + taxMoney) - tax
 				v.Account += v.ResultMoney
 				v.ResultMoney -= totalLose
+
 				// 记录玩家20句游戏Win次数
 				if v.ResultMoney > 0 {
 					v.TwentyData = append(v.TwentyData, 2)

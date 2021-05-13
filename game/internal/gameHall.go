@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"caidaxiao/msg"
 	"errors"
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
@@ -86,34 +85,6 @@ func (hall *GameHall) CreateGameRoom() {
 }
 
 func (hall *GameHall) PlayerJoinRoom(rid string, p *Player) {
-
-	roomId, _ := hall.UserRoom.Load(p.Id)
-	if roomId != nil {
-		room := roomId.(*Room)
-		// 把玩家从掉线列表中移除
-		for i, userId := range room.UserLeave {
-			if userId == p.Id {
-				room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
-				break
-			}
-		}
-		enter := &msg.EnterRoom_S2C{}
-		roomData := room.RespRoomData()
-		enter.RoomData = roomData
-		if room.GameStat == msg.GameStep_DownBet {
-			enter.RoomData.GameTime = DownBetTime - room.counter
-		} else if room.GameStat == msg.GameStep_Close {
-			enter.RoomData.GameTime = CloseTime - room.counter
-		} else if room.GameStat == msg.GameStep_GetRes {
-			enter.RoomData.GameTime = GetResTime - room.counter
-		} else if room.GameStat == msg.GameStep_Settle {
-			enter.RoomData.GameTime = SettleTime - room.counter
-		} else if room.GameStat == msg.GameStep_LiuJu {
-			enter.RoomData.GameTime = SettleTime - room.counter
-		}
-		p.SendMsg(enter)
-		return
-	}
 
 	r, _ := hall.RoomRecord.Load(rid)
 	if r != nil {

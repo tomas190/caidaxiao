@@ -44,7 +44,7 @@ const (
 )
 
 const (
-	taxRate float64 = 0.06 //税率
+	taxRate float64 = 0.05 //税率
 )
 
 var sur *SurplusPoolDB
@@ -56,10 +56,11 @@ type Room struct {
 	PlayerList  []*Player // 玩家列表
 	TablePlayer []*Player // 玩家列表
 
-	BankerId    string           // 庄家ID
-	BankerMoney float64          // 庄家金额
-	bankerList  map[string]int32 // 抢庄列表
-	IsConBanker bool             // 是否继续连庄
+	GodGambleName string           // 赌神id
+	BankerId      string           // 庄家ID
+	BankerMoney   float64          // 庄家金额
+	bankerList    map[string]int32 // 抢庄列表
+	IsConBanker   bool             // 是否继续连庄
 
 	resultTime       string            // 结算时间
 	Lottery          []int             // 开奖数据
@@ -89,6 +90,7 @@ func (r *Room) Init() {
 	r.PlayerList = nil
 	r.TablePlayer = nil
 
+	r.GodGambleName = ""
 	r.BankerId = ""
 	r.BankerMoney = 0
 	r.bankerList = make(map[string]int32)
@@ -319,17 +321,60 @@ func (r *Room) RespUptPlayerList() []*msg.PlayerData {
 	return playerSlice
 }
 
-//PlayerListSort 玩家列表排序(进入房间、退出房间、重新开始)
-func (r *Room) UpdatePlayerList() {
-	// 首先
-	// 临时切片
-	var playerSlice []*Player
+//GetGodGableId 获取赌神ID
+func (r *Room) GetGodGableId() {
+	var GodSlice []*Player
+	GodSlice = append(GodSlice, r.PlayerList...)
 
-	//1、玩家下注总金额
+	var WinCount []*Player
+	for _, v := range GodSlice {
+		if v != nil && v.WinTotalCount != 0 {
+			WinCount = append(WinCount, v)
+		}
+	}
+	if len(WinCount) == 0 {
+		//log.Debug("---------- 没有获取到赌神 ~")
+		return
+	}
+
+	for i := 0; i < len(GodSlice); i++ {
+		for j := 1; j < len(GodSlice)-i; j++ {
+			if GodSlice[j].TotalDownBet > GodSlice[j-1].TotalDownBet {
+				GodSlice[j], GodSlice[j-1] = GodSlice[j-1], GodSlice[j]
+			}
+		}
+	}
+
+	for i := 0; i < len(GodSlice); i++ {
+		for j := 1; j < len(GodSlice)-i; j++ {
+			if GodSlice[j].WinTotalCount > GodSlice[j-1].WinTotalCount {
+				//交换
+				GodSlice[j], GodSlice[j-1] = GodSlice[j-1], GodSlice[j]
+			}
+		}
+	}
+	r.GodGambleName = GodSlice[0].Id
+}
+
+//UpdatePlayerList 玩家列表排序
+func (r *Room) UpdatePlayerList() {
+	// 获取赌神id
+	r.GetGodGableId()
+
+	//首先
+	//临时切片
+	var playerSlice []*Player
+	//1、赌神
+	for _, v := range r.PlayerList {
+		if v != nil && v.Id == r.GodGambleName {
+			playerSlice = append(playerSlice, v)
+		}
+	}
+	//2、玩家下注总金额
 	var p1 []*Player //所有下注过的用户
 	var p2 []*Player //所有下注金额为0的用户
 	for _, v := range r.PlayerList {
-		if v != nil {
+		if v != nil && v.Id != r.GodGambleName {
 			if v.TotalDownBet != 0 {
 				p1 = append(p1, v)
 			} else {
@@ -337,7 +382,7 @@ func (r *Room) UpdatePlayerList() {
 			}
 		}
 	}
-	//2、根据玩家总下注进行排序
+	//根据玩家总下注进行排序
 	for i := 0; i < len(p1); i++ {
 		for j := 1; j < len(p1)-i; j++ {
 			if p1[j].TotalDownBet > p1[j-1].TotalDownBet {
@@ -346,7 +391,7 @@ func (r *Room) UpdatePlayerList() {
 			}
 		}
 	}
-	// 将用户总下注金额顺序追加到临时切片
+	//将用户总下注金额顺序追加到临时切片
 	playerSlice = append(playerSlice, p1...)
 	//3、玩家金额,总下注为0,按用户金额排序
 	for i := 0; i < len(p2); i++ {
@@ -357,10 +402,10 @@ func (r *Room) UpdatePlayerList() {
 			}
 		}
 	}
-	// 将用户余额排序追加到临时切片
+	//将用户余额排序追加到临时切片
 	playerSlice = append(playerSlice, p2...)
 
-	// 将房间列表置为空,将更新的数据追加到房间列表
+	//将房间列表置为空,将更新的数据追加到房间列表
 	r.PlayerList = nil
 	r.PlayerList = append(r.PlayerList, playerSlice...)
 }

@@ -804,10 +804,8 @@ func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
 	for _, v := range recodes {
 		if v.SettlementFunds >= float64(amount) {
 			data.GameCount++
-			data.TotalWin += v.SettlementFunds
 		} else {
 			data.GameCount = 0
-			data.TotalWin = 0
 		}
 	}
 

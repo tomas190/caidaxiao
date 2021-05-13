@@ -704,7 +704,7 @@ func (c4c *Conn4Center) SendMsg2Center(data interface{}) {
 		log.Error(err1.Error())
 	}
 	log.Debug("Msg to Send Center:%v", string(codeData))
-	//TODO LOCK
+
 	err2 := c4c.conn.WriteMessage(websocket.TextMessage, []byte(codeData))
 	if err2 != nil {
 		log.Fatal("SendMsg2Center:%v", err2.Error())
