@@ -525,6 +525,9 @@ func (r *Room) ResultMoney() {
 					gameData.StartTime = nowTime - 55
 					gameData.EndTime = nowTime + 5
 					gameData.SettlementFunds = v.ResultMoney
+					gameData.TotalWin = v.WinResultMoney
+					gameData.TotalLose = v.LoseResultMoney
+					gameData.PackageId = v.PackageId
 					InsertPlayerGame(gameData)
 				}
 			}

@@ -740,13 +740,18 @@ func HandleHeNeiWin(w http.ResponseWriter, r *http.Request) {
 	recodes, err := GetPlayerWinData(selector)
 
 	data := &GamePayResp{}
+	var num int
 	for _, v := range recodes {
-		if v.SettlementFunds >= float64(amount) {
-			data.GameCount++
-			data.TotalWin += v.SettlementFunds
+		pac := packageTax[v.PackageId]
+		taxR := pac / 100
+		resWin := v.TotalLose + (v.TotalWin * (1 - taxR))
+		if resWin >= float64(amount) {
+			num++
+			if num > data.GameCount {
+				data.GameCount = num
+			}
 		} else {
-			data.GameCount = 0
-			data.TotalWin = 0
+			num = 0
 		}
 	}
 
@@ -801,11 +806,18 @@ func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
 	recodes, err := GetPlayerWinData(selector)
 
 	data := &GamePayResp{}
+	var num int
 	for _, v := range recodes {
-		if v.SettlementFunds >= float64(amount) {
-			data.GameCount++
+		pac := packageTax[v.PackageId]
+		taxR := pac / 100
+		resWin := v.TotalLose + (v.TotalWin * (1 - taxR))
+		if resWin >= float64(amount) {
+			num++
+			if num > data.GameCount {
+				data.GameCount = num
+			}
 		} else {
-			data.GameCount = 0
+			num = 0
 		}
 	}
 

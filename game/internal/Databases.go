@@ -245,6 +245,9 @@ type PlayerGameData struct {
 	StartTime       int64             `json:"start_time" bson:"start_time"`             // 开始时间
 	EndTime         int64             `json:"end_time" bson:"end_time"`                 // 结束时间
 	SettlementFunds float64           `json:"settlement_funds" bson:"settlement_funds"` // 当局输赢结果(税后)
+	TotalWin        float64           `json:"total_win" bson:"total_win"`               // 玩家当局赢
+	TotalLose       float64           `json:"total_lose" bson:"total_lose"`             // 玩家当局输
+	PackageId       uint16            `json:"package_id" bson:"package_id"`             // PackageId
 }
 
 //InsertPlayerGame 玩家游戏数据
