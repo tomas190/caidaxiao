@@ -474,19 +474,6 @@ func (r *Room) GetCaiYuan() {
 					r.Lottery = codeData
 				}
 			}
-			t := time.Now()
-			nMinute := t.Minute()
-			nSecond := t.Second()
-			if nSecond == 18 {
-				lottery := data[0].(map[string]interface{})
-				date := lottery["opendate"].(string)
-				m := getMinute(date)
-				log.Debug("当前时间:%v,%v", m, nMinute)
-				if m != nMinute { // 判断是否最新奖号
-					r.Lottery = nil
-					return
-				}
-			}
 			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				return
 			}
