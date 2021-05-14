@@ -36,4 +36,3 @@ func init() {
 	Processor.Register(&ErrorMsg_S2C{})
 
 }
-

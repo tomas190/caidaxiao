@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/name5566/leaf/log"
-	"io/ioutil"
 	"math"
 	"net/http"
 	"strconv"
@@ -56,6 +55,7 @@ type Room struct {
 	PlayerList  []*Player // 玩家列表
 	TablePlayer []*Player // 玩家列表
 
+	PackageId     uint16
 	GodGambleName string           // 赌神id
 	BankerId      string           // 庄家ID
 	BankerMoney   float64          // 庄家金额
@@ -66,6 +66,7 @@ type Room struct {
 	Lottery          []int             // 开奖数据
 	LotteryResult    msg.PotWinList    // 开奖结果
 	PeriodsNum       string            // 开奖期数
+	ResultNum        string            // 期数
 	PeriodsTime      string            // 开奖时间
 	GameStat         msg.GameStep      // 游戏状态
 	PotMoneyCount    msg.DownBetMoney  // 注池下注总金额(用于客户端显示)
@@ -410,18 +411,24 @@ func (r *Room) UpdatePlayerList() {
 	r.PlayerList = append(r.PlayerList, playerSlice...)
 }
 
+type PrizeRecord struct {
+	Issue    string `json:"issue"`    // 期号
+	Code     string `json:"code"`     // 开奖号码
+	OpenDate string `json:"opendate"` // 开奖时间
+}
+
 //GetCaiYuan 获取彩源开奖结果
 func (r *Room) GetCaiYuan() {
 
 	go func() {
 		for {
+			time.Sleep(time.Millisecond * 500)
 			var dataRes *http.Response
 			if r.RoomId == "1" {
 				caiYuan := "https://manycai.com/K2601968389c853/hn60-1.json"
 				res, err := http.Get(caiYuan)
 				if err != nil {
 					log.Debug("再次获取随机数值失败: %v", err)
-					return
 				}
 				dataRes = res
 			} else if r.RoomId == "2" {
@@ -429,27 +436,16 @@ func (r *Room) GetCaiYuan() {
 				res, err := http.Get(caiYuan)
 				if err != nil {
 					log.Debug("再次获取随机数值失败: %v", err)
-					return
 				}
 				dataRes = res
-			}
-
-			//log.Debug("res:%v", dataRes)
-			result, err := ioutil.ReadAll(dataRes.Body)
-			defer dataRes.Body.Close()
-			if err != nil {
-				log.Debug("解析随机数值失败: %v", err)
-				return
+				//log.Debug("奇趣 res:%v", dataRes)
 			}
 
 			var users interface{}
-			err2 := json.Unmarshal(result, &users)
-			if err2 != nil {
+			err := json.NewDecoder(dataRes.Body).Decode(&users)
+			if err != nil {
 				log.Debug("解码随机数值失败: %v", err)
-				return
 			}
-
-			//log.Debug("读取的彩源数据: %v", users)
 
 			data, ok := users.([]interface{})
 			if ok {
@@ -462,11 +458,11 @@ func (r *Room) GetCaiYuan() {
 					//lotterycode := lottery["lotterycode"] // 彩票代码
 					//log.Debug("彩票代码:%v", lotterycode)
 					code := lottery["code"] // 中奖号码
-					//log.Debug("中奖号码:%v", code)
+					log.Debug("中奖号码:%v", code)
 
 					r.resultTime = opendate.(string)
-					r.PeriodsNum = issue.(string)
 					r.PeriodsTime = opendate.(string)
+					r.PeriodsNum = issue.(string)
 					codeString := code.(string)
 					codeSlice := strings.Split(codeString, `,`)
 					//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
@@ -478,10 +474,22 @@ func (r *Room) GetCaiYuan() {
 					r.Lottery = codeData
 				}
 			}
+			t := time.Now()
+			nMinute := t.Minute()
+			nSecond := t.Second()
+			if nSecond == 18 {
+				lottery := data[0].(map[string]interface{})
+				date := lottery["opendate"].(string)
+				m := getMinute(date)
+				log.Debug("当前时间:%v,%v", m, nMinute)
+				if m != nMinute { // 判断是否最新奖号
+					r.Lottery = nil
+					return
+				}
+			}
 			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				return
 			}
-			time.Sleep(time.Millisecond * 500)
 		}
 	}()
 }

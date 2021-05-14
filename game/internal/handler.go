@@ -132,7 +132,7 @@ func handleLogin(args []interface{}) {
 		//u.Id = m.Id
 		//u.Password = m.PassWord
 		//u.NickName = m.Id
-		//u.Account = 80000
+		//u.Account = 500
 		//u.HeadImg = "3.png"
 		//login := &msg.Login_S2C{}
 		//login.PlayerInfo = new(msg.PlayerInfo)

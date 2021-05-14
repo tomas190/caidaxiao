@@ -449,6 +449,7 @@ func (r *Room) ResultMoney() {
 						}
 					}
 				}
+
 				pac := packageTax[v.PackageId] //todo
 				taxR := pac / 100
 				var tax float64
@@ -456,7 +457,10 @@ func (r *Room) ResultMoney() {
 					tax = (taxMoney) * taxR // todo
 					//tax = (taxMoney) * taxRate
 				} else {
-					tax = (taxMoney) * taxRate
+					pac2 := packageTax[r.PackageId] //todo
+					taxR2 := pac2 / 100
+					tax = (taxMoney) * taxR2
+					//tax = (taxMoney) * taxRate
 				}
 				v.ResultMoney = (totalWin + taxMoney) - tax
 				v.Account += v.ResultMoney
@@ -559,8 +563,9 @@ func (r *Room) GetResultType() {
 	}
 	// 开奖类型 豹子(千位、百位、个位)
 	r.GetType(r.Lottery)
-
 	log.Debug("获取开奖类型~")
+
+	r.ResultNum = r.PeriodsNum
 
 	var potWin msg.PotWinList
 	potWin.ResultNum = r.LotteryResult.ResultNum

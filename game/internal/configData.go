@@ -1,10 +1,10 @@
 package internal
 
 import (
-	"caidaxiao/msg"
 	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -43,21 +43,20 @@ func getNextTime() string {
 
 func SetPackageTaxM(packageT uint16, tax float64) {
 	packageTax[packageT] = tax
-}
 
-func removeDuplicate(personList []msg.HistoryData) []msg.HistoryData {
-	result := []msg.HistoryData{}
-	for i := range personList {
-		flag := true
-		for j := range result {
-			if personList[i].TimeFmt == result[j].TimeFmt {
-				flag = false
-				break
-			}
-		}
-		if flag {
-			result = append(result, personList[i])
+	for _, v := range hall.roomList {
+		if v != nil {
+			v.PackageId = packageT
 		}
 	}
-	return result
+}
+
+func getMinute(timeStr string) int {
+	a1 := strings.Split(timeStr, " ")
+	a2 := strings.Split(a1[1], ":")
+	m, e := strconv.Atoi(a2[1])
+	if e != nil {
+		return -1
+	}
+	return m
 }
