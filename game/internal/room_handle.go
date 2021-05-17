@@ -82,7 +82,6 @@ func (r *Room) GetRoomType() {
 					if r.PeriodsNum == r.ResultNum { // 判断当前奖期是否与上局奖期相同
 						r.Lottery = nil
 					}
-					r.Lottery = []int{1, 2, 2, 3, 2}
 					if time.Now().Minute() == 0 || time.Now().Minute() == 30 || r.Lottery == nil { // 流局处理
 						log.Debug("当前分钟:%v,当前奖源:%v", time.Now().Minute(), r.Lottery)
 						// 当局游戏流局处理
