@@ -857,8 +857,10 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 		return true
 	})
 
-	// 插入玩家限定下注数据
-	InsertUserLimitBet(&req)
+	if req.UserId != "" {
+		// 插入玩家限定下注数据
+		InsertUserLimitBet(&req)
+	}
 
 	js, err := json.Marshal(NewResp(SuccCode, "", req))
 	if err != nil {
