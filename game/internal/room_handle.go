@@ -79,12 +79,14 @@ func (r *Room) GetRoomType() {
 				if time.Now().Second() == SettleStep {
 					r.GameStat = msg.GameStep_Settle
 					log.Debug("----------开奖阶段----------")
+					if r.PeriodsNum == r.ResultNum { // 判断当前奖期是否与上局奖期相同
+						r.Lottery = nil
+					}
 					if time.Now().Minute() == 0 || time.Now().Minute() == 30 || r.Lottery == nil { // 流局处理
 						log.Debug("当前分钟:%v,当前奖源:%v", time.Now().Minute(), r.Lottery)
 						// 当局游戏流局处理
 						r.HandleLiuJu()
 					} else { // 正常结算
-						r.Lottery = []int{1, 3, 3, 2, 3}
 						//开始比牌结算任务
 						r.CompareSettlement()
 					}
@@ -432,7 +434,7 @@ func (r *Room) ResultMoney() {
 					v.WinResultMoney = taxMoney
 					sur.HistoryWin += v.WinResultMoney
 					sur.TotalWinMoney += v.WinResultMoney
-					reason := "猜大小赢钱" //todo
+					reason := "彩源猜大小赢钱" //todo
 					if v.IsRobot == false {
 						//同时同步赢分和输分
 						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, totalWin)
@@ -442,7 +444,7 @@ func (r *Room) ResultMoney() {
 					v.LoseResultMoney = -totalLose + totalWin
 					sur.HistoryLose -= v.LoseResultMoney
 					sur.TotalLoseMoney -= v.LoseResultMoney
-					reason := "猜大小输钱" //todo
+					reason := "彩源猜大小输钱" //todo
 					//同时同步赢分和输分
 					if v.IsRobot == false {
 						if v.LoseResultMoney != 0 {
