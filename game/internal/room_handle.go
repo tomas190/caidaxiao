@@ -84,6 +84,7 @@ func (r *Room) GetRoomType() {
 						// 当局游戏流局处理
 						r.HandleLiuJu()
 					} else { // 正常结算
+						r.Lottery = []int{1, 3, 3, 2, 3}
 						//开始比牌结算任务
 						r.CompareSettlement()
 					}
