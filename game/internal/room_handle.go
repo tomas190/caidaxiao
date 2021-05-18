@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"fmt"
 	"github.com/name5566/leaf/log"
@@ -12,9 +13,9 @@ import (
 //JoinGameRoom 加入游戏房间
 func (r *Room) JoinGameRoom(p *Player) {
 	// 插入玩家信息
-	//if p.IsRobot == false { //todo
-	//	p.FindPlayerInfo()
-	//}
+	if p.IsRobot == false { //todo
+		p.FindPlayerInfo()
+	}
 
 	r.SetUserRoom(p)
 
@@ -211,13 +212,13 @@ func (r *Room) HandleGetRes() {
 	sur.UpdateTime = time.Now()
 	sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
 	sur.Rid = r.RoomId
-	//sur.PlayerNum = GetPlayerCount() //todo
-	//
-	//surPool := FindSurplusPool()
-	//if surPool != nil {
-	//	sur.HistoryWin = surPool.HistoryWin
-	//	sur.HistoryLose = surPool.HistoryLose
-	//}
+	sur.PlayerNum = GetPlayerCount() //todo
+
+	surPool := FindSurplusPool()
+	if surPool != nil {
+		sur.HistoryWin = surPool.HistoryWin
+		sur.HistoryLose = surPool.HistoryLose
+	}
 
 	log.Debug("获取盈余数据~")
 
@@ -427,42 +428,42 @@ func (r *Room) ResultMoney() {
 					log.Debug("downBet:%v", v.DownBetMoney)
 				}
 
-				//nowTime := time.Now().Unix() //todo
+				nowTime := time.Now().Unix() //todo
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				if taxMoney > 0 {
 					v.WinResultMoney = taxMoney
 					sur.HistoryWin += v.WinResultMoney
 					sur.TotalWinMoney += v.WinResultMoney
-					//reason := "彩源猜大小赢钱" //todo
-					//if v.IsRobot == false {
-					//	//同时同步赢分和输分
-					//	c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, totalWin)
-					//}
+					reason := "彩源猜大小赢钱" //todo
+					if v.IsRobot == false {
+						//同时同步赢分和输分
+						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, totalWin)
+					}
 				}
 				if totalLose > 0 {
 					v.LoseResultMoney = -totalLose + totalWin
 					sur.HistoryLose -= v.LoseResultMoney
 					sur.TotalLoseMoney -= v.LoseResultMoney
-					//reason := "彩源猜大小输钱" //todo
-					////同时同步赢分和输分
-					//if v.IsRobot == false {
-					//	if v.LoseResultMoney != 0 {
-					//		c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, 0-v.LoseResultMoney)
-					//	}
-					//}
+					reason := "彩源猜大小输钱" //todo
+					//同时同步赢分和输分
+					if v.IsRobot == false {
+						if v.LoseResultMoney != 0 {
+							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, 0-v.LoseResultMoney)
+						}
+					}
 				}
 
-				//pac := packageTax[v.PackageId] //todo
-				//taxR := pac / 100
+				pac := packageTax[v.PackageId] //todo
+				taxR := pac / 100
 				var tax float64
 				if v.IsRobot == false {
-					//tax = (taxMoney) * taxR // todo
-					tax = (taxMoney) * taxRate
+					tax = (taxMoney) * taxR // todo
+					//tax = (taxMoney) * taxRate
 				} else {
-					//pac2 := packageTax[r.PackageId] //todo
-					//taxR2 := pac2 / 100
-					//tax = (taxMoney) * taxR2
-					tax = (taxMoney) * taxRate
+					pac2 := packageTax[r.PackageId] //todo
+					taxR2 := pac2 / 100
+					tax = (taxMoney) * taxR2
+					//tax = (taxMoney) * taxRate
 				}
 				v.ResultMoney = (totalWin + taxMoney) - tax
 				v.Account += v.ResultMoney
@@ -486,56 +487,56 @@ func (r *Room) ResultMoney() {
 				v.WinTotalCount = count
 				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
-				//if v.WinResultMoney != 0 || v.LoseResultMoney != 0 { //todo
-				//	// 插入盈余池数据
-				//	InsertSurplusPool(sur)
-				//
-				//	// 插入玩家下注记录
-				//	data := &PlayerDownBetRecode{}
-				//	data.Id = v.Id
-				//	data.GameId = conf.Server.GameID
-				//	data.RoundId = v.RoundId
-				//	data.RoomId = r.RoomId
-				//	data.DownBetInfo = new(msg.DownBetMoney)
-				//	data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
-				//	data.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
-				//	data.DownBetInfo.SingleDownBet = v.DownBetMoney.SingleDownBet
-				//	data.DownBetInfo.DoubleDownBet = v.DownBetMoney.DoubleDownBet
-				//	data.DownBetInfo.PairDownBet = v.DownBetMoney.PairDownBet
-				//	data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
-				//	data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-				//	data.DownBetTime = nowTime
-				//	data.StartTime = nowTime - 55
-				//	data.EndTime = nowTime + 5
-				//	data.Lottery = r.Lottery
-				//	data.CardResult = new(msg.PotWinList)
-				//	data.CardResult.ResultNum = r.LotteryResult.ResultNum
-				//	data.CardResult.BigSmall = r.LotteryResult.BigSmall
-				//	data.CardResult.SinDouble = r.LotteryResult.SinDouble
-				//	data.CardResult.CardType = r.LotteryResult.CardType
-				//	data.SettlementFunds = v.ResultMoney
-				//	data.SpareCash = v.Account
-				//	data.TaxRate = taxR
-				//	data.PeriodsNum = r.PeriodsNum
-				//	InsertAccessData(data)
-				//
-				//	// 插入玩家数据
-				//	gameData := &PlayerGameData{}
-				//	gameData.UserId = v.Id
-				//	gameData.RoomId = r.RoomId
-				//	gameData.DownBetInfo = new(msg.DownBetMoney)
-				//	gameData.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
-				//	gameData.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
-				//	gameData.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-				//	gameData.DownBetTime = nowTime
-				//	gameData.StartTime = nowTime - 55
-				//	gameData.EndTime = nowTime + 5
-				//	gameData.SettlementFunds = v.ResultMoney
-				//	gameData.TotalWin = v.WinResultMoney
-				//	gameData.TotalLose = v.LoseResultMoney
-				//	gameData.PackageId = v.PackageId
-				//	InsertPlayerGame(gameData)
-				//}
+				if v.WinResultMoney != 0 || v.LoseResultMoney != 0 { //todo
+					// 插入盈余池数据
+					InsertSurplusPool(sur)
+
+					// 插入玩家下注记录
+					data := &PlayerDownBetRecode{}
+					data.Id = v.Id
+					data.GameId = conf.Server.GameID
+					data.RoundId = v.RoundId
+					data.RoomId = r.RoomId
+					data.DownBetInfo = new(msg.DownBetMoney)
+					data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
+					data.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
+					data.DownBetInfo.SingleDownBet = v.DownBetMoney.SingleDownBet
+					data.DownBetInfo.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+					data.DownBetInfo.PairDownBet = v.DownBetMoney.PairDownBet
+					data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
+					data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+					data.DownBetTime = nowTime
+					data.StartTime = nowTime - 55
+					data.EndTime = nowTime + 5
+					data.Lottery = r.Lottery
+					data.CardResult = new(msg.PotWinList)
+					data.CardResult.ResultNum = r.LotteryResult.ResultNum
+					data.CardResult.BigSmall = r.LotteryResult.BigSmall
+					data.CardResult.SinDouble = r.LotteryResult.SinDouble
+					data.CardResult.CardType = r.LotteryResult.CardType
+					data.SettlementFunds = v.ResultMoney
+					data.SpareCash = v.Account
+					data.TaxRate = taxR
+					data.PeriodsNum = r.PeriodsNum
+					InsertAccessData(data)
+
+					// 插入玩家数据
+					gameData := &PlayerGameData{}
+					gameData.UserId = v.Id
+					gameData.RoomId = r.RoomId
+					gameData.DownBetInfo = new(msg.DownBetMoney)
+					gameData.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
+					gameData.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
+					gameData.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+					gameData.DownBetTime = nowTime
+					gameData.StartTime = nowTime - 55
+					gameData.EndTime = nowTime + 5
+					gameData.SettlementFunds = v.ResultMoney
+					gameData.TotalWin = v.WinResultMoney
+					gameData.TotalLose = v.LoseResultMoney
+					gameData.PackageId = v.PackageId
+					InsertPlayerGame(gameData)
+				}
 			}
 		}
 	}
