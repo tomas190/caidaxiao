@@ -25,7 +25,6 @@ func init() {
 	Processor.Register(&PlayerAction_C2S{})
 	Processor.Register(&PlayerAction_S2C{})
 	Processor.Register(&PotChangeMoney_S2C{})
-	Processor.Register(&UptPlayerList_S2C{})
 	Processor.Register(&ResultData_S2C{})
 	Processor.Register(&BankerData_C2S{})
 	Processor.Register(&BankerData_S2C{})
@@ -34,5 +33,6 @@ func init() {
 	Processor.Register(&SendActTime_S2C{})
 	Processor.Register(&ChangeRoomType_S2C{})
 	Processor.Register(&ErrorMsg_S2C{})
-
+	Processor.Register(&ShowTableInfo_C2S{})
+	Processor.Register(&ShowTableInfo_S2C{})
 }

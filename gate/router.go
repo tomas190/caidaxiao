@@ -19,4 +19,6 @@ func init() {
 	msg.Processor.SetRouter(&msg.BankerData_C2S{}, game.ChanRPC)
 
 	msg.Processor.SetRouter(&msg.EmojiChat_C2S{}, game.ChanRPC)
+
+	msg.Processor.SetRouter(&msg.ShowTableInfo_C2S{}, game.ChanRPC)
 }

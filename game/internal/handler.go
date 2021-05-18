@@ -5,7 +5,6 @@ import (
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
 	"reflect"
-	"strconv"
 	"time"
 )
 
@@ -21,6 +20,8 @@ func init() {
 
 	handlerReg(&msg.BankerData_C2S{}, handleBankerData)
 	handlerReg(&msg.EmojiChat_C2S{}, handleEmojiChat)
+
+	handlerReg(&msg.ShowTableInfo_C2S{}, ShowTableInfo)
 }
 
 // 注册消息处理函数
@@ -128,117 +129,117 @@ func handleLogin(args []interface{}) {
 			}
 		}
 	} else if !hall.agentExist(a) { // 玩家首次登入
-		//u := &Player{}
-		//u.Id = m.Id
-		//u.Password = m.PassWord
-		//u.NickName = m.Id
-		//u.Account = 500
-		//u.HeadImg = "3.png"
-		//login := &msg.Login_S2C{}
-		//login.PlayerInfo = new(msg.PlayerInfo)
-		//login.PlayerInfo.Id = u.Id
-		//login.PlayerInfo.NickName = u.NickName
-		//login.PlayerInfo.HeadImg = u.HeadImg
-		//login.PlayerInfo.Account = u.Account
-		//for _, v := range hall.roomList {
-		//	if v != nil {
-		//		if v.RoomId == "1" {
-		//			login.PlayerNumR1 = v.PlayerLength()
-		//			login.Room01 = v.IsOpenRoom
-		//		}
-		//		if v.RoomId == "2" {
-		//			login.PlayerNumR2 = v.PlayerLength()
-		//			login.Room02 = v.IsOpenRoom
-		//		}
-		//	}
-		//}
-		//a.WriteMsg(login)
-		//
-		//u.Init()
-		//// 重新绑定信息
-		//u.ConnAgent = a
-		//a.SetUserData(u)
-		//
-		//u.Password = m.GetPassWord()
-		//u.Token = m.GetToken()
-		//
-		//hall.UserRecord.Store(u.Id, u)
-		//hall.UserRoom.Store(u.Id, "1")
-		//
-		//rId, _ := hall.UserRoom.Load(u.Id)
-		//v, _ := hall.RoomRecord.Load(rId)
-		//if v != nil {
-		//	// 玩家如果已在游戏中，则返回房间数据
-		//	room := v.(*Room)
-		//	for i, userId := range room.UserLeave {
-		//		log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
-		//		// 把玩家从掉线列表中移除
-		//		if userId == u.Id {
-		//			room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
-		//			log.Debug("AllocateUser 清除玩家记录~:%v", userId)
-		//			break
-		//		}
-		//		log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
-		//	}
-		//}
-
-		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
-
-			log.Debug("玩家首次登陆:%v", u.Id)
-			login := &msg.Login_S2C{}
-			login.PlayerInfo = new(msg.PlayerInfo)
-			login.PlayerInfo.Id = u.Id
-			login.PlayerInfo.NickName = u.NickName
-			login.PlayerInfo.HeadImg = u.HeadImg
-			login.PlayerInfo.Account = u.Account
-			for _, v := range hall.roomList {
-				if v != nil {
-					if v.RoomId == "1" {
-						login.PlayerNumR1 = v.PlayerLength()
-						login.Room01 = v.IsOpenRoom
-					}
-					if v.RoomId == "2" {
-						login.PlayerNumR2 = v.PlayerLength()
-						login.Room02 = v.IsOpenRoom
-					}
-				}
-			}
-			log.Debug("Room01:%v,Room02:%v", login.Room01, login.Room02)
-			a.WriteMsg(login)
-
-			u.Init()
-			// 重新绑定信息
-			u.ConnAgent = a
-			a.SetUserData(u)
-
-			u.Password = m.GetPassWord()
-			u.Token = m.GetToken()
-
-			limitData := LoadUserLimitBet(u)
-			minBet, _ := strconv.Atoi(limitData.MinBet)
-			maxBet, _ := strconv.Atoi(limitData.MaxBet)
-			u.MinBet = int32(minBet)
-			u.MaxBet = int32(maxBet)
-
-			hall.UserRecord.Store(u.Id, u)
-
-			rId, _ := hall.UserRoom.Load(u.Id)
-			v, _ := hall.RoomRecord.Load(rId)
+		u := &Player{}
+		u.Id = m.Id
+		u.Password = m.PassWord
+		u.NickName = m.Id
+		u.Account = 500
+		u.HeadImg = "3.png"
+		login := &msg.Login_S2C{}
+		login.PlayerInfo = new(msg.PlayerInfo)
+		login.PlayerInfo.Id = u.Id
+		login.PlayerInfo.NickName = u.NickName
+		login.PlayerInfo.HeadImg = u.HeadImg
+		login.PlayerInfo.Account = u.Account
+		for _, v := range hall.roomList {
 			if v != nil {
-				// 玩家如果已在游戏中，则返回房间数据
-				room := v.(*Room)
-				for i, userId := range room.UserLeave {
-					log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
-					// 把玩家从掉线列表中移除
-					if userId == u.Id {
-						room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
-						log.Debug("AllocateUser 清除玩家记录~:%v", userId)
-						break
-					}
-					log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
+				if v.RoomId == "1" {
+					login.PlayerNumR1 = v.PlayerLength()
+					login.Room01 = v.IsOpenRoom
+				}
+				if v.RoomId == "2" {
+					login.PlayerNumR2 = v.PlayerLength()
+					login.Room02 = v.IsOpenRoom
 				}
 			}
-		})
+		}
+		a.WriteMsg(login)
+
+		u.Init()
+		// 重新绑定信息
+		u.ConnAgent = a
+		a.SetUserData(u)
+
+		u.Password = m.GetPassWord()
+		u.Token = m.GetToken()
+
+		hall.UserRecord.Store(u.Id, u)
+		hall.UserRoom.Store(u.Id, "1")
+
+		rId, _ := hall.UserRoom.Load(u.Id)
+		v, _ := hall.RoomRecord.Load(rId)
+		if v != nil {
+			// 玩家如果已在游戏中，则返回房间数据
+			room := v.(*Room)
+			for i, userId := range room.UserLeave {
+				log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
+				// 把玩家从掉线列表中移除
+				if userId == u.Id {
+					room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
+					log.Debug("AllocateUser 清除玩家记录~:%v", userId)
+					break
+				}
+				log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
+			}
+		}
+
+		//c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
+		//
+		//	log.Debug("玩家首次登陆:%v", u.Id)
+		//	login := &msg.Login_S2C{}
+		//	login.PlayerInfo = new(msg.PlayerInfo)
+		//	login.PlayerInfo.Id = u.Id
+		//	login.PlayerInfo.NickName = u.NickName
+		//	login.PlayerInfo.HeadImg = u.HeadImg
+		//	login.PlayerInfo.Account = u.Account
+		//	for _, v := range hall.roomList {
+		//		if v != nil {
+		//			if v.RoomId == "1" {
+		//				login.PlayerNumR1 = v.PlayerLength()
+		//				login.Room01 = v.IsOpenRoom
+		//			}
+		//			if v.RoomId == "2" {
+		//				login.PlayerNumR2 = v.PlayerLength()
+		//				login.Room02 = v.IsOpenRoom
+		//			}
+		//		}
+		//	}
+		//	log.Debug("Room01:%v,Room02:%v", login.Room01, login.Room02)
+		//	a.WriteMsg(login)
+		//
+		//	u.Init()
+		//	// 重新绑定信息
+		//	u.ConnAgent = a
+		//	a.SetUserData(u)
+		//
+		//	u.Password = m.GetPassWord()
+		//	u.Token = m.GetToken()
+		//
+		//	limitData := LoadUserLimitBet(u)
+		//	minBet, _ := strconv.Atoi(limitData.MinBet)
+		//	maxBet, _ := strconv.Atoi(limitData.MaxBet)
+		//	u.MinBet = int32(minBet)
+		//	u.MaxBet = int32(maxBet)
+		//
+		//	hall.UserRecord.Store(u.Id, u)
+		//
+		//	rId, _ := hall.UserRoom.Load(u.Id)
+		//	v, _ := hall.RoomRecord.Load(rId)
+		//	if v != nil {
+		//		// 玩家如果已在游戏中，则返回房间数据
+		//		room := v.(*Room)
+		//		for i, userId := range room.UserLeave {
+		//			log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
+		//			// 把玩家从掉线列表中移除
+		//			if userId == u.Id {
+		//				room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
+		//				log.Debug("AllocateUser 清除玩家记录~:%v", userId)
+		//				break
+		//			}
+		//			log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
+		//		}
+		//	}
+		//})
 	}
 }
 
@@ -341,6 +342,23 @@ func handleEmojiChat(args []interface{}) {
 			data.ActId = p.Id
 			data.GoalId = m.GoalId
 			room.BroadCastMsg(data)
+		}
+	}
+}
+
+func ShowTableInfo(args []interface{}) {
+	a := args[1].(gate.Agent)
+
+	p, ok := a.UserData().(*Player)
+	log.Debug("ShowTableInfo 玩家发送房间信息~ : %v", p.Id)
+	if ok {
+		roomId, _ := hall.UserRoom.Load(p.Id)
+		r, _ := hall.RoomRecord.Load(roomId)
+		if r != nil {
+			room := r.(*Room)
+			data := &msg.ShowTableInfo_S2C{}
+			data.RoomData = room.RespRoomData()
+			p.SendMsg(data)
 		}
 	}
 }

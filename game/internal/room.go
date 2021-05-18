@@ -423,26 +423,23 @@ func (r *Room) GetCaiYuan() {
 	go func() {
 		for {
 			time.Sleep(time.Millisecond * 500)
-			var dataRes *http.Response
+
+			var caiYuan string
 			if r.RoomId == "1" {
-				caiYuan := "https://manycai.com/K2601968389c853/hn60-1.json"
-				res, err := http.Get(caiYuan)
-				if err != nil {
-					log.Debug("再次获取随机数值失败: %v", err)
-				}
-				dataRes = res
+				caiYuan = "https://manycai.com/K2601968389c853/hn60-1.json"
 			} else if r.RoomId == "2" {
-				caiYuan := "https://manycai.com/K2601968389c853/PTXFFC-1.json"
-				res, err := http.Get(caiYuan)
+				caiYuan = "https://manycai.com/K2601968389c853/PTXFFC-1.json"
+			}
+
+			resp, err := http.Get(caiYuan)
+			if resp != nil && resp.Body != nil {
 				if err != nil {
 					log.Debug("再次获取随机数值失败: %v", err)
 				}
-				dataRes = res
-				//log.Debug("奇趣 res:%v", dataRes)
 			}
 
 			var users interface{}
-			err := json.NewDecoder(dataRes.Body).Decode(&users)
+			err = json.NewDecoder(resp.Body).Decode(&users)
 			if err != nil {
 				log.Debug("解码随机数值失败: %v", err)
 			}
@@ -945,7 +942,7 @@ func (r *Room) SetPlayerDownBet() {
 			}
 			data.DownBetInfo = v.DownBetMoney
 			data.DownBetTime = time.Now().Format("2006-01-02 15:04:05")
-			InsertPlayerDownBet(data) //todo
+			//InsertPlayerDownBet(data) //todo
 		}
 	}
 }
@@ -963,7 +960,7 @@ func (r *Room) SeRoomTotalBet() {
 		data.LotteryType = "奇趣分分彩"
 	}
 	data.PotTotalMoney = r.PlayerTotalMoney
-	InsertRoomTotalBet(data) //todo
+	//InsertRoomTotalBet(data) //todo
 }
 
 func (r *Room) SetUserRoom(p *Player) {

@@ -19,15 +19,16 @@ enum MessageID {
     MSG_PlayerAction_C2S = 12;
     MSG_PlayerAction_S2C = 13;
     MSG_PotChangeMoney_S2C = 14;
-    MSG_UptPlayerList_S2C = 15;
-    MSG_ResultData_S2C = 16;
-    MSG_BankerData_C2S = 17;
-    MSG_BankerData_S2C = 18;
-    MSG_EmojiChat_C2S = 19;
-    MSG_EmojiChat_S2C = 20;
-    MSG_SendActTime_S2C = 21;
-    MSG_ChangeRoomType_S2C = 22;
-    MSG_ErrorMsg_S2C = 23;
+    MSG_ResultData_S2C = 15;
+    MSG_BankerData_C2S = 16;
+    MSG_BankerData_S2C = 17;
+    MSG_EmojiChat_C2S = 18;
+    MSG_EmojiChat_S2C = 19;
+    MSG_SendActTime_S2C = 20;
+    MSG_ChangeRoomType_S2C = 21;
+    MSG_ErrorMsg_S2C = 22;
+    MSG_ShowTableInfo_C2S = 23;
+    MSG_ShowTableInfo_S2C = 24;
 }
 
 // 游戏阶段
@@ -222,11 +223,6 @@ message PotChangeMoney_S2C {
     DownBetMoney potMoneyCount = 2; //房间注池金额总数量集合
 }
 
-// 更新房间用户列表
-message UptPlayerList_S2C {
-    repeated PlayerData playerList = 1;
-}
-
 message ResultData_S2C {
     RoomData roomData = 1;
 }
@@ -274,4 +270,11 @@ message ChangeRoomType_S2C {
 
 message ErrorMsg_S2C {
     string msgData = 1; // 错误消息
+}
+
+message ShowTableInfo_C2S {
+}
+
+message ShowTableInfo_S2C {
+    RoomData roomData = 1;
 }
