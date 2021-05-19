@@ -57,7 +57,8 @@ func (c4c *Conn4Center) Init() {
 	c4c.GameId = conf.Server.GameID
 	c4c.DevKey = conf.Server.DevKey
 	c4c.LoginStat = false
-
+	c4c.closebreathchan = make(chan bool, 1)
+	c4c.closereceivechan = make(chan bool, 1)
 	c4c.waitUser = make(map[string]*UserCallback)
 	//go changeToken()
 }
@@ -118,7 +119,8 @@ func (c4c *Conn4Center) CreatConnect() {
 	log.Debug("<--- Dial rsp --->: %v", rsp)
 
 	if err != nil {
-		log.Fatal("CreatConnect:%v", err.Error())
+		log.Debug("CreatConnect:%v", err.Error())
+		// log.Fatal("CreatConnect:%v", err.Error())
 	} else {
 		c4c.Run()
 	}
@@ -127,27 +129,30 @@ func (c4c *Conn4Center) CreatConnect() {
 func (c4c *Conn4Center) ReConnect() {
 	go func() {
 		for {
-			c4c.closebreathchan <- true
-			c4c.closereceivechan <- true
 			if c4c.LoginStat == true {
+				log.Debug("c4c.LoginStat == true~~~~~~~~~~~~~~~~~~~~~~~~~")
 				return
 			}
-			time.Sleep(time.Second * 5)
+			c4c.closebreathchan <- true
+			c4c.closereceivechan <- true
 			c4c.CreatConnect()
+			time.Sleep(time.Second * 5)
 		}
 	}()
 }
 
 //Run 开始运行,监听中心服务器的返回
 func (c4c *Conn4Center) Run() {
-	ticker := time.NewTicker(time.Second * 5)
+
 	go func() {
+		ticker := time.NewTicker(time.Second * 5)
 		for { //循环
 			select {
 			case <-ticker.C:
 				c4c.onBreath()
 				break
 			case <-c4c.closebreathchan:
+				ticker.Stop()
 				return
 			}
 		}

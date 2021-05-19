@@ -434,7 +434,6 @@ func (r *Room) GetCaiYuan() {
 			}
 
 			resp, err := http.Get(caiYuan)
-			resp.Close = true
 			if resp != nil && resp.Body != nil {
 				defer func() {
 					errC := resp.Body.Close() //必須調用否則可能產生記憶體洩漏
@@ -446,7 +445,7 @@ func (r *Room) GetCaiYuan() {
 
 			if err != nil {
 				log.Debug("Get-err-1 %+v , urlReq = %s", err, caiYuan)
-
+				continue
 			}
 
 			cpinfo := make([]*PrizeRecord, 1)
