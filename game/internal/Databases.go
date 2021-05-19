@@ -52,7 +52,7 @@ func InitMongoDB() {
 	//打开数据库
 	session.SetMode(mgo.Monotonic, true)
 
-	createUniqueIndex("PlayerDownBetDB", []string{"game_id"})
+	// createUniqueIndex("PlayerDownBetDB", []string{"game_id"})
 }
 
 func connect(dbName, cName string) (*mgo.Session, *mgo.Collection) {
