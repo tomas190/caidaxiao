@@ -3,7 +3,6 @@ package internal
 import (
 	"caidaxiao/conf"
 	"caidaxiao/msg"
-	"fmt"
 	"github.com/name5566/leaf/log"
 	"sort"
 	"strconv"
@@ -429,7 +428,7 @@ func (r *Room) ResultMoney() {
 				}
 
 				nowTime := time.Now().Unix() //todo
-				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+				//v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				if taxMoney > 0 {
 					v.WinResultMoney = taxMoney
 					sur.HistoryWin += v.WinResultMoney

@@ -86,6 +86,17 @@ func (p *Player) RespPlayerData() *msg.PlayerData {
 	pd.DownBetMoney.PairDownBet = p.DownBetMoney.PairDownBet
 	pd.DownBetMoney.StraightDownBet = p.DownBetMoney.StraightDownBet
 	pd.DownBetMoney.LeopardDownBet = p.DownBetMoney.LeopardDownBet
+	for _, v := range p.DownBetHistory {
+		his := &msg.DownBetHistory{}
+		his.TimeFmt = v.TimeFmt
+		his.ResNum = v.ResNum
+		his.Result = v.Result
+		his.BigSmall = v.BigSmall
+		his.SinDouble = v.SinDouble
+		his.CardType = v.CardType
+		his.DownBetMoney = v.DownBetMoney
+		pd.DownBetHistory = append(pd.DownBetHistory, his)
+	}
 	pd.TotalDownBet = p.TotalDownBet
 	pd.WinTotalCount = p.WinTotalCount
 	pd.ResultMoney = p.ResultMoney

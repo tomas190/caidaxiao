@@ -481,9 +481,9 @@ func (r *Room) GetCaiYuan() {
 //CleanRoomData 清空房间数据,开始下一句游戏
 func (r *Room) CleanRoomData() {
 	r.TablePlayer = nil
+	r.resultTime = ""
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
-	//r.GameStat = msg.GameStep_XX_Step
 	r.PlayerTotalMoney = msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
 	r.counter = 0
