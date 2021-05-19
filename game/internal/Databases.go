@@ -52,7 +52,7 @@ func InitMongoDB() {
 	//打开数据库
 	session.SetMode(mgo.Monotonic, true)
 
-	// createUniqueIndex("PlayerDownBetDB", []string{"game_id"})
+	createUniqueIndex("PlayerDownBetDB", []string{"game_id"})
 }
 
 func connect(dbName, cName string) (*mgo.Session, *mgo.Collection) {
@@ -561,8 +561,8 @@ func GetUserLimitBet(selector bson.M) ([]GameLimitBet, int, error) {
 }
 
 func createUniqueIndex(cName string, keys []string) {
-	session := dbContext.Ref()
-	defer dbContext.UnRef(session)
+	// DBSession := dbContext.Ref()
+	// defer dbContext.UnRef(DBSession)
 	col := session.DB(dbName).C(cName)
 	// 設定統計表唯一索引
 	index := mgo.Index{
