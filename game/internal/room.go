@@ -4,17 +4,25 @@ import (
 	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/name5566/leaf/log"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/name5566/leaf/log"
 )
 
 type RoomStatus int32
+
+type PrizeRecord struct {
+	Issue    string `json:"issue"`    // 奖期号
+	Code     string `json:"code"`     // 开奖号码
+	OpenDate string `json:"opendate"` // 开奖时间
+}
 
 const (
 	BankerTime  = 8  // 庄家时间 8秒
@@ -411,18 +419,12 @@ func (r *Room) UpdatePlayerList() {
 	r.PlayerList = append(r.PlayerList, playerSlice...)
 }
 
-type PrizeRecord struct {
-	Issue    string `json:"issue"`    // 期号
-	Code     string `json:"code"`     // 开奖号码
-	OpenDate string `json:"opendate"` // 开奖时间
-}
-
 //GetCaiYuan 获取彩源开奖结果
 func (r *Room) GetCaiYuan() {
 
 	go func() {
 		for {
-			time.Sleep(time.Millisecond * 500)
+			time.Sleep(time.Millisecond * 1000)
 
 			var caiYuan string
 			if r.RoomId == "1" {
@@ -432,48 +434,67 @@ func (r *Room) GetCaiYuan() {
 			}
 
 			resp, err := http.Get(caiYuan)
+			resp.Close = true
 			if resp != nil && resp.Body != nil {
-				if err != nil {
-					log.Debug("再次获取随机数值失败: %v", err)
-				}
-			}
-
-			var users interface{}
-			err = json.NewDecoder(resp.Body).Decode(&users)
-			if err != nil {
-				log.Debug("解码随机数值失败: %v", err)
-			}
-
-			data, ok := users.([]interface{})
-			if ok {
-				for _, v := range data {
-					lottery := v.(map[string]interface{})
-					opendate := lottery["opendate"] // 开奖时间
-					log.Debug("开奖时间:%v", opendate)
-					issue := lottery["issue"] // 彩票期数
-					//log.Debug("彩票期数:%v", issue)
-					//lotterycode := lottery["lotterycode"] // 彩票代码
-					//log.Debug("彩票代码:%v", lotterycode)
-					code := lottery["code"] // 中奖号码
-					log.Debug("中奖号码:%v", code)
-
-					r.resultTime = opendate.(string)
-					r.PeriodsTime = opendate.(string)
-					r.PeriodsNum = issue.(string)
-					codeString := code.(string)
-					codeSlice := strings.Split(codeString, `,`)
-					//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
-					var codeData []int
-					for _, v := range codeSlice {
-						num, _ := strconv.Atoi(v)
-						codeData = append(codeData, num)
+				defer func() {
+					errC := resp.Body.Close() //必須調用否則可能產生記憶體洩漏
+					if errC != nil {
+						log.Debug("close resp err = %v, urlReq = %s", errC, caiYuan)
 					}
-					r.Lottery = codeData
-				}
+				}()
 			}
+
+			if err != nil {
+				log.Debug("Get-err-1 %+v , urlReq = %s", err, caiYuan)
+
+			}
+
+			cpinfo := make([]*PrizeRecord, 1)
+			err = json.NewDecoder(resp.Body).Decode(&cpinfo)
+			if err != nil {
+				errMap := make(map[string]interface{})
+				err2 := json.NewDecoder(resp.Body).Decode(&errMap)
+				if err2 == nil && errMap["error"] != nil {
+					errMsg, ok := errMap["error"].(string)
+					if ok == false {
+						errMsg = "Unknown Error"
+					}
+					err2 = errors.New(errMsg)
+				}
+				log.Debug("reqPrizeSource-err: %v, urlReq = %s", err2, caiYuan)
+				// return nil, err2
+				continue
+			}
+
+			opendate := cpinfo[0].OpenDate // 开奖时间
+			issue := cpinfo[0].Issue       // 彩票期数
+			code := cpinfo[0].Code         // 中奖号码
+			log.Debug("獎源:%v \n开奖时间:%v 彩票期数:%v 中奖号码:%v", caiYuan, opendate, issue, code)
+
+			t := time.Now()
+			nMinute := t.Minute()
+			m := getMinute(cpinfo[0].OpenDate)
+
+			if nMinute == m { // 判斷是最新的期号
+				r.resultTime = opendate
+				r.PeriodsTime = opendate
+				r.PeriodsNum = issue
+				codeString := code
+				codeSlice := strings.Split(codeString, `,`)
+				//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
+				var codeData []int
+				for _, v := range codeSlice {
+					num, _ := strconv.Atoi(v)
+					codeData = append(codeData, num)
+				}
+				r.Lottery = codeData
+				return
+			}
+
 			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				return
 			}
+
 		}
 	}()
 }

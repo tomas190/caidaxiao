@@ -3,10 +3,11 @@ package internal
 import (
 	"caidaxiao/conf"
 	"caidaxiao/msg"
-	"github.com/name5566/leaf/log"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/name5566/leaf/log"
 )
 
 //JoinGameRoom 加入游戏房间
@@ -58,30 +59,30 @@ func (r *Room) GetRoomType() {
 			//log.Debug("go数量:%v", runtime.NumGoroutine())
 			select {
 			case <-t.C:
-				if time.Now().Second() == DownBetStep {
+				switch time.Now().Second() {
+				case DownBetStep:
 					log.Debug("----------下注阶段----------")
 					// 下注阶段定时
 					r.DownBetTimerTask()
-				}
-				if time.Now().Second() == CloseStep {
+					break
+				case CloseStep:
 					r.GameStat = msg.GameStep_Close
 					log.Debug("----------封单阶段----------")
 					// 封单时间
 					r.HandleCloseOver()
-				}
-				if time.Now().Second() == GetResStep {
+					break
+				case GetResStep:
 					r.GameStat = msg.GameStep_GetRes
 					log.Debug("----------奖源阶段----------")
 					// 获取结算
 					r.HandleGetRes()
-				}
-				if time.Now().Second() == SettleStep {
+				case SettleStep:
 					r.GameStat = msg.GameStep_Settle
 					log.Debug("----------开奖阶段----------")
 					if r.PeriodsNum == r.ResultNum { // 判断当前奖期是否与上局奖期相同
 						r.Lottery = nil
 					}
-					if time.Now().Minute() == 0 || time.Now().Minute() == 30 || r.Lottery == nil { // 流局处理
+					if r.Lottery == nil { // 流局处理
 						log.Debug("当前分钟:%v,当前奖源:%v", time.Now().Minute(), r.Lottery)
 						// 当局游戏流局处理
 						r.HandleLiuJu()
@@ -89,6 +90,9 @@ func (r *Room) GetRoomType() {
 						//开始比牌结算任务
 						r.CompareSettlement()
 					}
+					break
+				default:
+					break
 				}
 			}
 		}

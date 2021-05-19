@@ -23,7 +23,7 @@ var addr = flag.String("addr", "localhost:1355", "http service address")
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	t := time.NewTicker(  time.Millisecond)
+	t := time.NewTicker(time.Millisecond)
 	for i := 0; i < 10000; i++ {
 		<-t.C
 		fmt.Println(i)
@@ -81,9 +81,9 @@ func clientbot(ctx context.Context) {
 	// logger.Debug("connecting to %s", u.String())
 	_ = u
 	// 連接服務器 本機
-	//ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	//ws, _, err := websocket.DefaultDialer.Dial("ws://game.539316.com/caidaxiao", nil)
-	ws, _, err := websocket.DefaultDialer.Dial("ws://game.tampk.club/caidaxiao", nil)
+	// ws, _, err := websocket.DefaultDialer.Dial("ws://game.tampk.club/caidaxiao", nil)
 	if err != nil {
 		log.Fatal("dial:", err)
 	}

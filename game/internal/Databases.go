@@ -3,14 +3,17 @@ package internal
 import (
 	"caidaxiao/conf"
 	"caidaxiao/msg"
+	"time"
+
+	"github.com/name5566/leaf/db/mongodb"
 	"github.com/name5566/leaf/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 var (
-	session *mgo.Session
+	session   *mgo.Session
+	dbContext *mongodb.DialContext
 )
 
 const (
@@ -48,6 +51,8 @@ func InitMongoDB() {
 
 	//打开数据库
 	session.SetMode(mgo.Monotonic, true)
+
+	createUniqueIndex("PlayerDownBetDB", []string{"game_id"})
 }
 
 func connect(dbName, cName string) (*mgo.Session, *mgo.Collection) {
@@ -553,4 +558,24 @@ func GetUserLimitBet(selector bson.M) ([]GameLimitBet, int, error) {
 		return nil, 0, err
 	}
 	return wts, n, nil
+}
+
+func createUniqueIndex(cName string, keys []string) {
+	session := dbContext.Ref()
+	defer dbContext.UnRef(session)
+	col := session.DB(dbName).C(cName)
+	// 設定統計表唯一索引
+	index := mgo.Index{
+		Key:        keys,  // 索引鍵
+		Background: true,  // 不长时间占用写锁
+		Unique:     false, // 唯一索引
+		DropDups:   true,  // 存在資料後建立, 則自動刪除重複資料
+	}
+
+	err := col.EnsureIndex(index)
+	if err != nil {
+		log.Debug("mgo建立index錯誤:%v", err)
+	} else {
+		log.Debug("mgo建立index:%v %v", cName, index)
+	}
 }

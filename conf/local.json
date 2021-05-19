@@ -1,0 +1,24 @@
+{
+  "LogLevel": "debug",
+  "LogPath": "",
+  "WSAddr": "0.0.0.0:1355",
+  "HTTPPort": "3355",
+  "MaxConnNum": 20000,
+
+  "MongoDBAddr": "127.0.0.1:27017",
+  "MongoDBAuth": "",
+  "MongoDBUser": "",
+  "MongoDBPwd": "",
+
+  "TokenServer": "ws://161.117.178.174:12345/Token/getToken",
+  "CenterServer": "161.117.178.174",
+  "CenterServerPort": 12345,
+  "DevName": "新游戏开发",
+  "GameID": "5b1f3a3cb76a591e7f251734",
+  "DevKey": "cy*&&%hhdz",
+  "CenterUrl": "ws://161.117.178.174:12345",
+
+  "LogAddr": "",
+
+  "CaiYuan":"http://manycai.com/K2601968389c853/hn60-1.json"
+}
