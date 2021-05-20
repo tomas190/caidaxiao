@@ -5,11 +5,12 @@ import (
 	"caidaxiao/msg"
 	"encoding/json"
 	"fmt"
-	"github.com/name5566/leaf/log"
-	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/name5566/leaf/log"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type ApiResp struct {
@@ -107,7 +108,7 @@ type CaiYuanReq struct {
 type RoomType struct {
 	GameId string `form:"game_id" json:"game_id"`
 	RoomId string `form:"room_id" json:"room_id"`
-	IsOpen string `form:"is_open" json:"is_open"`
+	IsOpen string `form:"room_status" json:"room_status"`
 }
 
 type GamePayReq struct {
@@ -550,7 +551,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 
 	req.GameId = r.FormValue("game_id")
 	req.RoomId = r.FormValue("room_id")
-	req.IsOpen = r.FormValue("is_open")
+	req.IsOpen = r.FormValue("room_status")
 
 	log.Debug("RoomId:%v, IsOpen:%v", req.RoomId, req.IsOpen)
 
