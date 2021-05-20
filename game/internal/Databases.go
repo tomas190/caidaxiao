@@ -53,6 +53,8 @@ func InitMongoDB() {
 	session.SetMode(mgo.Monotonic, true)
 
 	createUniqueIndex("PlayerDownBetDB", []string{"game_id"})
+	createUniqueIndex("PlayerGameDataDB", []string{"user_id"})
+
 }
 
 func connect(dbName, cName string) (*mgo.Session, *mgo.Collection) {
