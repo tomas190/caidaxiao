@@ -3,6 +3,7 @@ package internal
 import (
 	"caidaxiao/conf"
 	"caidaxiao/msg"
+	"fmt"
 	"sort"
 	"strconv"
 	"time"
@@ -12,10 +13,6 @@ import (
 
 //JoinGameRoom 加入游戏房间
 func (r *Room) JoinGameRoom(p *Player) {
-	// 插入玩家信息
-	if p.IsRobot == false { //todo
-		p.FindPlayerInfo()
-	}
 
 	r.SetUserRoom(p)
 
@@ -24,6 +21,13 @@ func (r *Room) JoinGameRoom(p *Player) {
 
 	// 只要不小于两人,就属于游戏状态
 	p.Status = msg.PlayerStatus_PlayGame
+
+	if p.IsRobot == true { //todo
+		return
+	}
+
+	// 插入玩家信息
+	p.FindPlayerInfo()
 
 	// 获取桌面显示的6个玩家
 	if len(r.PlayerList) >= 6 {
@@ -55,7 +59,7 @@ func (r *Room) GetRoomType() {
 	t := time.NewTicker(time.Second)
 	go func() {
 		for {
-			log.Debug("时间:%v", time.Now().Second())
+			// log.Debug("时间:%v", time.Now().Second())
 			//log.Debug("go数量:%v", runtime.NumGoroutine())
 			select {
 			case <-t.C:
@@ -432,7 +436,7 @@ func (r *Room) ResultMoney() {
 				}
 
 				nowTime := time.Now().Unix() //todo
-				//v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
 				if taxMoney > 0 {
 					v.WinResultMoney = taxMoney
 					sur.HistoryWin += v.WinResultMoney

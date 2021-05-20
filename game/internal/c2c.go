@@ -207,7 +207,7 @@ func (c4c *Conn4Center) onReceive(messType int, messBody []byte) {
 		if err != nil {
 			log.Error(err.Error())
 		}
-
+		log.Debug("Receive From Center:%v", baseData)
 		switch baseData.Event {
 		case msgServerLogin:
 			c4c.onServerLogin(baseData.Data)
