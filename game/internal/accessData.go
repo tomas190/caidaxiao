@@ -555,15 +555,15 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 
 	log.Debug("RoomId:%v, IsOpen:%v", req.RoomId, req.IsOpen)
 
-	if req.RoomId == "1" {
-		if req.IsOpen == "true" {
+	if req.RoomId == "01" {
+		if req.IsOpen == "1" {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "1" {
 					v.IsOpenRoom = true
 				}
 			}
 		}
-		if req.IsOpen == "false" {
+		if req.IsOpen == "0" {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "1" {
 					v.IsOpenRoom = false
@@ -572,15 +572,15 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if req.RoomId == "2" {
-		if req.IsOpen == "true" {
+	if req.RoomId == "02" {
+		if req.IsOpen == "1" {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "2" {
 					v.IsOpenRoom = true
 				}
 			}
 		}
-		if req.IsOpen == "false" {
+		if req.IsOpen == "0" {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "2" {
 					v.IsOpenRoom = false
