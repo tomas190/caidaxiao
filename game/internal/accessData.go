@@ -1,6 +1,7 @@
 package internal
 
 import (
+	common "caidaxiao/base"
 	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"encoding/json"
@@ -58,30 +59,29 @@ type GetSurPool struct {
 	PlayerTotalWin                 float64 `json:"player_total_win" bson:"player_total_win"`
 	PercentageToTotalWin           float64 `json:"percentage_to_total_win" bson:"percentage_to_total_win"`
 	TotalPlayer                    int32   `json:"total_player" bson:"total_player"`
-	CoefficientToTotalPlayer       int32   `json:"coefficient_to_total_player" bson:"coefficient_to_total_player"`
+	CoefficientToTotalPlayer       float64 `json:"coefficient_to_total_player" bson:"coefficient_to_total_player"`
 	FinalPercentage                float64 `json:"final_percentage" bson:"final_percentage"`
 	PlayerTotalLoseWin             float64 `json:"player_total_lose_win" bson:"player_total_lose_win" `
 	SurplusPool                    float64 `json:"surplus_pool" bson:"surplus_pool"`
 	PlayerLoseRateAfterSurplusPool float64 `json:"player_lose_rate_after_surplus_pool" bson:"player_lose_rate_after_surplus_pool"`
 	DataCorrection                 float64 `json:"data_correction" bson:"data_correction"`
 	PlayerWinRate                  float64 `json:"player_win_rate" bson:"player_win_rate"`
-	RandomCountAfterWin            float64 `json:"random_count_after_win" bson:"random_count_after_win"`
-	RandomCountAfterLose           float64 `json:"random_count_after_lose" bson:"random_count_after_lose"`
-	RandomPercentageAfterWin       float64 `json:"random_percentage_after_win" bson:"random_percentage_after_win"`
-	RandomPercentageAfterLose      float64 `json:"random_percentage_after_lose" bson:"random_percentage_after_lose"`
+	CountAfterWin                  float64 `json:"random_count_after_win"`       // 玩家贏錢重新開獎次數
+	PercentageAfterWin             float64 `json:"random_percentage_after_win"`  // 玩家贏錢重新開獎機率
+	CountAfterLose                 float64 `json:"random_count_after_lose"`      // 玩家輸錢重新開獎次數
+	PercertageAfterLose            float64 `json:"random_percentage_after_lose"` // 玩家輸錢重新開獎機率
 }
 
 type UpSurPool struct {
 	PlayerLoseRateAfterSurplusPool float64 `json:"player_lose_rate_after_surplus_pool" bson:"player_lose_rate_after_surplus_pool"`
-	PercentageToTotalWin           float64 `json:"percentage_to_total_win" bson:"percentage_to_total_win"`
-	CoefficientToTotalPlayer       int32   `json:"coefficient_to_total_player" bson:"coefficient_to_total_player"`
+	PercentageToTotalWin           float64 `json:"percentage_to_total_win" bson:"percentage_to_total_win"`         // （该游戏全部实际的玩家历史总输 _ （该游戏全部实际的玩家历史总赢 * 100%）
+	CoefficientToTotalPlayer       float64 `json:"coefficient_to_total_player" bson:"coefficient_to_total_player"` //玩家赠送金额
 	FinalPercentage                float64 `json:"final_percentage" bson:"final_percentage"`
 	DataCorrection                 float64 `json:"data_correction" bson:"data_correction"`
-	PlayerWinRate                  float64 `json:"player_win_rate" bson:"player_win_rate"`
-	RandomCountAfterWin            float64 `json:"random_count_after_win" bson:"random_count_after_win"`
-	RandomCountAfterLose           float64 `json:"random_count_after_lose" bson:"random_count_after_lose"`
-	RandomPercentageAfterWin       float64 `json:"random_percentage_after_win" bson:"random_percentage_after_win"`
-	RandomPercentageAfterLose      float64 `json:"random_percentage_after_lose" bson:"random_percentage_after_lose"`
+	RandomCountAfterWin            float64 `json:"random_count_after_win" bson:"random_count_after_win"`             // 玩家贏錢重新開獎次數
+	RandomCountAfterLose           float64 `json:"random_count_after_lose" bson:"random_count_after_lose"`           // 玩家輸錢重新開獎次數
+	RandomPercentageAfterWin       float64 `json:"random_percentage_after_win" bson:"random_percentage_after_win"`   // 玩家贏錢重新開獎機率
+	RandomPercentageAfterLose      float64 `json:"random_percentage_after_lose" bson:"random_percentage_after_lose"` // 玩家輸錢重新開獎機率
 }
 
 type GRobotData struct {
@@ -281,32 +281,29 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 
 // 查询子游戏盈余池数据
 func getSurplusOne(w http.ResponseWriter, r *http.Request) {
-	var req GameDataReq
-	req.GameId = r.FormValue("game_id")
-	log.Debug("game_id :%v", req.GameId)
 
-	selector := bson.M{}
-	if req.GameId != "" {
-		selector["game_id"] = req.GameId
-	}
+	GameId := r.FormValue("game_id")
 
-	result, err := GetSurPoolData(selector)
-	if err != nil {
+	if GameId != conf.Server.GameID {
+		log.Debug("game_id错误:%v   %v", GameId, conf.Server.GameID)
 		return
 	}
 
 	var getSur GetSurPool
-	getSur.PlayerTotalLose = result.PlayerTotalLose
-	getSur.PlayerTotalWin = result.PlayerTotalWin
-	getSur.PercentageToTotalWin = result.PercentageToTotalWin
-	getSur.TotalPlayer = result.TotalPlayer
-	getSur.CoefficientToTotalPlayer = result.CoefficientToTotalPlayer
-	getSur.FinalPercentage = result.FinalPercentage
-	getSur.PlayerTotalLoseWin = result.PlayerTotalLoseWin
-	getSur.SurplusPool = result.SurplusPool
-	getSur.PlayerLoseRateAfterSurplusPool = result.PlayerLoseRateAfterSurplusPool
-	getSur.DataCorrection = result.DataCorrection
-	getSur.PlayerWinRate = result.PlayerWinRate
+	getSur.PlayerTotalLose = ServerSurPool.TotalLost
+	getSur.PlayerTotalWin = ServerSurPool.TotalWin
+	getSur.PercentageToTotalWin = ServerSurPool.KillPercent
+	getSur.TotalPlayer = int32(ServerSurPool.SumUser)
+	getSur.CoefficientToTotalPlayer = ServerSurPool.MoneyPrizeOneUser
+	getSur.FinalPercentage = ServerSurPool.FinalPercentage
+	getSur.PlayerTotalLoseWin = ServerSurPool.UserLostMinusWin
+	getSur.SurplusPool = ServerSurPool.PoolBalance
+	getSur.PlayerLoseRateAfterSurplusPool = ServerSurPool.LoseRateAfterSurplus
+	getSur.DataCorrection = ServerSurPool.DataCorrection
+	getSur.CountAfterWin = ServerSurPool.CountAfterWin
+	getSur.PercentageAfterWin = ServerSurPool.PercentageAfterWin
+	getSur.CountAfterLose = ServerSurPool.CountAfterLose
+	getSur.PercertageAfterLose = ServerSurPool.PercertageAfterLose
 
 	js, err := json.Marshal(NewResp(SuccCode, "", getSur))
 	if err != nil {
@@ -318,59 +315,73 @@ func getSurplusOne(w http.ResponseWriter, r *http.Request) {
 }
 
 func uptSurplusOne(w http.ResponseWriter, r *http.Request) {
-	rateSur := r.PostFormValue("player_lose_rate_after_surplus_pool")
-	percentage := r.PostFormValue("percentage_to_total_win")
-	coefficient := r.PostFormValue("coefficient_to_total_player")
-	final := r.PostFormValue("final_percentage")
-	correction := r.PostFormValue("data_correction")
-	winRate := r.PostFormValue("player_win_rate")
 
-	s, c := connect(dbName, surPool)
-	defer s.Close()
-
-	sur := &SurPool{}
-	err := c.Find(nil).One(sur)
-	if err != nil {
-		log.Debug("uptSurplusOne 盈余池赋值失败~")
+	gameID := r.PostFormValue("game_id")
+	if gameID != conf.Server.GameID {
+		log.Debug("game_id错误 %v", gameID)
+		return
 	}
+
+	rateSur, errR := strconv.ParseFloat(r.PostFormValue("player_lose_rate_after_surplus_pool"), 64)
+	percentage, errP := strconv.ParseFloat(r.PostFormValue("percentage_to_total_win"), 64)
+	coefficient, errC := strconv.ParseFloat(r.PostFormValue("coefficient_to_total_player"), 64)
+	final, errF := strconv.ParseFloat(r.PostFormValue("final_percentage"), 64)
+	correction, errD := strconv.ParseFloat(r.PostFormValue("data_correction"), 64)
+	CountAfterWin, errW := strconv.ParseFloat(r.PostFormValue("random_count_after_win"), 64)
+	PercentageAfterWin, errPW := strconv.ParseFloat(r.PostFormValue("random_percentage_after_win"), 64)
+	CountAfterLose, errL := strconv.ParseFloat(r.PostFormValue("random_count_after_lose"), 64)
+	PercentageAfterLose, errPL := strconv.ParseFloat(r.PostFormValue("random_percentage_after_lose"), 64)
+
+	if errR == nil {
+		ServerSurPool.LoseRateAfterSurplus = rateSur
+	}
+	if errP == nil {
+		ServerSurPool.KillPercent = percentage
+	}
+	if errC == nil {
+		ServerSurPool.MoneyPrizeOneUser = coefficient
+	}
+	if errF == nil {
+		ServerSurPool.FinalPercentage = final
+	}
+	if errD == nil {
+		ServerSurPool.DataCorrection = correction
+	}
+	if errW == nil {
+		ServerSurPool.CountAfterWin = CountAfterWin
+	}
+	if errPW == nil {
+		ServerSurPool.PercentageAfterWin = PercentageAfterWin
+	}
+	if errL == nil {
+		ServerSurPool.CountAfterLose = CountAfterLose
+	}
+	if errPL == nil {
+		ServerSurPool.PercertageAfterLose = PercentageAfterLose
+	}
+
+	if errP == nil || errC == nil || errF == nil || errD == nil {
+		itemPoolBalance := (ServerSurPool.TotalLost - ServerSurPool.TotalWin*ServerSurPool.KillPercent - ServerSurPool.SumUser*ServerSurPool.MoneyPrizeOneUser + ServerSurPool.DataCorrection) * ServerSurPool.FinalPercentage
+		p, errSur := strconv.ParseFloat(fmt.Sprintf("%.2f", itemPoolBalance), 64)
+		if errSur == nil {
+			ServerSurPool.PoolBalance = p
+		} else {
+			common.Debug_log("errSur=%v", errSur)
+		}
+	}
+
+	SaveServerConfig()
 
 	var upt UpSurPool
-	upt.PlayerLoseRateAfterSurplusPool = sur.PlayerLoseRateAfterSurplusPool
-	upt.PercentageToTotalWin = sur.PercentageToTotalWin
-	upt.CoefficientToTotalPlayer = sur.CoefficientToTotalPlayer
-	upt.FinalPercentage = sur.FinalPercentage
-	upt.DataCorrection = sur.DataCorrection
-	upt.PlayerWinRate = sur.PlayerWinRate
-
-	if rateSur != "" {
-		upt.PlayerLoseRateAfterSurplusPool, _ = strconv.ParseFloat(rateSur, 64)
-		sur.PlayerLoseRateAfterSurplusPool = upt.PlayerLoseRateAfterSurplusPool
-	}
-	if percentage != "" {
-		upt.PercentageToTotalWin, _ = strconv.ParseFloat(percentage, 64)
-		sur.PercentageToTotalWin = upt.PercentageToTotalWin
-	}
-	if coefficient != "" {
-		data, _ := strconv.ParseInt(coefficient, 10, 32)
-		upt.CoefficientToTotalPlayer = int32(data)
-		sur.CoefficientToTotalPlayer = upt.CoefficientToTotalPlayer
-	}
-	if final != "" {
-		upt.FinalPercentage, _ = strconv.ParseFloat(final, 64)
-		sur.FinalPercentage = upt.FinalPercentage
-	}
-	if correction != "" {
-		upt.DataCorrection, _ = strconv.ParseFloat(correction, 64)
-		sur.DataCorrection = upt.DataCorrection
-	}
-	if winRate != "" {
-		upt.PlayerWinRate, _ = strconv.ParseFloat(winRate, 64)
-		sur.PlayerWinRate = upt.PlayerWinRate
-	}
-
-	sur.SurplusPool = (sur.PlayerTotalLose - (sur.PlayerTotalWin * sur.PercentageToTotalWin) - float64(sur.TotalPlayer*sur.CoefficientToTotalPlayer) + sur.DataCorrection) * sur.FinalPercentage
-	// 更新盈余池数据
-	UpdateSurPool(sur)
+	upt.PlayerLoseRateAfterSurplusPool = ServerSurPool.LoseRateAfterSurplus
+	upt.PercentageToTotalWin = ServerSurPool.KillPercent
+	upt.CoefficientToTotalPlayer = ServerSurPool.MoneyPrizeOneUser
+	upt.FinalPercentage = ServerSurPool.FinalPercentage
+	upt.DataCorrection = ServerSurPool.DataCorrection
+	upt.RandomCountAfterWin = ServerSurPool.CountAfterWin
+	upt.RandomPercentageAfterWin = ServerSurPool.PercentageAfterWin
+	upt.RandomCountAfterLose = ServerSurPool.CountAfterLose
+	upt.RandomPercentageAfterLose = ServerSurPool.PercertageAfterLose
 
 	js, err := json.Marshal(NewResp(SuccCode, "", upt))
 	if err != nil {
@@ -396,7 +407,7 @@ func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 			p.PlayerExitRoom()
 			c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
 			leaveHall := &msg.Logout_S2C{}
-			p.SendMsg(leaveHall)
+			p.SendMsg(leaveHall, "Logout_S2C")
 
 			js, err := json.Marshal(NewResp(SuccCode, "", "已成功T出房间!"))
 			if err != nil {
@@ -604,7 +615,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	// 发送给所有玩家
 	hall.UserRecord.Range(func(key, value interface{}) bool {
 		u := value.(*Player)
-		u.SendMsg(data)
+		u.SendMsg(data, "ChangeRoomType_S2C")
 		return true
 	})
 

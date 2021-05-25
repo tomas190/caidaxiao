@@ -3,9 +3,10 @@ package internal
 import (
 	"caidaxiao/msg"
 	"fmt"
-	"github.com/name5566/leaf/log"
 	"math/rand"
 	"time"
+
+	"github.com/name5566/leaf/log"
 )
 
 //机器人问题:
@@ -181,7 +182,7 @@ func (r *Room) RobotsDownBet() {
 								action.DownPot = msg.PotType(pot)
 								action.IsAction = v.IsAction
 								action.Account = v.Account
-								r.BroadCastMsg(action)
+								r.BroadCastMsg(action, "PlayerAction_S2C")
 
 								// 广播房间更新注池金额
 								potChange := &msg.PotChangeMoney_S2C{}
@@ -193,7 +194,7 @@ func (r *Room) RobotsDownBet() {
 								potChange.PotMoneyCount.PairDownBet = r.PotMoneyCount.PairDownBet
 								potChange.PotMoneyCount.StraightDownBet = r.PotMoneyCount.StraightDownBet
 								potChange.PotMoneyCount.LeopardDownBet = r.PotMoneyCount.LeopardDownBet
-								r.BroadCastMsg(potChange)
+								r.BroadCastMsg(potChange, "PotChangeMoney_S2C")
 							}
 						} else {
 							// 判断机器人的下注筹码是否足够
@@ -292,7 +293,7 @@ func (r *Room) RobotsDownBet() {
 							action.DownPot = msg.PotType(pot)
 							action.IsAction = v.IsAction
 							action.Account = v.Account
-							r.BroadCastMsg(action)
+							r.BroadCastMsg(action, "PlayerAction_S2C")
 
 							// 广播房间更新注池金额
 							potChange := &msg.PotChangeMoney_S2C{}
@@ -304,7 +305,7 @@ func (r *Room) RobotsDownBet() {
 							potChange.PotMoneyCount.PairDownBet = r.PotMoneyCount.PairDownBet
 							potChange.PotMoneyCount.StraightDownBet = r.PotMoneyCount.StraightDownBet
 							potChange.PotMoneyCount.LeopardDownBet = r.PotMoneyCount.LeopardDownBet
-							r.BroadCastMsg(potChange)
+							r.BroadCastMsg(potChange, "PotChangeMoney_S2C")
 							//log.Debug("机器Id: %v,下注: %v", v.Id, v.DownBetMoney)
 						}
 					} else {

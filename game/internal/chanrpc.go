@@ -2,6 +2,7 @@ package internal
 
 import (
 	"caidaxiao/msg"
+
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
 )
@@ -44,14 +45,16 @@ func rpcCloseAgent(args []interface{}) {
 					room.UserLeave = append(room.UserLeave, p.Id)
 				}
 				leaveHall := &msg.Logout_S2C{}
-				a.WriteMsg(leaveHall)
+				// a.WriteMsg(leaveHall)
+				p.SendMsg(leaveHall, "Logout_S2C")
 			}
 		} else {
 			hall.UserRecord.Delete(p.Id)
 			p.PlayerExitRoom()
 			c4c.UserLogoutCenter(p.Id, p.Password, p.Token) //todo
 			leaveHall := &msg.Logout_S2C{}
-			a.WriteMsg(leaveHall)
+			// a.WriteMsg(leaveHall)
+			p.SendMsg(leaveHall, "Logout_S2C")
 			a.Close()
 		}
 	}

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"caidaxiao/base"
+
 	"github.com/name5566/leaf/module"
 )
 
@@ -29,6 +30,9 @@ func (m *Module) OnInit() {
 	// 大厅初始化
 	hall.Init()
 
+	// 載入盈餘池
+	LoadServerSurpool()
+
 	// 中心服初始化并创建链接
 	c4c.Init()
 	c4c.CreatConnect()
@@ -37,5 +41,5 @@ func (m *Module) OnInit() {
 }
 
 func (m *Module) OnDestroy() {
-
+	SaveServerConfig()
 }

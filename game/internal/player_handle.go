@@ -2,6 +2,7 @@ package internal
 
 import (
 	"caidaxiao/msg"
+
 	"github.com/name5566/leaf/log"
 )
 
@@ -29,7 +30,7 @@ func (p *Player) PlayerExitRoom() {
 			leave.PlayerInfo.NickName = p.NickName
 			leave.PlayerInfo.HeadImg = p.HeadImg
 			leave.PlayerInfo.Account = p.Account
-			p.SendMsg(leave)
+			p.SendMsg(leave, "LeaveRoom_S2C")
 		} else {
 			room.ExitFromRoom(p)
 		}
@@ -59,6 +60,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			return
 		}
 
+		// TODO Switch//
 		// 当下玩家下注限红设定
 		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
 		log.Debug("玩家最大限注:%v", p.MaxBet)
@@ -66,7 +68,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			if m.DownBet < p.MinBet || totalBet+m.DownBet > p.MaxBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETLIMITBET
-				p.SendMsg(data)
+				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
 		}
@@ -76,7 +78,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			if (room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard > 1000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
+				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
 		}
@@ -85,13 +87,13 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			if (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
+				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
 			if (p.DownBetMoney.BigDownBet+m.DownBet)-p.DownBetMoney.SmallDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
+				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
 		}
@@ -99,19 +101,19 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			if (room.PotMoneyCount.SmallDownBet+m.DownBet)-room.PotMoneyCount.BigDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
+				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
 			if (p.DownBetMoney.SmallDownBet+m.DownBet)-p.DownBetMoney.BigDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
-				p.SendMsg(data)
+				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
 		}
 
-		room.userRoomMutex.Lock()
-		defer room.userRoomMutex.Unlock()
+		room.userBetMutex.Lock()
+		defer room.userBetMutex.Unlock()
 
 		p.IsAction = m.IsAction
 		if p.IsAction == true {
@@ -142,7 +144,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			action.DownPot = m.DownPot
 			action.IsAction = p.IsAction
 			action.Account = p.Account
-			room.BroadCastMsg(action)
+			room.BroadCastMsg(action, "PlayerAction_S2C")
 
 			// 广播房间更新注池金额
 			potChange := &msg.PotChangeMoney_S2C{}
@@ -155,7 +157,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			potChange.PotMoneyCount.PairDownBet = room.PotMoneyCount.PairDownBet
 			potChange.PotMoneyCount.StraightDownBet = room.PotMoneyCount.StraightDownBet
 			potChange.PotMoneyCount.LeopardDownBet = room.PotMoneyCount.LeopardDownBet
-			room.BroadCastMsg(potChange)
+			room.BroadCastMsg(potChange, "PotChangeMoney_S2C")
 		}
 	}
 }

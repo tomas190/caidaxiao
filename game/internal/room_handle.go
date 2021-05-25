@@ -26,9 +26,6 @@ func (r *Room) JoinGameRoom(p *Player) {
 		return
 	}
 
-	// 插入玩家信息
-	p.FindPlayerInfo()
-
 	// 获取桌面显示的6个玩家
 	if len(r.PlayerList) >= 6 {
 		num := len(r.PlayerList) - 6
@@ -51,7 +48,10 @@ func (r *Room) JoinGameRoom(p *Player) {
 	} else if r.GameStat == msg.GameStep_LiuJu {
 		data.RoomData.GameTime = SettleTime - r.counter
 	}
-	p.SendMsg(data)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	p.SendMsg(data, "JoinRoom_S2C")
 
 }
 
@@ -122,7 +122,10 @@ func (r *Room) DownBetTimerTask() {
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_DownBet
 	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 发送时间
 	//send := &msg.SendActTime_S2C{}
@@ -145,7 +148,7 @@ func (r *Room) DownBetTimerTask() {
 			send.StartTime = r.counter
 			send.GameTime = DownBetTime
 			send.GameStep = msg.GameStep_DownBet
-			r.BroadCastMsg(send)
+			r.BroadCastMsg(send, "SendActTime_S2C")
 			if r.GameStat == msg.GameStep_Close {
 				r.counter = 0
 				return
@@ -163,14 +166,20 @@ func (r *Room) HandleCloseOver() {
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Close
 	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 发送时间
 	send := &msg.SendActTime_S2C{}
 	send.StartTime = r.counter
 	send.GameTime = CloseTime
 	send.GameStep = msg.GameStep_Close
-	r.BroadCastMsg(send)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(send, "SendActTime_S2C")
 
 	// 获取派奖前的玩家投注数据
 	r.SetPlayerDownBet()
@@ -186,7 +195,7 @@ func (r *Room) HandleCloseOver() {
 			send.StartTime = r.counter
 			send.GameTime = CloseTime
 			send.GameStep = msg.GameStep_Close
-			r.BroadCastMsg(send)
+			r.BroadCastMsg(send, "SendActTime_S2C")
 			if r.GameStat == msg.GameStep_GetRes {
 				r.counter = 0
 				return
@@ -206,28 +215,32 @@ func (r *Room) HandleGetRes() {
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_GetRes
 	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 发送时间
 	send := &msg.SendActTime_S2C{}
 	send.StartTime = r.counter
 	send.GameTime = GetResTime
 	send.GameStep = msg.GameStep_GetRes
-	r.BroadCastMsg(send)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(send, "SendActTime_S2C")
 
-	sur = &SurplusPoolDB{}
-	sur.UpdateTime = time.Now()
-	sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
-	sur.Rid = r.RoomId
-	sur.PlayerNum = GetPlayerCount() //todo
+	// sur = &SurplusPoolDB{}
+	// sur.UpdateTime = time.Now()
+	// sur.TimeNow = time.Now().Format("2006-01-02 15:04:05")
+	// sur.Rid = r.RoomId
+	// sur.PlayerNum = GetPlayerCount() //SUR Todo
 
-	surPool := FindSurplusPool()
-	if surPool != nil {
-		sur.HistoryWin = surPool.HistoryWin
-		sur.HistoryLose = surPool.HistoryLose
-	}
-
-	log.Debug("获取盈余数据~")
+	// surPool := FindSurplusPool()
+	// if surPool != nil {
+	// 	sur.HistoryWin = surPool.HistoryWin
+	// 	sur.HistoryLose = surPool.HistoryLose
+	// }
 
 	// 定时
 	t := time.NewTicker(time.Second)
@@ -240,7 +253,7 @@ func (r *Room) HandleGetRes() {
 			send.StartTime = r.counter
 			send.GameTime = GetResTime
 			send.GameStep = msg.GameStep_GetRes
-			r.BroadCastMsg(send)
+			r.BroadCastMsg(send, "SendActTime_S2C")
 			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				r.counter = 0
 				return
@@ -287,13 +300,19 @@ func (r *Room) HandleLiuJu() {
 	// 发送结算数据
 	resultData := &msg.ResultData_S2C{}
 	resultData.RoomData = r.RespRoomData()
-	r.BroadCastMsg(resultData)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ResultData_S2C 房間:%v    playerData:%v  HistoryData:%v ", resultData.RoomData.RoomId, len(resultData.RoomData.PlayerData), len(resultData.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(resultData, "ResultData_S2C")
 
 	// 结算时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_LiuJu
 	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 获取投注统计
 	r.SeRoomTotalBet()
@@ -311,7 +330,7 @@ func (r *Room) HandleLiuJu() {
 	send.StartTime = r.counter
 	send.GameTime = SettleTime
 	send.GameStep = msg.GameStep_LiuJu
-	r.BroadCastMsg(send)
+	r.BroadCastMsg(send, "SendActTime_S2C")
 
 	t := time.NewTicker(time.Second)
 	go func() {
@@ -323,7 +342,7 @@ func (r *Room) HandleLiuJu() {
 			send.StartTime = r.counter
 			send.GameTime = SettleTime
 			send.GameStep = msg.GameStep_LiuJu
-			r.BroadCastMsg(send)
+			r.BroadCastMsg(send, "SendActTime_S2C")
 
 			if r.GameStat == msg.GameStep_DownBet {
 				r.counter = 0
@@ -349,13 +368,16 @@ func (r *Room) CompareSettlement() {
 	// 发送结算数据
 	resultData := &msg.ResultData_S2C{}
 	resultData.RoomData = r.RespRoomData()
-	r.BroadCastMsg(resultData)
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	log.Debug("ResultData_S2C 房間: %v   playerData:%v  HistoryData:%v ", resultData.RoomData.RoomId, len(resultData.RoomData.PlayerData), len(resultData.RoomData.HistoryData))
+	log.Debug("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	r.BroadCastMsg(resultData, "ResultData_S2C")
 
 	// 结算时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Settle
 	data.RoomData = r.RespRoomData()
-	r.BroadCastMsg(data)
+	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 获取投注统计
 	r.SeRoomTotalBet()
@@ -373,7 +395,7 @@ func (r *Room) CompareSettlement() {
 	send.StartTime = r.counter
 	send.GameTime = SettleTime
 	send.GameStep = msg.GameStep_Settle
-	r.BroadCastMsg(send)
+	r.BroadCastMsg(send, "SendActTime_S2C")
 
 	t := time.NewTicker(time.Second)
 	go func() {
@@ -385,7 +407,7 @@ func (r *Room) CompareSettlement() {
 			send.StartTime = r.counter
 			send.GameTime = SettleTime
 			send.GameStep = msg.GameStep_Settle
-			r.BroadCastMsg(send)
+			r.BroadCastMsg(send, "SendActTime_S2C")
 			if r.GameStat == msg.GameStep_DownBet {
 				r.counter = 0
 				return
@@ -394,9 +416,16 @@ func (r *Room) CompareSettlement() {
 	}()
 }
 
+type userSettlement struct {
+	uBetLoss float64 // 玩家總輸下注(玩家總輸)
+	uBetWin  float64 // 玩家總贏下注
+	uWinSum  float64 // 玩家總贏
+}
+
 //ResultMoney 结算数据
 func (r *Room) ResultMoney() {
-
+	r.SettlementMutex.Lock()
+	defer r.SettlementMutex.Unlock()
 	if r.GameStat == msg.GameStep_LiuJu { // 流局结算
 		for _, v := range r.PlayerList {
 			if v != nil && v.IsAction == true {
@@ -408,54 +437,79 @@ func (r *Room) ResultMoney() {
 		log.Debug("玩家流局结算~")
 	} else { // 正常结算
 		log.Debug("开始处理玩家结算~")
+
 		for _, v := range r.PlayerList {
 			if v != nil && v.IsAction == true {
-				var totalWin float64
-				var taxMoney float64
-				var totalLose float64
+				// var totalWin float64  //clear
+				// var taxMoney float64  //clear
+				// var totalLose float64 //clear
+				us := &userSettlement{}
 
-				totalLose = float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet + v.DownBetMoney.LeopardDownBet)
-				if r.LotteryResult.CardType == msg.CardsType_Leopard {
-					totalWin += float64(v.DownBetMoney.LeopardDownBet)
-					taxMoney += float64(v.DownBetMoney.LeopardDownBet * WinLeopard)
-					totalLose -= float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet)
-					money := float64(v.DownBetMoney.SmallDownBet+v.DownBetMoney.BigDownBet) / 2
-					totalLose += money
-					v.Account += money
-				} else if r.LotteryResult.BigSmall == 1 {
-					totalWin += float64(v.DownBetMoney.SmallDownBet)
-					taxMoney += float64(v.DownBetMoney.SmallDownBet * WinSmall)
-				} else if r.LotteryResult.BigSmall == 2 {
-					totalWin += float64(v.DownBetMoney.BigDownBet)
-					taxMoney += float64(v.DownBetMoney.BigDownBet * WinBig)
+				us.uBetLoss = float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet + v.DownBetMoney.LeopardDownBet)
+
+				// totalLose = float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet + v.DownBetMoney.LeopardDownBet) //clear
+				// 只會有一個中獎區
+				if r.LotteryResult.CardType == msg.CardsType_Leopard { // 豹子
+					// 中豹子 大.小下注額退一半給玩家
+					refund := float64(v.DownBetMoney.SmallDownBet+v.DownBetMoney.BigDownBet) / 2
+					v.Account += refund
+					us.uBetLoss -= float64(v.DownBetMoney.LeopardDownBet) - refund
+					us.uBetWin += float64(v.DownBetMoney.LeopardDownBet)
+					us.uWinSum += float64(v.DownBetMoney.LeopardDownBet * WinLeopard)
+
+					// totalWin += float64(v.DownBetMoney.LeopardDownBet) //clear
+					// taxMoney += float64(v.DownBetMoney.LeopardDownBet * WinLeopard)//clear
+					// totalLose -= float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet)//clear
+					// money := float64(v.DownBetMoney.SmallDownBet+v.DownBetMoney.BigDownBet) / 2//clear
+					// totalLose += money//clear
+					// v.Account += money //clear
+				} else if r.LotteryResult.BigSmall == 1 { // 小
+
+					us.uBetLoss -= float64(v.DownBetMoney.SmallDownBet)
+					us.uBetWin += float64(v.DownBetMoney.SmallDownBet)
+					us.uWinSum += float64(v.DownBetMoney.SmallDownBet * WinSmall)
+
+					// totalWin += float64(v.DownBetMoney.SmallDownBet)            //clear
+					// taxMoney += float64(v.DownBetMoney.SmallDownBet * WinSmall) //clear
+				} else if r.LotteryResult.BigSmall == 2 { // 大
+
+					us.uBetLoss -= float64(v.DownBetMoney.BigDownBet)
+					us.uBetWin += float64(v.DownBetMoney.BigDownBet)
+					us.uWinSum += float64(v.DownBetMoney.BigDownBet * WinBig)
+
+					// totalWin += float64(v.DownBetMoney.BigDownBet)          //clear
+					// taxMoney += float64(v.DownBetMoney.BigDownBet * WinBig) //clear
 				}
 
 				if v.IsRobot == false {
-					log.Debug("id:%v,totalWin:%v,totalLose:%v", v.Id, totalWin, totalLose)
-					log.Debug("downBet:%v", v.DownBetMoney)
+					log.Debug("玩家:%v,贏分下注:%v 輸分下注:%v 玩家獲利:%v", v.Id, us.uBetWin, us.uBetLoss, us.uWinSum)
+					log.Debug("各區下注:%v", v.DownBetMoney)
 				}
 
 				nowTime := time.Now().Unix() //todo
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
-				if taxMoney > 0 {
-					v.WinResultMoney = taxMoney
-					sur.HistoryWin += v.WinResultMoney
-					sur.TotalWinMoney += v.WinResultMoney
+
+				if us.uWinSum > 0 {
+
+					v.WinResultMoney = us.uWinSum
+					ServerSurPool.TotalWin += us.uWinSum
+
 					reason := "彩源猜大小赢钱" //todo
 					if v.IsRobot == false {
 						//同时同步赢分和输分
-						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, totalWin)
+						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, us.uBetWin)
 					}
 				}
-				if totalLose > 0 {
-					v.LoseResultMoney = -totalLose + totalWin
-					sur.HistoryLose -= v.LoseResultMoney
-					sur.TotalLoseMoney -= v.LoseResultMoney
+
+				if us.uBetLoss > 0 {
+					v.LoseResultMoney = -us.uBetLoss
+					ServerSurPool.TotalWin = us.uBetLoss
+
 					reason := "彩源猜大小输钱" //todo
 					//同时同步赢分和输分
 					if v.IsRobot == false {
 						if v.LoseResultMoney != 0 {
-							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, 0-v.LoseResultMoney)
+							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, us.uBetLoss)
 						}
 					}
 				}
@@ -464,17 +518,17 @@ func (r *Room) ResultMoney() {
 				taxR := pac / 100
 				var tax float64
 				if v.IsRobot == false {
-					tax = (taxMoney) * taxR // todo
+					tax = (us.uWinSum) * taxR // todo
 					//tax = (taxMoney) * taxRate
 				} else {
 					pac2 := packageTax[r.PackageId] //todo
 					taxR2 := pac2 / 100
-					tax = (taxMoney) * taxR2
+					tax = (us.uWinSum) * taxR2
 					//tax = (taxMoney) * taxRate
 				}
-				v.ResultMoney = (totalWin + taxMoney) - tax
-				v.Account += v.ResultMoney
-				v.ResultMoney -= totalLose
+
+				v.Account += us.uBetWin + us.uWinSum - tax
+				v.ResultMoney = us.uBetWin + us.uWinSum - tax - us.uBetLoss
 
 				// 记录玩家20句游戏Win次数
 				if v.ResultMoney > 0 {
@@ -495,8 +549,9 @@ func (r *Room) ResultMoney() {
 				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
 				if v.WinResultMoney != 0 || v.LoseResultMoney != 0 { //todo
+
 					// 插入盈余池数据
-					InsertSurplusPool(sur)
+					// InsertSurplusPool(sur)
 
 					// 插入玩家下注记录
 					data := &PlayerDownBetRecode{}
@@ -546,6 +601,9 @@ func (r *Room) ResultMoney() {
 				}
 			}
 		}
+
+		// 更新盈餘池
+		ServerSurPool.updatePoolBalance()
 	}
 	log.Debug("result：%v", r.LotteryResult)
 }

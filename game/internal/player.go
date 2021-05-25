@@ -2,6 +2,7 @@ package internal
 
 import (
 	"caidaxiao/msg"
+
 	"github.com/name5566/leaf/gate"
 )
 
@@ -63,8 +64,13 @@ func (p *Player) Init() {
 }
 
 //SendMsg 玩家向客户端发送消息
-func (p *Player) SendMsg(msg interface{}) {
-	if p.ConnAgent != nil {
+func (p *Player) SendMsg(msg interface{}, event string) {
+
+	if p.ConnAgent != nil && p.IsRobot != true {
+		// if  event != "SendActTime_S2C" && event != "PlayerAction_S2C" && event != "PotChangeMoney_S2C" && event != "JoinRoom_S2C" && event != "ActionTime_S2C" && event != "ResultData_S2C" { //過濾:1.反回遊戲時間(表演) 2.玩家、機器人下注(表演) 3.更新注池金额 4.加入房間 5.結算資料
+		// 	log.Debug("Send To Client playerID: %v Event:%v Message : %v", p.Id, event, msg)
+		// }
+
 		p.ConnAgent.WriteMsg(msg)
 	}
 }

@@ -54,9 +54,11 @@ const (
 	taxRate float64 = 0.05 //税率
 )
 
-var sur *SurplusPoolDB
+var (
+	packageTax map[uint16]float64
 
-var packageTax map[uint16]float64
+	keyReqPrize sync.Mutex //取號鎖
+)
 
 type Room struct {
 	RoomId      string    // 房间号
@@ -90,7 +92,9 @@ type Room struct {
 
 	IsOpenRoom bool // 是否开启房间
 
-	userRoomMutex sync.RWMutex
+	userRoomMutex   sync.RWMutex // 玩家進出鎖
+	userBetMutex    sync.RWMutex // 玩家下注鎖
+	SettlementMutex sync.RWMutex // 玩家結算鎖
 }
 
 func (r *Room) Init() {
@@ -129,16 +133,16 @@ func (r *Room) Init() {
 func (r *Room) BroadCastExcept(msg interface{}, p *Player) {
 	for _, v := range r.PlayerList {
 		if v != nil && v.Id != p.Id {
-			v.SendMsg(msg)
+			v.SendMsg(msg, "沒在用")
 		}
 	}
 }
 
 //BroadCastMsg 进行广播消息
-func (r *Room) BroadCastMsg(msg interface{}) {
+func (r *Room) BroadCastMsg(msg interface{}, event string) {
 	for _, v := range r.PlayerList {
 		if v != nil {
-			v.SendMsg(msg)
+			v.SendMsg(msg, event)
 		}
 	}
 }
@@ -424,78 +428,85 @@ func (r *Room) GetCaiYuan() {
 
 	go func() {
 		for {
-			time.Sleep(time.Millisecond * 1000)
-
-			var caiYuan string
-			if r.RoomId == "1" {
-				caiYuan = "https://manycai.com/K2601968389c853/hn60-1.json"
-			} else if r.RoomId == "2" {
-				caiYuan = "https://manycai.com/K2601968389c853/PTXFFC-1.json"
-			}
-
-			resp, err := http.Get(caiYuan)
-			if resp != nil && resp.Body != nil {
-				defer func() {
-					errC := resp.Body.Close() //必須調用否則可能產生記憶體洩漏
-					if errC != nil {
-						log.Debug("close resp err = %v, urlReq = %s", errC, caiYuan)
-					}
-				}()
-			}
-
-			if err != nil {
-				log.Debug("Get-err-1 %+v , urlReq = %s", err, caiYuan)
-				continue
-			}
-
-			cpinfo := make([]*PrizeRecord, 1)
-			err = json.NewDecoder(resp.Body).Decode(&cpinfo)
-			if err != nil {
-				errMap := make(map[string]interface{})
-				err2 := json.NewDecoder(resp.Body).Decode(&errMap)
-				if err2 == nil && errMap["error"] != nil {
-					errMsg, ok := errMap["error"].(string)
-					if ok == false {
-						errMsg = "Unknown Error"
-					}
-					err2 = errors.New(errMsg)
-				}
-				log.Debug("reqPrizeSource-err: %v, urlReq = %s", err2, caiYuan)
-				// return nil, err2
-				continue
-			}
-
-			opendate := cpinfo[0].OpenDate // 开奖时间
-			issue := cpinfo[0].Issue       // 彩票期数
-			code := cpinfo[0].Code         // 中奖号码
-			log.Debug("獎源:%v \n开奖时间:%v 彩票期数:%v 中奖号码:%v", caiYuan, opendate, issue, code)
-
-			t := time.Now()
-			nMinute := t.Minute()
-			m := getMinute(cpinfo[0].OpenDate)
-
-			if nMinute == m { // 判斷是最新的期号
-				r.resultTime = opendate
-				r.PeriodsTime = opendate
-				r.PeriodsNum = issue
-				codeString := code
-				codeSlice := strings.Split(codeString, `,`)
-				//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
-				var codeData []int
-				for _, v := range codeSlice {
-					num, _ := strconv.Atoi(v)
-					codeData = append(codeData, num)
-				}
-				r.Lottery = codeData
-				return
-			}
-
-			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
+			time.Sleep(time.Millisecond * 2000)
+			ReqAgain := r.CaiYunApi()
+			if ReqAgain != true || r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				return
 			}
 
 		}
 	}()
+}
+
+func (r *Room) CaiYunApi() bool {
+
+	var caiYuan string
+	if r.RoomId == "1" {
+		caiYuan = "https://manycai.com/K2601968389c853/hn60-1.json"
+	} else if r.RoomId == "2" {
+		caiYuan = "https://manycai.com/K2601968389c853/qiqffc-1.json"
+
+	}
+	keyReqPrize.Lock()
+	resp, err := http.Get(caiYuan)
+	if err != nil {
+		log.Debug("Get-err-1 %+v , urlReq = %s", err, caiYuan)
+		return true
+	}
+	resp.Close = true
+
+	defer func() {
+		keyReqPrize.Unlock()
+		if resp != nil && resp.Body != nil {
+			errC := resp.Body.Close() //必須調用否則可能產生記憶體洩漏
+			if errC != nil {
+				log.Debug("close resp err = %v, urlReq = %s", errC, caiYuan)
+			}
+		}
+	}()
+
+	cpinfo := make([]*PrizeRecord, 1)
+	err = json.NewDecoder(resp.Body).Decode(&cpinfo)
+	if err != nil {
+		errMap := make(map[string]interface{})
+		err2 := json.NewDecoder(resp.Body).Decode(&errMap)
+		if err2 == nil && errMap["error"] != nil {
+			errMsg, ok := errMap["error"].(string)
+			if ok == false {
+				errMsg = "Unknown Error"
+			}
+			err2 = errors.New(errMsg)
+		}
+		log.Debug("reqPrizeSource-err: %v, urlReq = %s", err2, caiYuan)
+		// return nil, err2
+		return true
+	}
+
+	opendate := cpinfo[0].OpenDate // 开奖时间
+	issue := cpinfo[0].Issue       // 彩票期数
+	code := cpinfo[0].Code         // 中奖号码
+	log.Debug("獎源:%v \n开奖时间:%v 彩票期数:%v 中奖号码:%v", caiYuan, opendate, issue, code)
+
+	t := time.Now()
+	nMinute := t.Minute()
+	m := getMinute(cpinfo[0].OpenDate)
+
+	if nMinute == m { // 判斷是最新的期号
+		r.resultTime = opendate
+		r.PeriodsTime = opendate
+		r.PeriodsNum = issue
+		codeString := code
+		codeSlice := strings.Split(codeString, `,`)
+		//codeSlice = append(codeSlice[:0], codeSlice[2:]...)
+		var codeData []int
+		for _, v := range codeSlice {
+			num, _ := strconv.Atoi(v)
+			codeData = append(codeData, num)
+		}
+		r.Lottery = codeData
+		return false
+	}
+	return true
 }
 
 //CleanRoomData 清空房间数据,开始下一句游戏
@@ -552,7 +563,7 @@ func (r *Room) KickOutPlayer() {
 					hall.UserRecord.Delete(v.Id)
 					c4c.UserLogoutCenter(v.Id, v.Password, v.Token) //, p.PassWord
 					leaveHall := &msg.Logout_S2C{}
-					v.SendMsg(leaveHall)
+					v.SendMsg(leaveHall, "Logout_S2C")
 					v.IsOnline = false
 					log.Debug("踢出房间断线玩家 : %v", v.Id)
 				}
@@ -601,7 +612,7 @@ func (r *Room) ExitFromRoom(p *Player) {
 	leave.PlayerInfo.NickName = p.NickName
 	leave.PlayerInfo.HeadImg = p.HeadImg
 	leave.PlayerInfo.Account = p.Account
-	p.SendMsg(leave)
+	p.SendMsg(leave, "LeaveRoom_S2C")
 
 	r.DeleteUserRoom(p)
 }
@@ -799,7 +810,7 @@ func (r *Room) HandleRobot() {
 			r.JoinGameRoom(robot)
 			robotNum = r.RobotLength()
 			if robotNum == handleNum {
-				log.Debug("房间:%v,加机器人数量:%v", r.RoomId, r.RobotLength())
+				log.Debug("房间:%v,現机器人数量:%v ", r.RoomId, r.RobotLength())
 				break
 			}
 		}
@@ -809,7 +820,7 @@ func (r *Room) HandleRobot() {
 				r.ExitFromRoom(v)
 				robotNum = r.RobotLength()
 				if robotNum == handleNum {
-					log.Debug("房间:%v,减机器人数量:%v", r.RoomId, r.RobotLength())
+					log.Debug("房间:%v,現机器人数量:%v", r.RoomId, r.RobotLength())
 					break
 				}
 			}
@@ -847,7 +858,7 @@ func (r *Room) PlayerUpBanker() {
 		data := &msg.BankerData_S2C{}
 		data.Banker = p.RespPlayerData()
 		data.TakeMoney = bankerMoney[num]
-		r.BroadCastMsg(data)
+		r.BroadCastMsg(data, "BankerData_S2C")
 	} else if len(r.bankerList) >= 1 {
 		b2000 := make([]string, 0)
 		b5000 := make([]string, 0)
@@ -926,7 +937,7 @@ func (r *Room) SetBanker(id string, takeMoney int32) {
 			data := &msg.BankerData_S2C{}
 			data.Banker = v.RespPlayerData()
 			data.TakeMoney = takeMoney
-			r.BroadCastMsg(data)
+			r.BroadCastMsg(data, "BankerData_S2C")
 		}
 	}
 }

@@ -2,11 +2,12 @@ package internal
 
 import (
 	"caidaxiao/msg"
-	"github.com/name5566/leaf/gate"
-	"github.com/name5566/leaf/log"
 	"reflect"
 	"strconv"
 	"time"
+
+	"github.com/name5566/leaf/gate"
+	"github.com/name5566/leaf/log"
 )
 
 func init() {
@@ -102,9 +103,11 @@ func handleLogin(args []interface{}) {
 						}
 					}
 				}
-				a.WriteMsg(login)
+				// a.WriteMsg(login)
 				//p.ConnAgent.Destroy()
 				p.ConnAgent = a
+				p.SendMsg(login, "Login_S2C")
+
 				p.ConnAgent.SetUserData(u) //p
 				p.IsOnline = true
 				log.Debug("用户重连或顶替，发送登陆信息~,房间数据:%v", login.Backroom)
@@ -113,7 +116,7 @@ func handleLogin(args []interface{}) {
 					roomData := room.RespRoomData()
 					enter := &msg.EnterRoom_S2C{}
 					enter.RoomData = roomData
-					p.SendMsg(enter)
+					p.SendMsg(enter, "EnterRoom_S2C")
 				}
 			}
 
@@ -124,75 +127,28 @@ func handleLogin(args []interface{}) {
 						roomData := r.RespRoomData()
 						enter := &msg.EnterRoom_S2C{}
 						enter.RoomData = roomData
-						p.SendMsg(enter)
+						p.SendMsg(enter, "EnterRoom_S2C")
 					}
 				}
 			}
 		}
-	} else if !hall.agentExist(a) { // 玩家首次登入
-		//u := &Player{}
-		//u.Id = m.Id
-		//u.Password = m.PassWord
-		//u.NickName = m.Id
-		//u.Account = 500
-		//u.HeadImg = "3.png"
-		//login := &msg.Login_S2C{}
-		//login.PlayerInfo = new(msg.PlayerInfo)
-		//login.PlayerInfo.Id = u.Id
-		//login.PlayerInfo.NickName = u.NickName
-		//login.PlayerInfo.HeadImg = u.HeadImg
-		//login.PlayerInfo.Account = u.Account
-		//for _, v := range hall.roomList {
-		//	if v != nil {
-		//		if v.RoomId == "1" {
-		//			login.PlayerNumR1 = v.PlayerLength()
-		//			login.Room01 = v.IsOpenRoom
-		//		}
-		//		if v.RoomId == "2" {
-		//			login.PlayerNumR2 = v.PlayerLength()
-		//			login.Room02 = v.IsOpenRoom
-		//		}
-		//	}
-		//}
-		//a.WriteMsg(login)
-		//
-		//u.Init()
-		//// 重新绑定信息
-		//u.ConnAgent = a
-		//a.SetUserData(u)
-		//
-		//u.Password = m.GetPassWord()
-		//u.Token = m.GetToken()
-		//
-		//hall.UserRecord.Store(u.Id, u)
-		//hall.UserRoom.Store(u.Id, "1")
-		//
-		//rId, _ := hall.UserRoom.Load(u.Id)
-		//v, _ := hall.RoomRecord.Load(rId)
-		//if v != nil {
-		//	// 玩家如果已在游戏中，则返回房间数据
-		//	room := v.(*Room)
-		//	for i, userId := range room.UserLeave {
-		//		log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
-		//		// 把玩家从掉线列表中移除
-		//		if userId == u.Id {
-		//			room.UserLeave = append(room.UserLeave[:i], room.UserLeave[i+1:]...)
-		//			log.Debug("AllocateUser 清除玩家记录~:%v", userId)
-		//			break
-		//		}
-		//		log.Debug("AllocateUser 长度~:%v", len(room.UserLeave))
-		//	}
-		//}
-
+	} else if !hall.agentExist(a) { // 玩家正常登入
 		c4c.UserLoginCenter(m.GetId(), m.GetPassWord(), m.GetToken(), func(u *Player) { //todo
 
-			log.Debug("玩家首次登陆:%v", u.Id)
+			log.Debug("玩家正常登陆:%v", u.Id)
 			login := &msg.Login_S2C{}
 			login.PlayerInfo = new(msg.PlayerInfo)
 			login.PlayerInfo.Id = u.Id
 			login.PlayerInfo.NickName = u.NickName
 			login.PlayerInfo.HeadImg = u.HeadImg
 			login.PlayerInfo.Account = u.Account
+
+			// 判斷玩家是否第一次遊玩
+			if u.FirstPlayerInfo() {
+				u.InsertPlayerInfo()
+				ServerSurPool.SumUser++
+			}
+
 			for _, v := range hall.roomList {
 				if v != nil {
 					if v.RoomId == "1" {
@@ -206,11 +162,14 @@ func handleLogin(args []interface{}) {
 				}
 			}
 			log.Debug("Room01:%v,Room02:%v", login.Room01, login.Room02)
-			a.WriteMsg(login)
 
 			u.Init()
 			// 重新绑定信息
 			u.ConnAgent = a
+
+			// a.WriteMsg(login)
+			u.SendMsg(login, "Login_S2C")
+
 			a.SetUserData(u)
 
 			u.Password = m.GetPassWord()
@@ -267,14 +226,16 @@ func handleLogout(args []interface{}) {
 				}
 				p.IsOnline = false
 				leaveHall := &msg.Logout_S2C{}
-				a.WriteMsg(leaveHall)
+				// a.WriteMsg(leaveHall)
+				p.SendMsg(leaveHall, "Logout_S2C")
 			}
 		} else {
 			c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
 			p.IsOnline = false
 			hall.UserRecord.Delete(p.Id)
 			leaveHall := &msg.Logout_S2C{}
-			a.WriteMsg(leaveHall)
+			p.SendMsg(leaveHall, "Logout_S2C")
+			// a.WriteMsg(leaveHall)
 			p.ConnAgent.Close()
 		}
 	}
@@ -342,7 +303,7 @@ func handleEmojiChat(args []interface{}) {
 			data.ActNum = m.ActNum
 			data.ActId = p.Id
 			data.GoalId = m.GoalId
-			room.BroadCastMsg(data)
+			room.BroadCastMsg(data, "EmojiChat_S2C")
 		}
 	}
 }
@@ -359,7 +320,7 @@ func ShowTableInfo(args []interface{}) {
 			room := r.(*Room)
 			data := &msg.ShowTableInfo_S2C{}
 			data.RoomData = room.RespRoomData()
-			p.SendMsg(data)
+			p.SendMsg(data, "ShowTableInfo_S2C")
 		}
 	}
 }
