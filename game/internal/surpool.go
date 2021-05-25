@@ -222,6 +222,7 @@ func (item *SurPool) updatePoolBalance() {
 	// itemPoolBalance := (item.TotalLost - item.TotalWin*float64(item.KillPercent)) * item.FinalPercentage // - item.SumUser * 6
 	item.PoolBalance, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", itemPoolBalance), 64)
 	item.UserLostMinusWin = item.TotalLost - item.TotalWin
+	SaveServerConfig()
 	// common.Debug_log("item.PoolBalance:%v item.TotalLost:%v item.TotalWin:%v", item.PoolBalance, item.TotalLost, item.TotalWin)
 
 	// }
