@@ -167,8 +167,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/getRoomTotalBet", getRoomTotalBet)
 	// 接口操作关闭或开启房源
 	http.HandleFunc("/api/HandleRoomType", HandleRoomType)
-	// 分分彩包赔活动（河内分分彩）
-	http.HandleFunc("/api/HandleHeNeiPay", HandleHeNeiPay)
+	// 分分彩包赔活动
+	http.HandleFunc("/api/HandleBaoPay", HandleHeBaoPay)
 	// 分分彩连赢活动（河内分分彩）
 	http.HandleFunc("/api/HandleHeNeiWin", HandleHeNeiWin)
 	// 分分彩连赢活动（奇趣分分彩）
@@ -629,7 +629,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
+func HandleHeBaoPay(w http.ResponseWriter, r *http.Request) {
 	var req GamePayReq
 
 	req.UserId = r.FormValue("user_id")
@@ -648,7 +648,7 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 
 	eTime, erret := strconv.Atoi(req.EndTime)
 
-	log.Debug("河内赔付数据:%v", req)
+	log.Debug("赔付数据:%v", req)
 
 	selector := bson.M{}
 
@@ -660,48 +660,48 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.Lottery != "HNFFC" && req.Lottery != "PTXFFC" {
-		log.Debug("Lottery不存在")
+		log.Debug("Lottery不存在 %v %v %v", req.Lottery, req.Lottery != "PTXFFC", "PTXFFC")
 		return
 	}
 
 	if errmax != nil || errmin != nil {
 		log.Debug("maxBet minBet 輸入錯誤")
 		return
-	}
-
-	if minBet > maxBet {
+	} else if minBet > maxBet {
 		log.Debug("minBet必須小於maxBet")
 		return
 	}
 
-	if errst != nil || erret != nil {
-		log.Debug("sTime eTime 輸入格式錯誤")
-		return
-	}
-
-	if sTime > eTime {
-		log.Debug("end_time必須大於start_time")
-
-	}
-	if sTime != 0 && eTime != 0 {
-		selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
-	}
-
-	if sTime == 0 || eTime == 0 { //計算七天
+	if errst != nil || erret != nil { //此刻往前計算七天
 		endTime := time.Now().Unix()
 		currentTime := time.Now()
 		oldTime := currentTime.AddDate(0, 0, -7)
 		startTime := oldTime.Unix()
 		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
+		log.Debug("sTime eTime 輸入格式錯誤 默認為此刻往前推七天")
+	} else {
+		if sTime > eTime {
+			log.Debug("end_time必須大於start_time")
+			return
+		}
+		if eTime-sTime > 604800 { //時間段超過七天
+
+			currentTime := time.Unix(int64(eTime), 0)
+			oldTime := currentTime.AddDate(0, 0, -7)
+			startTime := oldTime.Unix()
+			selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": eTime}
+		} else { // 輸入正確
+			selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
+		}
 	}
 
 	limits, _ := strconv.Atoi(req.Limit)
 	if limits == 0 {
 		limits = 10
 	}
-
-	recodes, err := GetPlayerGameData(selector, limits, "-down_bet_time")
-	log.Debug("获取数据:%v", recodes)
+	log.Debug("bsonM:%v", selector)
+	recodes, err := GetPlayerGameData(selector, limits, "down_bet_time")
+	log.Debug("获取数据筆數:%v  \nDATA:%v", len(recodes), recodes)
 
 	data := &GamePayResp{}
 	for _, v := range recodes {
@@ -713,16 +713,20 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 			num++
 		}
 		if v.DownBetInfo.LeopardDownBet > 0 {
-			num++
+			num += 2
 		}
-		if num > 1 {
+		if num > 1 { //只有單獨下大或小才符合
 			continue
 		}
+
 		downBet := v.DownBetInfo.BigDownBet + v.DownBetInfo.SmallDownBet + v.DownBetInfo.LeopardDownBet
-		if downBet < int32(minBet) || downBet > int32(maxBet) {
+
+		if downBet < int32(minBet) || downBet > int32(maxBet) { // 下注超過活動區間
 			continue
 		}
+
 		data.GameCount++
+
 		if v.SettlementFunds > 0 {
 			data.TotalWin += v.SettlementFunds
 		} else {
