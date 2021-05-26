@@ -117,6 +117,7 @@ type GamePayReq struct {
 	MaxBet    string `form:"max_bet" json:"max_bet"`
 	StartTime string `form:"start_time" json:"start_time"`
 	EndTime   string `form:"end_time" json:"end_time"`
+	Lottery   string `form:"lottery" json:"lottery"`
 	Limit     string `form:"limit" json:"limit"`
 }
 
@@ -632,38 +633,66 @@ func HandleHeNeiPay(w http.ResponseWriter, r *http.Request) {
 	var req GamePayReq
 
 	req.UserId = r.FormValue("user_id")
+	req.Lottery = r.FormValue("lottery")
 	req.MinBet = r.FormValue("min_bet")
 	req.MaxBet = r.FormValue("max_bet")
 	req.StartTime = r.FormValue("start_time")
 	req.EndTime = r.FormValue("end_time")
 	req.Limit = r.FormValue("limit")
 
+	minBet, errmax := strconv.Atoi(req.MinBet)
+
+	maxBet, errmin := strconv.Atoi(req.MaxBet)
+
+	sTime, errst := strconv.Atoi(req.StartTime)
+
+	eTime, erret := strconv.Atoi(req.EndTime)
+
 	log.Debug("河内赔付数据:%v", req)
 
 	selector := bson.M{}
 
-	if req.UserId != "" {
+	if req.UserId == "" {
+		log.Debug("UserId為空")
+		return
+	} else {
 		selector["user_id"] = req.UserId
 	}
 
-	minBet, _ := strconv.Atoi(req.MinBet)
+	if req.Lottery != "HNFFC" && req.Lottery != "PTXFFC" {
+		log.Debug("Lottery不存在")
+		return
+	}
 
-	maxBet, _ := strconv.Atoi(req.MaxBet)
+	if errmax != nil || errmin != nil {
+		log.Debug("maxBet minBet 輸入錯誤")
+		return
+	}
 
-	sTime, _ := strconv.Atoi(req.StartTime)
+	if minBet > maxBet {
+		log.Debug("minBet必須小於maxBet")
+		return
+	}
 
-	eTime, _ := strconv.Atoi(req.EndTime)
+	if errst != nil || erret != nil {
+		log.Debug("sTime eTime 輸入格式錯誤")
+		return
+	}
 
+	if sTime > eTime {
+		log.Debug("end_time必須大於start_time")
+
+	}
 	if sTime != 0 && eTime != 0 {
 		selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
 	}
 
-	if sTime == 0 || eTime == 0 {
-		startTime := time.Now().Unix()
+	if sTime == 0 || eTime == 0 { //計算七天
+		endTime := time.Now().Unix()
 		currentTime := time.Now()
 		oldTime := currentTime.AddDate(0, 0, -7)
-		endTime := oldTime.Unix()
-		selector["down_bet_time"] = bson.M{"$gte": endTime, "$lte": startTime}
+		startTime := oldTime.Unix()
+		selector["down_bet_time"] = bson.M{"$gte": startTime, "$lte": endTime}
 	}
 
 	limits, _ := strconv.Atoi(req.Limit)
