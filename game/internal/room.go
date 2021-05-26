@@ -54,6 +54,11 @@ const (
 	taxRate float64 = 0.05 //税率
 )
 
+const (
+	PTXFFC = "https://manycai.com/K2601968389c853/PTXFFC-1.json"
+	HNFFC  = "https://manycai.com/K2601968389c853/hn60-1.json"
+)
+
 var (
 	packageTax map[uint16]float64
 
@@ -442,9 +447,9 @@ func (r *Room) CaiYunApi() bool {
 
 	var caiYuan string
 	if r.RoomId == "1" {
-		caiYuan = "https://manycai.com/K2601968389c853/hn60-1.json"
+		caiYuan = HNFFC
 	} else if r.RoomId == "2" {
-		caiYuan = "https://manycai.com/K2601968389c853/qiqffc-1.json"
+		caiYuan = PTXFFC
 
 	}
 	keyReqPrize.Lock()
