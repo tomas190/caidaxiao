@@ -454,11 +454,6 @@ func (r *Room) CaiYunApi() bool {
 	}
 	keyReqPrize.Lock()
 	resp, err := http.Get(caiYuan)
-	if err != nil {
-		log.Debug("Get-err-1 %+v , urlReq = %s", err, caiYuan)
-		return true
-	}
-	resp.Close = true
 
 	defer func() {
 		keyReqPrize.Unlock()
@@ -469,6 +464,12 @@ func (r *Room) CaiYunApi() bool {
 			}
 		}
 	}()
+
+	if err != nil {
+		log.Debug("Get-err-1 %+v , urlReq = %s", err, caiYuan)
+		return true
+	}
+	resp.Close = true
 
 	cpinfo := make([]*PrizeRecord, 1)
 	err = json.NewDecoder(resp.Body).Decode(&cpinfo)
