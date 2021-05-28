@@ -1,18 +1,18 @@
 package internal
 
 import (
-	"caidaxiao/base"
+	common "caidaxiao/base"
 
 	"github.com/name5566/leaf/module"
 )
 
 var (
-	skeleton = base.NewSkeleton()
+	skeleton = common.NewSkeleton()
 	ChanRPC  = skeleton.ChanRPCServer
 
 	hall = NewHall()
 
-	c4c = &Conn4Center{}
+	// c4c = &Conn4Center{}
 )
 
 type Module struct {
@@ -24,22 +24,26 @@ func (m *Module) OnInit() {
 
 	packageTax = make(map[uint16]float64)
 
-	// 初始连接数据库  //todo
-	InitMongoDB()
+	InitMongoDB() // 初始连接数据库  //todo
 
-	// 大厅初始化
-	hall.Init()
+	hall.Init() // 大厅初始化
 
-	// 載入盈餘池
-	LoadServerSurpool()
+	LoadServerSurpool() // 載入盈餘池
 
+	LoadUserList() // 載入玩家列表
 	// 中心服初始化并创建链接
-	c4c.Init()
-	c4c.CreatConnect()
-	// 监听接口
-	go StartHttpServer()
+	// c4c.Init()
+	// c4c.CreatConnect()
+
+	go StartHttpServer() // 监听接口
+
+	common.GetInstance().SetGameChanRpc(ChanRPC) //單例模式
+	HeartBeatLoop()                              //檢設用戶心跳開始
 }
 
 func (m *Module) OnDestroy() {
-	SaveServerConfig()
+	SaveServerConfig() //盈餘池資訊儲存
+	SaveAllUserInfo()  //儲存所有人員資料
+	LogoutAllUsers()   //登出所有用戶
+	CloseGameServer()  //關閉GameServer(清理心跳.所有用戶登出)
 }

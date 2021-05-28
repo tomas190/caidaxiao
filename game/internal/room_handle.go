@@ -1,6 +1,7 @@
 package internal
 
 import (
+	common "caidaxiao/base"
 	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"fmt"
@@ -9,7 +10,10 @@ import (
 	"time"
 
 	"github.com/name5566/leaf/log"
+	"gopkg.in/mgo.v2/bson"
 )
+
+var moneyWinToNotice float64 = 100 // 獲勝多少需要廣播
 
 //JoinGameRoom 加入游戏房间
 func (r *Room) JoinGameRoom(p *Player) {
@@ -268,7 +272,7 @@ func (r *Room) HandleLiuJu() {
 	r.GameStat = msg.GameStep_LiuJu
 
 	// 添加流局历史数据
-	var history msg.HistoryData
+	history := &msg.HistoryData{}
 	if r.resultTime == "" {
 		r.resultTime = getNextTime()
 	}
@@ -494,7 +498,18 @@ func (r *Room) ResultMoney() {
 						ServerSurPool.TotalWin += us.uWinSum
 						reason := "彩源猜大小赢钱" //todo
 						//同时同步赢分和输分
-						c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, us.uBetWin)
+						// c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, us.uBetWin)
+						common.GetInstance().Login.Go("UserWinMoney", common.AmountFlowReq{
+							UserID:     v.Id,
+							UserName:   v.NickName,
+							Money:      v.WinResultMoney, //本局盈虧(未扣稅)
+							RoomNumber: r.RoomId,
+							BetMoney:   us.uBetWin,
+							RoundID:    v.RoundId,
+							Order:      bson.NewObjectId().Hex(),
+							Reason:     reason,
+							TimeStamp:  nowTime,
+						})
 					}
 				}
 
@@ -505,8 +520,20 @@ func (r *Room) ResultMoney() {
 					if v.IsRobot == false {
 						ServerSurPool.TotalLost += us.uBetLoss
 						reason := "彩源猜大小输钱" //todo
+
 						if v.LoseResultMoney != 0 {
-							c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, us.uBetLoss)
+							// c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, us.uBetLoss)
+							common.GetInstance().Login.Go("UserLoseMoney", common.AmountFlowReq{
+								UserID:     v.Id,
+								UserName:   v.NickName,
+								RoomNumber: r.RoomId,
+								Money:      v.LoseResultMoney,
+								BetMoney:   us.uBetLoss,
+								RoundID:    v.RoundId,
+								Order:      bson.NewObjectId().Hex(),
+								Reason:     reason,
+								TimeStamp:  nowTime,
+							})
 						}
 					}
 				}
@@ -526,6 +553,11 @@ func (r *Room) ResultMoney() {
 
 				v.Account += us.uBetWin + us.uWinSum - tax
 				v.ResultMoney = us.uBetWin + us.uWinSum - tax - us.uBetLoss
+
+				// 玩家獲利一定金額廣播
+				if v.ResultMoney >= moneyWinToNotice && v.IsRobot == false {
+					sendNotice(v.Id, v.NickName, v.ResultMoney)
+				}
 
 				// 记录玩家20句游戏Win次数
 				if v.ResultMoney > 0 {
@@ -602,7 +634,7 @@ func (r *Room) ResultMoney() {
 		// 更新盈餘池
 		ServerSurPool.updatePoolBalance()
 	}
-	log.Debug("result：%v", r.LotteryResult)
+	// log.Debug("result：%v", r.LotteryResult)
 }
 
 //GetResultType 获取结算数据和类型
@@ -632,7 +664,7 @@ func (r *Room) GetResultType() {
 
 	r.ResultNum = r.PeriodsNum
 
-	var potWin msg.PotWinList
+	potWin := &msg.PotWinList{}
 	potWin.ResultNum = r.LotteryResult.ResultNum
 	potWin.BigSmall = r.LotteryResult.BigSmall
 	potWin.SinDouble = r.LotteryResult.SinDouble
@@ -643,7 +675,7 @@ func (r *Room) GetResultType() {
 		r.PotWinList = append(r.PotWinList[:0], r.PotWinList[1:]...)
 	}
 
-	var history msg.HistoryData
+	history := &msg.HistoryData{}
 	history.TimeFmt = r.resultTime
 	for _, v := range r.Lottery {
 		history.ResNum = append(history.ResNum, int32(v))
@@ -669,7 +701,7 @@ func (r *Room) GetResultType() {
 	//r.HistoryData = removeDuplicate(r.HistoryData)
 
 	// 存储下注记录
-	var downBetHis msg.DownBetHistory
+	downBetHis := &msg.DownBetHistory{}
 	downBetHis.TimeFmt = r.resultTime
 	for _, v := range r.Lottery {
 		downBetHis.ResNum = append(downBetHis.ResNum, int32(v))
@@ -702,4 +734,13 @@ func (r *Room) GetResultType() {
 		}
 	}
 	log.Debug("获取历史下注记录~")
+}
+
+// 勝利提示(獲利一定金額會發布通知)
+func sendNotice(userID int32, userName string, money float64) {
+	common.GetInstance().Login.Go("NoticeBroadcast", common.AmountFlowReq{
+		Money:    money,
+		UserID:   userID,
+		UserName: userName,
+	})
 }

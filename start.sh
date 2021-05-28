@@ -1,0 +1,1 @@
+nohup ./caidaxiao > out.log 2>&1 &

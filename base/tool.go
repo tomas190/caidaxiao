@@ -70,6 +70,11 @@ func IntToStr(n int) string {
 	return strconv.FormatInt(int64(n), 10)
 }
 
+// Int轉str 将整形转换成字符串
+func Int32ToStr(n int32) string {
+	return strconv.FormatInt(int64(n), 10)
+}
+
 // Float轉Str 浮点数转换成字符串
 func FloatToStr(f float64) string {
 	return fmt.Sprintf("%f", f)
@@ -194,7 +199,7 @@ func Str2Int(str string) int {
 func Str2int32(str string) int32 {
 	num, err := strconv.ParseInt(str, 10, 32) //轉完可能變int64
 	if err != nil {
-		Debug_log("轉int出錯")
+		Debug_log("轉int32出錯")
 	}
 	return int32(num)
 }

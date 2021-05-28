@@ -29,7 +29,9 @@ enum MessageID {
     MSG_ErrorMsg_S2C = 22;
     MSG_ShowTableInfo_C2S = 23;
     MSG_ShowTableInfo_S2C = 24;
+    MSG_KickedOutPush = 25;
 }
+
 
 // 游戏阶段
 enum GameStep {
@@ -277,4 +279,11 @@ message ShowTableInfo_C2S {
 
 message ShowTableInfo_S2C {
     RoomData roomData = 1;
+}
+
+// 异地登陆时被踢，此后不能再自动重连
+message KickedOutPush {
+	int64 serverTime = 1;
+	int32 code = 2;
+	int32 reason = 3;
 }

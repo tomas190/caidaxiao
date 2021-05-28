@@ -1,9 +1,28 @@
 package internal
 
 import (
+	common "caidaxiao/base"
 	"caidaxiao/msg"
+	"sync"
 
+	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
+	"gopkg.in/mgo.v2/bson"
+)
+
+//ClientInfo 在线用户数据结构 (心跳用)
+type ClientInfo struct {
+	agent  gate.Agent //连接
+	expire int64      //连接过期时间戳 (心跳)
+}
+
+var (
+	// 下面兩個參數是已登錄子遊戲玩家為了後面方便mapping用的
+
+	userIDFromAgent_ sync.Map
+	AgentFromuserID_ sync.Map
+	allUser_         sync.Map
+	emptyRoundID     = ""
 )
 
 //PlayerExitRoom 玩家退出房间
@@ -26,7 +45,7 @@ func (p *Player) PlayerExitRoom() {
 
 			leave := &msg.LeaveRoom_S2C{}
 			leave.PlayerInfo = new(msg.PlayerInfo)
-			leave.PlayerInfo.Id = p.Id
+			leave.PlayerInfo.Id = common.Int32ToStr(p.Id)
 			leave.PlayerInfo.NickName = p.NickName
 			leave.PlayerInfo.HeadImg = p.HeadImg
 			leave.PlayerInfo.Account = p.Account
@@ -72,39 +91,33 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				return
 			}
 		}
-
-		// 设定单个区域限红为1000
-		if m.DownPot == msg.PotType_LeopardPot {
+		switch m.DownPot {
+		case msg.PotType_LeopardPot: // 设定单个区域限红为1000
 			if (room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard > 1000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
-		}
-		// 设定全区的最大限红为10000
-		if m.DownPot == msg.PotType_BigPot {
+		case msg.PotType_BigPot: // 设定全区的最大限红为10000
 			if (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
-			}
-			if (p.DownBetMoney.BigDownBet+m.DownBet)-p.DownBetMoney.SmallDownBet > 10000 {
+			} else if (p.DownBetMoney.BigDownBet+m.DownBet)-p.DownBetMoney.SmallDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
-		}
-		if m.DownPot == msg.PotType_SmallPot {
+		case msg.PotType_SmallPot:
 			if (room.PotMoneyCount.SmallDownBet+m.DownBet)-room.PotMoneyCount.BigDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
-			}
-			if (p.DownBetMoney.SmallDownBet+m.DownBet)-p.DownBetMoney.BigDownBet > 10000 {
+			} else if (p.DownBetMoney.SmallDownBet+m.DownBet)-p.DownBetMoney.BigDownBet > 10000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
@@ -118,20 +131,19 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		p.IsAction = m.IsAction
 		if p.IsAction == true {
 			// 记录玩家在该房间总下注 和 房间注池的总金额
-			if m.DownPot == msg.PotType_BigPot {
-				p.DownBetMoney.BigDownBet += m.DownBet
-				room.PotMoneyCount.BigDownBet += m.DownBet
-				room.PlayerTotalMoney.BigDownBet += m.DownBet
-			}
-			if m.DownPot == msg.PotType_SmallPot {
-				p.DownBetMoney.SmallDownBet += m.DownBet
-				room.PotMoneyCount.SmallDownBet += m.DownBet
-				room.PlayerTotalMoney.SmallDownBet += m.DownBet
-			}
-			if m.DownPot == msg.PotType_LeopardPot {
+			switch m.DownPot {
+			case msg.PotType_LeopardPot:
 				p.DownBetMoney.LeopardDownBet += m.DownBet
 				room.PotMoneyCount.LeopardDownBet += m.DownBet
 				room.PlayerTotalMoney.LeopardDownBet += m.DownBet
+			case msg.PotType_BigPot:
+				p.DownBetMoney.BigDownBet += m.DownBet
+				room.PotMoneyCount.BigDownBet += m.DownBet
+				room.PlayerTotalMoney.BigDownBet += m.DownBet
+			case msg.PotType_SmallPot:
+				p.DownBetMoney.SmallDownBet += m.DownBet
+				room.PotMoneyCount.SmallDownBet += m.DownBet
+				room.PlayerTotalMoney.SmallDownBet += m.DownBet
 			}
 
 			p.Account -= float64(m.DownBet)
@@ -139,7 +151,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 			// 返回玩家行动数据
 			action := &msg.PlayerAction_S2C{}
-			action.Id = p.Id
+			action.Id = common.Int32ToStr(p.Id)
 			action.DownBet = m.DownBet
 			action.DownPot = m.DownPot
 			action.IsAction = p.IsAction
@@ -162,20 +174,139 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 	}
 }
 
-func (p *Player) BankerAction(m *msg.BankerData_C2S) {
-	if m.Status == 2 {
-		if p.Account > float64(m.TakeMoney) {
-			rid, _ := hall.UserRoom.Load(p.Id)
-			r, _ := hall.RoomRecord.Load(rid)
-			if r != nil {
-				room := r.(*Room)
-				room.bankerList[p.Id] = m.TakeMoney
-			}
-		}
+// func (p *Player) BankerAction(m *msg.BankerData_C2S) {
+// 	if m.Status == 2 {
+// 		if p.Account > float64(m.TakeMoney) {
+// 			rid, _ := hall.UserRoom.Load(p.Id)
+// 			r, _ := hall.RoomRecord.Load(rid)
+// 			if r != nil {
+// 				room := r.(*Room)
+// 				room.bankerList[p.Id] = m.TakeMoney
+// 			}
+// 		}
+// 	}
+// 	if m.Status == 3 {
+// 		if p.IsBanker == true {
+// 			p.IsDownBanker = true
+// 		}
+// 	}
+// }
+
+// 載入玩家列表(初始化)
+func LoadUserList() {
+	common.Debug_log("gameModule LoadUserList")
+	cmd := SearchCMD{
+		DBName: dbName,
+		CName:  playerInfo,
 	}
-	if m.Status == 3 {
-		if p.IsBanker == true {
-			p.IsDownBanker = true
-		}
+	users := make([]*msg.PlayerInfo, 0)
+	ok := FindAllItems(cmd, &users)
+	if !ok {
+		common.Debug_log("[ERROR]查无此表:USER")
+		return
 	}
+	if len(users) == 0 {
+		common.Debug_log("[ERROR]表中无资料:USER")
+		return
+	}
+	for _, user := range users {
+		// allUser[user.UserID] = user
+		allUser_.Store(user.Id, user)
+	}
+	// serverData.SumUser = float64(len(allUser))
+	allUserlength := 0
+	allUser_.Range(func(_, _ interface{}) bool {
+		allUserlength++
+		return true
+	})
+	ServerSurPool.SumUser = float64(allUserlength)
+}
+
+// 客戶端非正常退出
+func unusualLogout(a gate.Agent, reason string) {
+	userID, ok := userIDFromAgent_.Load(a)
+	if ok {
+		unbindAgentWithUser(userID.(int32))
+		common.Debug_log("用户ID:%d非正常退出游戏,原因:%s", userID, reason)
+		sendLogout(userID.(int32))
+	}
+}
+
+// 清除線上玩家map中的資料
+func unbindAgentWithUser(userID int32) {
+	client, ok := AgentFromuserID_.Load(userID)
+	if ok {
+		client.(*ClientInfo).agent.Destroy()
+		AgentFromuserID_.Delete(userID)
+		userIDFromAgent_.Delete(client.(*ClientInfo).agent)
+	}
+}
+
+// 客戶端登出
+func sendLogout(userID int32) {
+	// common.Debug_log("gameModule sendLogout")
+	common.GetInstance().Login.Go("UserLogout", userID)
+}
+
+// 更新玩家資訊(玩家結算更新餘額)要存到DB
+func UpdateUserData(userID int32) {
+	user, ok := allUser_.Load(common.Int32ToStr(userID))
+	if !ok {
+		return
+	}
+	update := bson.M{
+		"$set": bson.M{
+			"nickname": user.(*msg.PlayerInfo).NickName,
+			"headimg":  user.(*msg.PlayerInfo).HeadImg,
+			"account":  user.(*msg.PlayerInfo).Account,
+		}}
+	cmd := SearchCMD{
+		DBName: dbName,
+		CName:  playerInfo,
+		ItemID: bson.ObjectId(user.(*msg.PlayerInfo).Id),
+		Update: update,
+	}
+	UpdateItemByID(cmd)
+}
+
+// 關閉服務時儲存所有用戶訊息
+func SaveAllUserInfo() {
+	common.Debug_log("gameModule SaveALLUserInfo")
+
+	pairs := make([]interface{}, 0)
+
+	allUser_.Range(func(_, user interface{}) bool {
+		selector := bson.M{"_id": user.(*msg.PlayerInfo).Id}
+		update := bson.M{
+			"$set": bson.M{
+				"nickname": user.(*msg.PlayerInfo).NickName,
+				"headimg":  user.(*msg.PlayerInfo).HeadImg,
+				"account":  user.(*msg.PlayerInfo).Account,
+			}}
+		pairs = append(pairs, selector, update)
+		return true
+	})
+
+	if len(pairs) == 0 {
+		common.Debug_log("[Error] gameModule SaveAllUserInfo 并无玩家资料资料")
+		return
+	}
+	cmd := SearchCMD{
+		DBName: dbName,
+		CName:  playerInfo,
+	}
+	BulkUpdateAll(cmd, pairs)
+}
+
+// LogoutAllUsers 在服务器关闭时登出所有用户登出全部房间用户
+func LogoutAllUsers() {
+	// for _, v := range allUser {
+	// 	sendLogout(v.UserID)
+	// }
+
+	allUser_.Range(func(_, v interface{}) bool {
+		userID := common.Str2int32(v.(*msg.PlayerInfo).Id)
+		sendLogout(userID)
+		return true
+	})
 }

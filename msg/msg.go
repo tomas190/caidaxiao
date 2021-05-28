@@ -35,4 +35,5 @@ func init() {
 	Processor.Register(&ErrorMsg_S2C{})
 	Processor.Register(&ShowTableInfo_C2S{})
 	Processor.Register(&ShowTableInfo_S2C{})
+	Processor.Register(&KickedOutPush{})
 }

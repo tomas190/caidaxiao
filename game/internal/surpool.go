@@ -201,7 +201,7 @@ func FindAllItems(cmd SearchCMD, result interface{}) bool {
 
 	err := session.DB(cmd.DBName).C(cmd.CName).Find(nil).All(result)
 	if err != nil {
-		log.Debug("%读取所有数据 %v", cmd, err.Error())
+		log.Debug("%v读取所有数据 %v", cmd, err.Error())
 		return false
 	}
 	return true

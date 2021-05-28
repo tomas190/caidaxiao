@@ -166,7 +166,7 @@ func StartHttpServer() {
 	// 获取彩源房间投注统计
 	http.HandleFunc("/api/getRoomTotalBet", getRoomTotalBet)
 	// 接口操作关闭或开启房源
-	http.HandleFunc("/api/HandleRoomType", HandleRoomType)
+	http.HandleFunc("/api/changeRoomStatus", HandleRoomType)
 	// 分分彩包赔活动
 	http.HandleFunc("/api/HandleBaoPay", HandleHeBaoPay)
 	// 分分彩连赢活动（河内分分彩）
@@ -177,6 +177,10 @@ func StartHttpServer() {
 	http.HandleFunc("/api/setUserLimitBet", setUserLimitBet)
 	// 获取玩家下注限紅
 	http.HandleFunc("/api/getUserLimitBet", getUserLimitBet)
+	// 踢除玩家並退资金
+	http.HandleFunc("/api/kickUser", kickUser)
+	// 退资金
+	http.HandleFunc("/api/logoutUser", logoutUser)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -252,12 +256,12 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		gd.TimeFmt = FormatTime(pr.DownBetTime, "2006-01-02 15:04:05")
 		gd.StartTime = pr.StartTime
 		gd.EndTime = pr.EndTime
-		gd.PlayerId = pr.Id
+		gd.PlayerId = common.Int32ToStr(pr.Id)
 		gd.RoomId = pr.RoomId
 		gd.RoundId = pr.RoundId
 		gd.Lottery = pr.Lottery
-		gd.BetInfo = *pr.DownBetInfo
-		gd.Card = *pr.CardResult
+		gd.BetInfo = pr.DownBetInfo
+		gd.Card = pr.CardResult
 		gd.SettlementFunds = pr.SettlementFunds
 		gd.SpareCash = pr.SpareCash
 		gd.TaxRate = pr.TaxRate
@@ -406,7 +410,8 @@ func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 			room.IsConBanker = false
 			hall.UserRecord.Delete(p.Id)
 			p.PlayerExitRoom()
-			c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
+			sendLogout(p.Id) // 登出
+			// c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
 			leaveHall := &msg.Logout_S2C{}
 			p.SendMsg(leaveHall, "Logout_S2C")
 
@@ -562,8 +567,20 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	var req RoomType
 
 	req.GameId = r.FormValue("game_id")
+	if req.GameId == "" || req.GameId != conf.Server.GameID { //檢測game_id
+		log.Debug("game_id 有誤")
+		return
+	}
 	req.RoomId = r.FormValue("room_id")
+	if req.RoomId == "" { //檢測room_id
+		log.Debug("room_id 有誤")
+		return
+	}
 	req.IsOpen = r.FormValue("room_status")
+	if req.IsOpen == "" { //檢測room_id
+		log.Debug("roomStatus 有誤")
+		return
+	}
 
 	log.Debug("RoomId:%v, IsOpen:%v", req.RoomId, req.IsOpen)
 
@@ -894,7 +911,7 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 
 	hall.UserRecord.Range(func(key, value interface{}) bool {
 		u := value.(*Player)
-		if u.Id == req.UserId {
+		if u.Id == common.Str2int32(req.UserId) {
 			log.Debug("玩家id:%v,限制:%v,%v", u.Id, minBet, maxBet)
 			u.MinBet = int32(minBet)
 			u.MaxBet = int32(maxBet)
@@ -956,4 +973,73 @@ func FormatTime(timeUnix int64, layout string) string {
 
 func NewResp(code int, msg string, data interface{}) ApiResp {
 	return ApiResp{Code: code, Msg: msg, Data: data}
+}
+
+func kickUser(w http.ResponseWriter, r *http.Request) {
+
+	m1 := make(map[string]interface{})
+	m1["msg"] = "succeed"
+
+	uid := r.FormValue("id")
+	uidNum, errU := strconv.Atoi(uid)
+	if errU != nil {
+		m1["msg"] = "非法用户ID"
+	} else {
+		kickUserInRoom(int32(uidNum))
+	}
+
+	b4, err := json.Marshal(m1)
+	if err != nil {
+		common.Debug_log("%v\n", err)
+	}
+	_, errW := fmt.Fprintf(w, "%+v", string(b4))
+	if errW != nil {
+		common.Debug_log("unlockUserMoneyUnexpected 返回错误 %v", errW)
+	}
+
+}
+
+// API踢除玩家退款回大廳
+func kickUserInRoom(userID int32) {
+	common.Debug_log("gameModule kickUserInRoom")
+	//检查用户是否已登陆
+	// client, ok := AgentFromuserID[userID]
+	client, ok := AgentFromuserID_.Load(userID)
+	if ok {
+		// 如果已经登陆过，需要通知之前登陆的用户被踢出游戏
+		kickedBuf := &msg.KickedOutPush{
+			ServerTime: time.Now().Unix(),
+			Code:       0,
+			Reason:     KICKOUT_DISABLE,
+		}
+		client.(*ClientInfo).agent.WriteMsg(kickedBuf)
+		// delete(userIDFromAgent, client.agent)
+		userIDFromAgent_.Delete(client.(*ClientInfo).agent)
+		sendLogout(userID) // 踢人一起退資金
+	}
+}
+
+func logoutUser(w http.ResponseWriter, r *http.Request) {
+
+	m1 := make(map[string]interface{})
+	m1["msg"] = "succeed"
+
+	uid := r.FormValue("id")
+	uidNum, errU := strconv.Atoi(uid)
+	if errU != nil {
+		m1["msg"] = "非法用户ID"
+	} else {
+		sendLogout(int32(uidNum))
+	}
+
+	b4, err := json.Marshal(m1)
+	if err != nil {
+		common.Debug_log("%v\n", err)
+	}
+	//bridge.LogC("S->C = %v", dt.Data)
+	_, errW := fmt.Fprintf(w, "%+v", string(b4))
+	if errW != nil {
+		common.Debug_log("unlockUserMoneyUnexpected 返回错误 %v", errW)
+	}
+
 }

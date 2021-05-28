@@ -4,6 +4,7 @@ import (
 	"caidaxiao/conf"
 	"caidaxiao/game"
 	"caidaxiao/gate"
+	"caidaxiao/login"
 
 	"github.com/name5566/leaf"
 	lconf "github.com/name5566/leaf/conf"
@@ -19,5 +20,6 @@ func main() {
 	leaf.Run(
 		game.Module,
 		gate.Module,
+		login.Module,
 	)
 }

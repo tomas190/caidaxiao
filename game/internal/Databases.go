@@ -1,6 +1,7 @@
 package internal
 
 import (
+	common "caidaxiao/base"
 	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"time"
@@ -63,21 +64,21 @@ func connect(dbName, cName string) (*mgo.Session, *mgo.Collection) {
 	return s, c
 }
 
-func (p *Player) FirstPlayerInfo() bool {
-	s, c := connect(dbName, playerInfo)
-	defer s.Close()
-	player := &msg.PlayerInfo{}
-	player.Id = p.Id
-	player.NickName = p.NickName
-	player.HeadImg = p.HeadImg
-	player.Account = p.Account
+// func (p *Player) FirstPlayerInfo() bool {
+// 	s, c := connect(dbName, playerInfo)
+// 	defer s.Close()
+// 	player := &msg.PlayerInfo{}
+// 	player.Id = p.Id
+// 	player.NickName = p.NickName
+// 	player.HeadImg = p.HeadImg
+// 	player.Account = p.Account
 
-	err := c.Find(bson.M{"id": player.Id}).One(player)
-	if err != nil {
-		return true
-	}
-	return false
-}
+// 	err := c.Find(bson.M{"id": player.Id}).One(player)
+// 	if err != nil {
+// 		return true
+// 	}
+// 	return false
+// }
 
 func (p *Player) InsertPlayerInfo() {
 
@@ -85,7 +86,7 @@ func (p *Player) InsertPlayerInfo() {
 	defer s.Close()
 
 	player := &msg.PlayerInfo{}
-	player.Id = p.Id
+	player.Id = common.Int32ToStr(p.Id)
 	player.NickName = p.NickName
 	player.HeadImg = p.HeadImg
 	player.Account = p.Account
@@ -95,6 +96,15 @@ func (p *Player) InsertPlayerInfo() {
 		log.Debug("<----- 插入用户信息数据成功 ~ ----->")
 	}
 
+}
+
+// 更新用戶資料。
+func (p *Player) updateInfo(data common.UserInfo, playerInfo interface{}) {
+	// common.Debug_log("gameModule *BaseUser updateInfo")
+	playerInfo.(*msg.PlayerInfo).Id = common.Int32ToStr(data.UserID)
+	playerInfo.(*msg.PlayerInfo).NickName = data.UserName
+	playerInfo.(*msg.PlayerInfo).HeadImg = data.UserHead
+	playerInfo.(*msg.PlayerInfo).Account = data.Balance
 }
 
 //LoadPlayerCount 获取玩家数量
@@ -198,7 +208,7 @@ func InsertLoseMoney(base interface{}) {
 
 // 玩家的记录
 type PlayerDownBetRecode struct {
-	Id              string            `json:"id" bson:"id"`                             // 玩家Id
+	Id              int32             `json:"id" bson:"id"`                             // 玩家Id
 	GameId          string            `json:"game_id" bson:"game_id"`                   // gameId
 	RoundId         string            `json:"round_id" bson:"round_id"`                 // 随机Id
 	RoomId          string            `json:"room_id" bson:"room_id"`                   // 所在房间
@@ -250,7 +260,7 @@ func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]Playe
 
 // 玩家游戏数据
 type PlayerGameData struct {
-	UserId          string            `json:"user_id" bson:"user_id"`                   // 玩家Id
+	UserId          int32             `json:"user_id" bson:"user_id"`                   // 玩家Id
 	RoomId          string            `json:"room_id" bson:"room_id"`                   // 所在房间
 	DownBetInfo     *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"`       // 玩家各注池下注的金额
 	DownBetTime     int64             `json:"down_bet_time" bson:"down_bet_time"`       // 下注时间
@@ -442,14 +452,14 @@ func GetPlayerWinData(selector bson.M) ([]PlayerGameData, error) {
 // }
 
 type PlayerDownBet struct {
-	Id          string           `json:"id" bson:"id"`                       // 玩家Id
-	GameId      string           `json:"game_id" bson:"game_id"`             // gameId
-	RoomId      string           `json:"room_id" bson:"room_id"`             // 所在房间
-	PeriodsNum  string           `json:"periods_num" bson:"periods_num"`     // 奖期
-	PeriodsTime string           `json:"periods_time" bson:"periods_time"`   // 奖期时间
-	LotteryType string           `json:"lottery_type" bson:"lottery_type"`   // 彩种
-	DownBetInfo msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 玩家各注池下注的金额
-	DownBetTime string           `json:"down_bet_time" bson:"down_bet_time"` // 下注时间
+	Id          int32             `json:"id" bson:"id"`                       // 玩家Id
+	GameId      string            `json:"game_id" bson:"game_id"`             // gameId
+	RoomId      string            `json:"room_id" bson:"room_id"`             // 所在房间
+	PeriodsNum  string            `json:"periods_num" bson:"periods_num"`     // 奖期
+	PeriodsTime string            `json:"periods_time" bson:"periods_time"`   // 奖期时间
+	LotteryType string            `json:"lottery_type" bson:"lottery_type"`   // 彩种
+	DownBetInfo *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 玩家各注池下注的金额
+	DownBetTime string            `json:"down_bet_time" bson:"down_bet_time"` // 下注时间
 }
 
 func InsertPlayerDownBet(sur *PlayerDownBet) {
@@ -484,12 +494,12 @@ func GetPlayerDownBet(page, limit int, selector bson.M, sortBy string) ([]Player
 }
 
 type RoomTotalBet struct {
-	GameId        string           `json:"game_id" bson:"game_id"`             // gameId
-	RoomId        string           `json:"room_id" bson:"room_id"`             // 所在房间
-	PeriodsNum    string           `json:"periods_num" bson:"periods_num"`     // 奖期
-	PeriodsTime   string           `json:"periods_time" bson:"periods_time"`   // 奖期时间
-	LotteryType   string           `json:"lottery_type" bson:"lottery_type"`   // 彩种
-	PotTotalMoney msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 注池玩家下注总金额
+	GameId        string            `json:"game_id" bson:"game_id"`             // gameId
+	RoomId        string            `json:"room_id" bson:"room_id"`             // 所在房间
+	PeriodsNum    string            `json:"periods_num" bson:"periods_num"`     // 奖期
+	PeriodsTime   string            `json:"periods_time" bson:"periods_time"`   // 奖期时间
+	LotteryType   string            `json:"lottery_type" bson:"lottery_type"`   // 彩种
+	PotTotalMoney *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 注池玩家下注总金额
 }
 
 func InsertRoomTotalBet(sur *RoomTotalBet) {
@@ -584,5 +594,18 @@ func createUniqueIndex(cName string, keys []string) {
 		log.Debug("mgo建立index錯誤:%v", err)
 	} else {
 		log.Debug("mgo建立index:%v %v", cName, index)
+	}
+}
+
+func BulkUpdateAll(cmd SearchCMD, pairs []interface{}) {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+
+	bulk := session.DB(cmd.DBName).C(cmd.CName).Bulk()
+	bulk.Update(pairs...)
+	_, err := bulk.Run()
+	if err != nil {
+		log.Debug("%v批量更新 %v", cmd, err.Error())
+
 	}
 }

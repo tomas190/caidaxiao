@@ -1,6 +1,7 @@
 package internal
 
 import (
+	common "caidaxiao/base"
 	"caidaxiao/msg"
 	"fmt"
 	"math/rand"
@@ -28,11 +29,11 @@ func (rc *RobotsCenter) CreateRobot() *Player {
 
 	r.IsRobot = true
 	//生成随机ID
-	r.Id = RandomID()
+	r.Id = common.Str2int32(RandomID())
 	//生成随机头像IMG
 	r.HeadImg = RandomIMG()
 	//生成随机机器人NickName
-	r.NickName = r.Id
+	r.NickName = common.Int32ToStr(r.Id)
 	//r.NickName = RandomName()
 	//生成机器人金币随机数
 	r.Account = RandomAccount()
@@ -91,17 +92,16 @@ func (r *Room) RobotsDownBet() {
 								}
 
 								// 设定全区的最大限红为10000
-								if pot == int32(msg.PotType_BigPot) {
+								switch pot {
+								case int32(msg.PotType_BigPot):
 									if (r.PotMoneyCount.BigDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
 										continue
 									}
-								}
-								if pot == int32(msg.PotType_SmallPot) {
+								case int32(msg.PotType_SmallPot):
 									if (r.PotMoneyCount.SmallDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
 										continue
 									}
-								}
-								if pot == int32(msg.PotType_LeopardPot) {
+								case int32(msg.PotType_LeopardPot):
 									// 机器人豹子限注5个
 									if (r.PotMoneyCount.LeopardDownBet + bet) > 5 {
 										continue
@@ -177,7 +177,7 @@ func (r *Room) RobotsDownBet() {
 								}
 								// 返回玩家行动数据
 								action := &msg.PlayerAction_S2C{}
-								action.Id = v.Id
+								action.Id = common.Int32ToStr(v.Id)
 								action.DownBet = bet
 								action.DownPot = msg.PotType(pot)
 								action.IsAction = v.IsAction
@@ -288,7 +288,7 @@ func (r *Room) RobotsDownBet() {
 							}
 							// 返回玩家行动数据
 							action := &msg.PlayerAction_S2C{}
-							action.Id = v.Id
+							action.Id = common.Int32ToStr(v.Id)
 							action.DownBet = bet
 							action.DownPot = msg.PotType(pot)
 							action.IsAction = v.IsAction

@@ -1,6 +1,7 @@
 package internal
 
 import (
+	common "caidaxiao/base"
 	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"encoding/json"
@@ -71,29 +72,29 @@ type Room struct {
 	TablePlayer []*Player // 玩家列表
 
 	PackageId     uint16
-	GodGambleName string           // 赌神id
-	BankerId      string           // 庄家ID
+	GodGambleName int32            // 赌神id
+	BankerId      int32            // 庄家ID
 	BankerMoney   float64          // 庄家金额
 	bankerList    map[string]int32 // 抢庄列表
 	IsConBanker   bool             // 是否继续连庄
 
-	resultTime       string            // 结算时间
-	Lottery          []int             // 开奖数据
-	LotteryResult    msg.PotWinList    // 开奖结果
-	PeriodsNum       string            // 开奖期数
-	ResultNum        string            // 期数
-	PeriodsTime      string            // 开奖时间
-	GameStat         msg.GameStep      // 游戏状态
-	PotMoneyCount    msg.DownBetMoney  // 注池下注总金额(用于客户端显示)
-	PlayerTotalMoney msg.DownBetMoney  // 所有真实玩家注池下注(用于计算金额)
-	PotWinList       []msg.PotWinList  // 游戏开奖记录
-	HistoryData      []msg.HistoryData // 历史开奖数据
-	counter          int32             // 已经过去多少秒
-	clock            *time.Ticker      // 计时器
+	resultTime       string             // 结算时间
+	Lottery          []int              // 开奖数据
+	LotteryResult    msg.PotWinList     // 开奖结果
+	PeriodsNum       string             // 开奖期数
+	ResultNum        string             // 期数
+	PeriodsTime      string             // 开奖时间
+	GameStat         msg.GameStep       // 游戏状态
+	PotMoneyCount    msg.DownBetMoney   // 注池下注总金额(用于客户端显示)
+	PlayerTotalMoney *msg.DownBetMoney  // 所有真实玩家注池下注(用于计算金额)
+	PotWinList       []*msg.PotWinList  // 游戏开奖记录
+	HistoryData      []*msg.HistoryData // 历史开奖数据
+	counter          int32              // 已经过去多少秒
+	clock            *time.Ticker       // 计时器
 
 	Lock sync.Mutex // 锁
 
-	UserLeave []string // 用户是否在房间
+	UserLeave []int32 // 用户是否在房间
 
 	IsOpenRoom bool // 是否开启房间
 
@@ -108,8 +109,8 @@ func (r *Room) Init() {
 	r.PlayerList = nil
 	r.TablePlayer = nil
 
-	r.GodGambleName = ""
-	r.BankerId = ""
+	r.GodGambleName = 0
+	r.BankerId = 0
 	r.BankerMoney = 0
 	r.bankerList = make(map[string]int32)
 	r.IsConBanker = false
@@ -120,15 +121,15 @@ func (r *Room) Init() {
 	r.PeriodsNum = ""
 	r.PeriodsTime = ""
 	r.GameStat = msg.GameStep_XX_Step
-	r.PlayerTotalMoney = msg.DownBetMoney{}
+	r.PlayerTotalMoney = &msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
-	r.PotWinList = make([]msg.PotWinList, 0)
-	r.HistoryData = make([]msg.HistoryData, 0)
+	r.PotWinList = make([]*msg.PotWinList, 0)
+	r.HistoryData = make([]*msg.HistoryData, 0)
 
 	r.counter = 0
 	r.clock = time.NewTicker(time.Second)
 
-	r.UserLeave = make([]string, 0)
+	r.UserLeave = make([]int32, 0)
 
 	r.IsOpenRoom = true
 
@@ -234,7 +235,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 		if v != nil {
 			pd := &msg.PlayerData{}
 			pd.PlayerInfo = new(msg.PlayerInfo)
-			pd.PlayerInfo.Id = v.Id
+			pd.PlayerInfo.Id = common.Int32ToStr(v.Id)
 			pd.PlayerInfo.NickName = v.NickName
 			pd.PlayerInfo.HeadImg = v.HeadImg
 			pd.PlayerInfo.Account = v.Account
@@ -272,7 +273,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 		if v != nil {
 			pd := &msg.PlayerData{}
 			pd.PlayerInfo = new(msg.PlayerInfo)
-			pd.PlayerInfo.Id = v.Id
+			pd.PlayerInfo.Id = common.Int32ToStr(v.Id)
 			pd.PlayerInfo.NickName = v.NickName
 			pd.PlayerInfo.HeadImg = v.HeadImg
 			pd.PlayerInfo.Account = v.Account
@@ -316,7 +317,7 @@ func (r *Room) RespUptPlayerList() []*msg.PlayerData {
 		if v != nil {
 			pd := &msg.PlayerData{}
 			pd.PlayerInfo = new(msg.PlayerInfo)
-			pd.PlayerInfo.Id = v.Id
+			pd.PlayerInfo.Id = common.Int32ToStr(v.Id)
 			pd.PlayerInfo.NickName = v.NickName
 			pd.PlayerInfo.HeadImg = v.HeadImg
 			pd.PlayerInfo.Account = v.Account
@@ -521,10 +522,10 @@ func (r *Room) CleanRoomData() {
 	r.resultTime = ""
 	r.Lottery = nil
 	r.LotteryResult = msg.PotWinList{}
-	r.PlayerTotalMoney = msg.DownBetMoney{}
+	r.PlayerTotalMoney = &msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
 	r.counter = 0
-	r.UserLeave = []string{}
+	r.UserLeave = []int32{}
 	r.bankerList = make(map[string]int32)
 	// 清空玩家数据
 	r.CleanPlayerData()
@@ -534,7 +535,7 @@ func (r *Room) CleanRoomData() {
 func (r *Room) CleanPlayerData() {
 	for _, v := range r.PlayerList {
 		if v != nil {
-			v.DownBetMoney = msg.DownBetMoney{}
+			v.DownBetMoney = &msg.DownBetMoney{}
 			v.IsAction = false
 			v.WinResultMoney = 0
 			v.LoseResultMoney = 0
@@ -567,7 +568,8 @@ func (r *Room) KickOutPlayer() {
 				} else {
 					v.PlayerExitRoom()
 					hall.UserRecord.Delete(v.Id)
-					c4c.UserLogoutCenter(v.Id, v.Password, v.Token) //, p.PassWord
+					// c4c.UserLogoutCenter(v.Id, v.Password, v.Token) //, p.PassWord
+					sendLogout(v.Id) // 登出
 					leaveHall := &msg.Logout_S2C{}
 					v.SendMsg(leaveHall, "Logout_S2C")
 					v.IsOnline = false
@@ -586,14 +588,14 @@ func (r *Room) ExitFromRoom(p *Player) {
 	p.BankerMoney = 0
 	p.BankerCount = 0
 	p.BankerStatus = 0
-	p.DownBetMoney = msg.DownBetMoney{}
+	p.DownBetMoney = &msg.DownBetMoney{}
 	p.ResultMoney = 0
 	p.WinResultMoney = 0
 	p.LoseResultMoney = 0
 	p.TotalDownBet = 0
 	p.WinTotalCount = 0
 	p.TwentyData = nil
-	p.DownBetHistory = make([]msg.DownBetHistory, 0)
+	p.DownBetHistory = make([]*msg.DownBetHistory, 0)
 	p.IsBanker = false
 	p.IsDownBanker = false
 	p.IsAction = false
@@ -614,7 +616,7 @@ func (r *Room) ExitFromRoom(p *Player) {
 	// 发送退出房间
 	leave := &msg.LeaveRoom_S2C{}
 	leave.PlayerInfo = new(msg.PlayerInfo)
-	leave.PlayerInfo.Id = p.Id
+	leave.PlayerInfo.Id = common.Int32ToStr(p.Id)
 	leave.PlayerInfo.NickName = p.NickName
 	leave.PlayerInfo.HeadImg = p.HeadImg
 	leave.PlayerInfo.Account = p.Account
@@ -623,40 +625,40 @@ func (r *Room) ExitFromRoom(p *Player) {
 	r.DeleteUserRoom(p)
 }
 
-func (r *Room) HandleBanker() {
-	for _, v := range r.PlayerList {
-		if v != nil && v.IsRobot == false && v.IsBanker == true {
-			// 如果玩家点击下庄就处理庄家下庄
-			if v.IsDownBanker == true {
-				v.BankerMoney = 0
-				v.BankerCount = 0
-				v.BankerStatus = 0
-				v.IsBanker = false
-				v.IsDownBanker = false
-				r.IsConBanker = false
-				nowTime := time.Now().Unix()
-				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
-				reason := "庄家申请下庄"
-				c4c.BankerStatus(v, 0, nowTime, v.RoundId, reason)
-			}
-			// 判断庄家金额是否小于2000或者庄家连庄3次以上就下庄
-			if v.BankerMoney < 2000 || v.BankerCount >= 3 {
-				v.BankerMoney = 0
-				v.BankerCount = 0
-				v.BankerStatus = 0
-				v.IsBanker = false
-				v.IsDownBanker = false
-				r.IsConBanker = false
-				nowTime := time.Now().Unix()
-				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
-				reason := "庄家申请下庄"
-				c4c.BankerStatus(v, 0, nowTime, v.RoundId, reason)
-			}
-		}
-	}
-	// 清空机器庄家
-	r.ClearRobotBanker()
-}
+// func (r *Room) HandleBanker() {
+// 	for _, v := range r.PlayerList {
+// 		if v != nil && v.IsRobot == false && v.IsBanker == true {
+// 			// 如果玩家点击下庄就处理庄家下庄
+// 			if v.IsDownBanker == true {
+// 				v.BankerMoney = 0
+// 				v.BankerCount = 0
+// 				v.BankerStatus = 0
+// 				v.IsBanker = false
+// 				v.IsDownBanker = false
+// 				r.IsConBanker = false
+// 				nowTime := time.Now().Unix()
+// 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+// 				reason := "庄家申请下庄"
+// 				c4c.BankerStatus(v, 0, nowTime, v.RoundId, reason)
+// 			}
+// 			// 判断庄家金额是否小于2000或者庄家连庄3次以上就下庄
+// 			if v.BankerMoney < 2000 || v.BankerCount >= 3 {
+// 				v.BankerMoney = 0
+// 				v.BankerCount = 0
+// 				v.BankerStatus = 0
+// 				v.IsBanker = false
+// 				v.IsDownBanker = false
+// 				r.IsConBanker = false
+// 				nowTime := time.Now().Unix()
+// 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+// 				reason := "庄家申请下庄"
+// 				c4c.BankerStatus(v, 0, nowTime, v.RoundId, reason)
+// 			}
+// 		}
+// 	}
+// 	// 清空机器庄家
+// 	r.ClearRobotBanker()
+// }
 
 //HandleRobot 处理机器人
 func (r *Room) HandleRobot() {
@@ -844,123 +846,123 @@ func (r *Room) RobotLength() int {
 	return num
 }
 
-func (r *Room) PlayerUpBanker() {
-	if len(r.bankerList) == 0 {
-		p := gRobotCenter.CreateRobot()
-		p.Account = RandomBankerAccount()
-		p.IsBanker = true
-		r.BankerId = p.Id
-		p.BankerCount++
-		hall.UserRoom.Store(p.Id, r.RoomId)
-		r.PlayerList = append(r.PlayerList, p)
+// func (r *Room) PlayerUpBanker() {
+// 	if len(r.bankerList) == 0 {
+// 		p := gRobotCenter.CreateRobot()
+// 		p.Account = RandomBankerAccount()
+// 		p.IsBanker = true
+// 		r.BankerId = p.Id
+// 		p.BankerCount++
+// 		hall.UserRoom.Store(p.Id, r.RoomId)
+// 		r.PlayerList = append(r.PlayerList, p)
 
-		bankerMoney := []int32{2000, 5000, 10000, 20000}
-		num := RandInRange(0, 4)
+// 		bankerMoney := []int32{2000, 5000, 10000, 20000}
+// 		num := RandInRange(0, 4)
 
-		p.BankerMoney = float64(bankerMoney[num])
-		r.BankerMoney = float64(bankerMoney[num])
-		log.Debug("机器人当庄:%v,当庄金额:%v", p.Id, p.BankerMoney)
+// 		p.BankerMoney = float64(bankerMoney[num])
+// 		r.BankerMoney = float64(bankerMoney[num])
+// 		log.Debug("机器人当庄:%v,当庄金额:%v", p.Id, p.BankerMoney)
 
-		data := &msg.BankerData_S2C{}
-		data.Banker = p.RespPlayerData()
-		data.TakeMoney = bankerMoney[num]
-		r.BroadCastMsg(data, "BankerData_S2C")
-	} else if len(r.bankerList) >= 1 {
-		b2000 := make([]string, 0)
-		b5000 := make([]string, 0)
-		b10000 := make([]string, 0)
-		b20000 := make([]string, 0)
-		for k := range r.bankerList {
-			if r.bankerList[k] == 2000 {
-				b2000 = append(b2000, k)
-			}
-			if r.bankerList[k] == 5000 {
-				b5000 = append(b5000, k)
-			}
-			if r.bankerList[k] == 10000 {
-				b10000 = append(b10000, k)
-			}
-			if r.bankerList[k] == 20000 {
-				b20000 = append(b20000, k)
-			}
-		}
-		if len(b20000) >= 1 {
-			if len(b20000) == 1 {
-				r.SetBanker(b20000[0], 20000)
-			} else {
-				num := RandInRange(0, len(b20000))
-				r.SetBanker(b20000[num], 20000)
-			}
-			return
-		}
-		if len(b10000) >= 1 {
-			if len(b10000) == 1 {
-				r.SetBanker(b10000[0], 10000)
-			} else {
-				num := RandInRange(0, len(b10000))
-				r.SetBanker(b10000[num], 10000)
-			}
-			return
-		}
-		if len(b5000) >= 1 {
-			if len(b5000) == 1 {
-				r.SetBanker(b5000[0], 5000)
-			} else {
-				num := RandInRange(0, len(b5000))
-				r.SetBanker(b5000[num], 5000)
-			}
-			return
-		}
-		if len(b2000) >= 1 {
-			if len(b2000) == 1 {
-				r.SetBanker(b2000[0], 2000)
-			} else {
-				num := RandInRange(0, len(b2000))
-				r.SetBanker(b2000[num], 2000)
-			}
-			return
-		}
-	}
-}
+// 		data := &msg.BankerData_S2C{}
+// 		data.Banker = p.RespPlayerData()
+// 		data.TakeMoney = bankerMoney[num]
+// 		r.BroadCastMsg(data, "BankerData_S2C")
+// 	} else if len(r.bankerList) >= 1 {
+// 		b2000 := make([]string, 0)
+// 		b5000 := make([]string, 0)
+// 		b10000 := make([]string, 0)
+// 		b20000 := make([]string, 0)
+// 		for k := range r.bankerList {
+// 			if r.bankerList[k] == 2000 {
+// 				b2000 = append(b2000, k)
+// 			}
+// 			if r.bankerList[k] == 5000 {
+// 				b5000 = append(b5000, k)
+// 			}
+// 			if r.bankerList[k] == 10000 {
+// 				b10000 = append(b10000, k)
+// 			}
+// 			if r.bankerList[k] == 20000 {
+// 				b20000 = append(b20000, k)
+// 			}
+// 		}
+// 		if len(b20000) >= 1 {
+// 			if len(b20000) == 1 {
+// 				r.SetBanker(b20000[0], 20000)
+// 			} else {
+// 				num := RandInRange(0, len(b20000))
+// 				r.SetBanker(b20000[num], 20000)
+// 			}
+// 			return
+// 		}
+// 		if len(b10000) >= 1 {
+// 			if len(b10000) == 1 {
+// 				r.SetBanker(b10000[0], 10000)
+// 			} else {
+// 				num := RandInRange(0, len(b10000))
+// 				r.SetBanker(b10000[num], 10000)
+// 			}
+// 			return
+// 		}
+// 		if len(b5000) >= 1 {
+// 			if len(b5000) == 1 {
+// 				r.SetBanker(b5000[0], 5000)
+// 			} else {
+// 				num := RandInRange(0, len(b5000))
+// 				r.SetBanker(b5000[num], 5000)
+// 			}
+// 			return
+// 		}
+// 		if len(b2000) >= 1 {
+// 			if len(b2000) == 1 {
+// 				r.SetBanker(b2000[0], 2000)
+// 			} else {
+// 				num := RandInRange(0, len(b2000))
+// 				r.SetBanker(b2000[num], 2000)
+// 			}
+// 			return
+// 		}
+// 	}
+// }
 
 // 设定庄家并发送数据
-func (r *Room) SetBanker(id string, takeMoney int32) {
-	for _, v := range r.PlayerList {
-		if v != nil && v.Id == id {
-			v.IsBanker = true
-			v.BankerMoney = float64(takeMoney)
-			v.BankerCount++
-			v.BankerStatus = msg.BankerStatus_BankerUp
-			r.BankerId = id
-			r.BankerMoney = float64(takeMoney)
-			r.IsConBanker = true
-			nowTime := time.Now().Unix()
-			v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
-			reason := "庄家申请上庄"
-			c4c.BankerStatus(v, 1, nowTime, v.RoundId, reason)
-			log.Debug("玩家当庄:%v,当庄金额:%v", v.Id, v.BankerMoney)
+// func (r *Room) SetBanker(id string, takeMoney int32) {
+// 	for _, v := range r.PlayerList {
+// 		if v != nil && v.Id == id {
+// 			v.IsBanker = true
+// 			v.BankerMoney = float64(takeMoney)
+// 			v.BankerCount++
+// 			v.BankerStatus = msg.BankerStatus_BankerUp
+// 			r.BankerId = id
+// 			r.BankerMoney = float64(takeMoney)
+// 			r.IsConBanker = true
+// 			nowTime := time.Now().Unix()
+// 			v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
+// 			reason := "庄家申请上庄"
+// 			c4c.BankerStatus(v, 1, nowTime, v.RoundId, reason)
+// 			log.Debug("玩家当庄:%v,当庄金额:%v", v.Id, v.BankerMoney)
 
-			data := &msg.BankerData_S2C{}
-			data.Banker = v.RespPlayerData()
-			data.TakeMoney = takeMoney
-			r.BroadCastMsg(data, "BankerData_S2C")
-		}
-	}
-}
+// 			data := &msg.BankerData_S2C{}
+// 			data.Banker = v.RespPlayerData()
+// 			data.TakeMoney = takeMoney
+// 			r.BroadCastMsg(data, "BankerData_S2C")
+// 		}
+// 	}
+// }
 
 // 清除机器庄家
-func (r *Room) ClearRobotBanker() {
-	for _, v := range r.PlayerList {
-		if v != nil {
-			if v.IsRobot == true && v.IsBanker == true {
-				v.IsBanker = false
-				v.BankerMoney = 0
-				v.BankerCount = 0
-				v.BankerStatus = 0
-			}
-		}
-	}
-}
+// func (r *Room) ClearRobotBanker() {
+// 	for _, v := range r.PlayerList {
+// 		if v != nil {
+// 			if v.IsRobot == true && v.IsBanker == true {
+// 				v.IsBanker = false
+// 				v.BankerMoney = 0
+// 				v.BankerCount = 0
+// 				v.BankerStatus = 0
+// 			}
+// 		}
+// 	}
+// }
 
 // 获取派奖前玩家投注的数据
 func (r *Room) SetPlayerDownBet() {
