@@ -82,6 +82,7 @@ func C2CS_Login(args []interface{}) {
 	// common.Debug_log("loginModule C2CS_Login")
 	userID := args[0].(int32)
 	pwd := args[1].(string)
+	token := args[2].(string)
 	if len(pwd) == 6 {
 		auth := AuthUserPsw{
 			UserID:  userID,
@@ -98,7 +99,7 @@ func C2CS_Login(args []interface{}) {
 			DevKey:  c4c.devKey,
 			DevName: c4c.devName,
 		}
-		auth.Token = pwd
+		auth.Token = token
 		c4c.sendMessage(MSG_USER_LOGIN, auth)
 	}
 }

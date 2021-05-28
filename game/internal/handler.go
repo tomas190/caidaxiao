@@ -50,7 +50,7 @@ func handlerReg(m interface{}, h interface{}) {
 func handleLogin(args []interface{}) {
 	m := args[0].(*msg.Login_C2S) // C2S_Login結構
 	a := args[1].(gate.Agent)     // 傳送結構體的玩家
-	common.Debug_log("gameModule protobuf userLogin 用户登陆 UserID:%s UserPW:%s", m.GetId(), m.GetPassWord())
+	// common.Debug_log("gameModule protobuf userLogin 用户登陆 UserID:%s UserPW:%s", m.GetId(), m.GetPassWord())
 
 	//检查用户是否已登陆
 	userID := common.Str2int32(m.GetId())
@@ -76,7 +76,7 @@ func handleLogin(args []interface{}) {
 	}
 
 	bindAgentWithUser(a, userID)
-	common.GetInstance().Login.Go("UserLogin", userID, m.GetPassWord())
+	common.GetInstance().Login.Go("UserLogin", userID, m.GetPassWord(), m.GetToken())
 }
 
 // func handleLogin(args []interface{}) {
