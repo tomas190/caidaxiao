@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	KICKOUT_OTHER_LOGIN int32 = 1
-	KICKOUT_DISABLE     int32 = 2
+	KICKOUT_OTHER_LOGIN int32 = 1 // 登入後踢前
+	KICKOUT_DISABLE     int32 = 2 // 接口踢人
+	KICKOUT_CLOSE_ROOM  int32 = 3 // 關房踢人
 )
 
 func init() {
@@ -246,6 +247,7 @@ func handleLogout(args []interface{}) {
 
 	user := findUserByAgent(a)
 	if user == nil { //不是虛有玩家
+		common.Debug_log("玩家不存在")
 		return
 	}
 
@@ -259,8 +261,8 @@ func handleLogout(args []interface{}) {
 			v, _ := hall.RoomRecord.Load(rid)
 			if v != nil {
 				room := v.(*Room)
-				for _, v := range room.UserLeave {
-					if v == p.Id {
+				for _, uid := range room.UserLeave {
+					if uid == p.Id {
 						exist = true
 					}
 				}
@@ -283,6 +285,8 @@ func handleLogout(args []interface{}) {
 			// a.WriteMsg(leaveHall)
 			// p.ConnAgent.Close()
 		}
+	} else {
+		log.Debug("UserData() err agent 找不到對應*Player")
 	}
 }
 
@@ -290,18 +294,17 @@ func handleLogout(args []interface{}) {
 func findUserByAgent(a gate.Agent) *msg.PlayerInfo {
 	// common.Debug_log("gameModule gate.Agent findUserByAgent *BaseUser")
 	//查询用户ID
-	// UID4Agent.RLock()
-	// userID, ok := userIDFromAgent[a]
-	// UID4Agent.RUnlock()
+
 	userID, ok := userIDFromAgent_.Load(a)
 
 	if !ok {
+		log.Debug("userIDFromAgent_ err agent 找不到對應userID")
 		return nil
 	}
 	//查询用户信息
-	// user, ok := allUser[userID]
 	user, ok := allUser_.Load(common.Int32ToStr(userID.(int32)))
 	if !ok {
+		log.Debug("userID找不到對應玩家PlayerInfo")
 		return nil
 	}
 	return user.(*msg.PlayerInfo)
