@@ -16,7 +16,7 @@ type Player struct {
 	// Password  string
 	// Token     string
 	RoundId   string
-	PackageId uint16
+	PackageId int
 
 	Status          msg.PlayerStatus      // 玩家状态
 	BankerMoney     float64               // 庄家金额

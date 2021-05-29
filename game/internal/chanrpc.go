@@ -3,6 +3,7 @@ package internal
 import (
 	common "caidaxiao/base"
 	"caidaxiao/msg"
+	"math"
 	"strconv"
 
 	"github.com/name5566/leaf/gate"
@@ -10,6 +11,10 @@ import (
 )
 
 func init() {
+
+	// 開始遊戲服務
+	skeleton.RegisterChanRPC("StartServer", respondStart)
+
 	skeleton.RegisterChanRPC("NewAgent", rpcNewAgent)
 	skeleton.RegisterChanRPC("CloseAgent", rpcCloseAgent)
 
@@ -82,7 +87,7 @@ func playerEnterGame(args []interface{}) {
 	u.Id = cInfo.UserID
 	u.HeadImg = cInfo.UserHead
 	u.NickName = cInfo.UserName
-	u.PackageId = uint16(cInfo.PackageID)
+	u.PackageId = cInfo.PackageID
 	u.Account = cInfo.Balance
 
 	log.Debug("玩家正常登陆:%v", u.Id)
@@ -160,4 +165,19 @@ func playerExitGame(args []interface{}) {
 	cInfo := args[0].(common.UserInfo)
 	common.Debug_log("用户登出中心服成功,userID=%d\n", cInfo.UserID)
 	unbindAgentWithUser(cInfo.UserID)
+}
+
+// 登陸中心服後的處理
+func respondStart(args []interface{}) {
+	common.Debug_log("gameModule respondStart")
+	go func() {
+		StartHttpServer() // 监听接口
+	}()
+	common.Debug_log("财神到游戏服务器启动成功 version:" + versionCode)
+	arrPackages := args[0].([]common.LoginResponse)
+	mapTaxPercent = make(map[int]float64)
+	for _, v := range arrPackages {
+		mapTaxPercent[v.PackageID] = float64(v.TaxPercent) * math.Pow10(-2)
+	}
+	common.Debug_log("respondStart=%+v", mapTaxPercent)
 }

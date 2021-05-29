@@ -13,7 +13,11 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-var moneyWinToNotice float64 = 100 // 獲勝多少需要廣播
+var (
+	moneyWinToNotice float64 = 100                   // 獲勝多少需要廣播
+	taxPercent               = 0.05                  // 预设税收
+	mapTaxPercent            = make(map[int]float64) // 根据平台列表税收map
+)
 
 //JoinGameRoom 加入游戏房间
 func (r *Room) JoinGameRoom(p *Player) {
@@ -538,11 +542,10 @@ func (r *Room) ResultMoney() {
 					}
 				}
 
-				pac := packageTax[v.PackageId] //todo
-				taxR := pac / 100
 				var tax float64
 				if v.IsRobot == false {
-					tax = (us.uWinSum) * taxR // todo
+
+					tax = minusTax(us.uWinSum, v.PackageId) // todo
 				} else {
 					tax = (us.uWinSum) * 0.05
 
@@ -605,7 +608,7 @@ func (r *Room) ResultMoney() {
 					data.CardResult.CardType = r.LotteryResult.CardType
 					data.SettlementFunds = v.ResultMoney
 					data.SpareCash = v.Account
-					data.TaxRate = taxR
+					data.TaxRate = getTaxPercent(v.PackageId)
 					data.PeriodsNum = r.PeriodsNum
 					InsertAccessData(data)
 
@@ -741,4 +744,22 @@ func sendNotice(userID int32, userName string, money float64) {
 		UserID:   userID,
 		UserName: userName,
 	})
+}
+
+// 平台扣稅比例
+func minusTax(money float64, packageID int) float64 {
+	if money <= 0 {
+		return money
+	}
+	return money * getTaxPercent(packageID)
+}
+
+// 获取平台对应税收
+func getTaxPercent(packageID int) float64 {
+	t, ok := mapTaxPercent[packageID] //tax
+	if !ok {
+		return taxPercent
+	}
+	// common.Debug_log("存在对应ID(%d)的Tax：%.2f", packageID, t)
+	return t
 }

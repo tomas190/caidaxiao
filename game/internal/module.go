@@ -38,8 +38,6 @@ func (m *Module) OnInit() {
 	// c4c.CreatConnect()
 	rand.Seed(time.Now().UnixNano())
 
-	go StartHttpServer() // 监听接口
-
 	common.GetInstance().SetGameChanRpc(ChanRPC) //單例模式
 	HeartBeatLoop()                              //檢設用戶心跳開始
 }

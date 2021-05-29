@@ -269,7 +269,7 @@ type PlayerGameData struct {
 	SettlementFunds float64           `json:"settlement_funds" bson:"settlement_funds"` // 当局输赢结果(税后)
 	TotalWin        float64           `json:"total_win" bson:"total_win"`               // 玩家当局赢
 	TotalLose       float64           `json:"total_lose" bson:"total_lose"`             // 玩家当局输
-	PackageId       uint16            `json:"package_id" bson:"package_id"`             // PackageId
+	PackageId       int               `json:"package_id" bson:"package_id"`             // PackageId
 }
 
 //InsertPlayerGame 玩家游戏数据

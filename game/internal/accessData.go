@@ -143,8 +143,9 @@ type GameLimitBet struct {
 }
 
 const (
-	SuccCode = 0
-	ErrCode  = -1
+	SuccCode    = 0
+	ErrCode     = -1
+	versionCode = "1.0.0"
 )
 
 // HTTP端口监听
@@ -804,8 +805,7 @@ func HandleHeNeiWin(w http.ResponseWriter, r *http.Request) {
 	data := &GamePayResp{}
 	var num int
 	for _, v := range recodes {
-		pac := packageTax[v.PackageId]
-		taxR := pac / 100
+		taxR, _ := mapTaxPercent[v.PackageId] //tax
 		resWin := v.TotalLose + (v.TotalWin * (1 - taxR))
 		if resWin >= float64(amount) {
 			num++
@@ -870,8 +870,9 @@ func HandleQiQuWin(w http.ResponseWriter, r *http.Request) {
 	data := &GamePayResp{}
 	var num int
 	for _, v := range recodes {
-		pac := packageTax[v.PackageId]
-		taxR := pac / 100
+
+		taxR, _ := mapTaxPercent[v.PackageId] //tax
+
 		resWin := v.TotalLose + (v.TotalWin * (1 - taxR))
 		if resWin >= float64(amount) {
 			num++
