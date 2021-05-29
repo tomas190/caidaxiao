@@ -31,8 +31,6 @@ func RanInt(num int) int {
 		return 0
 	}
 
-	// rand.Seed(time.Now().UnixNano())
-	// time.Sleep(1 * time.Nanosecond)
 	if num == 0 {
 		num++
 	}

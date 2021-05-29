@@ -543,15 +543,13 @@ func (r *Room) ResultMoney() {
 				var tax float64
 				if v.IsRobot == false {
 					tax = (us.uWinSum) * taxR // todo
-					//tax = (taxMoney) * taxRate
 				} else {
-					pac2 := packageTax[r.PackageId] //todo
-					taxR2 := pac2 / 100
-					tax = (us.uWinSum) * taxR2
-					//tax = (taxMoney) * taxRate
+					tax = (us.uWinSum) * 0.05
+
 				}
 
 				v.Account += us.uBetWin + us.uWinSum - tax
+
 				v.ResultMoney = us.uBetWin + us.uWinSum - tax - us.uBetLoss
 
 				// 玩家獲利一定金額廣播

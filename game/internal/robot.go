@@ -62,7 +62,6 @@ func (r *Room) RobotsDownBet() {
 				if v != nil && v.IsRobot == true {
 					// 间隔时间
 					timerSlice := []int32{50, 150, 20, 300, 30}
-					rand.Seed(time.Now().UnixNano())
 					num := rand.Intn(len(timerSlice))
 					time.Sleep(time.Millisecond * time.Duration(timerSlice[num]))
 
@@ -356,7 +355,6 @@ func RobotRandBet() int32 {
 
 //Start 机器人开工~！
 func (rc *RobotsCenter) Start() {
-	rand.Seed(time.Now().UnixNano())
 	num := RandInRange(15, 25)
 	hall.LoadHallRobots(num)
 }
@@ -377,7 +375,6 @@ func RandomIMG() string {
 		"1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png", "10.png",
 		"11.png", "12.png", "13.png", "14.png", "15.png", "16.png", "17.png", "18.png", "19.png", "20.png",
 	}
-	rand.Seed(time.Now().UnixNano())
 	num := rand.Intn(len(slice))
 
 	return slice[num]
@@ -395,8 +392,8 @@ func RandomName() string {
 
 func RandomAccount() float64 {
 	rand.Intn(int(time.Now().Unix()))
-	money := RandInRange(200, 5000)
-	return float64(money)
+	money := float64(RandInRange(20000, 500000)) / 100
+	return money //增加到小數
 }
 
 func RandomBankerAccount() float64 {

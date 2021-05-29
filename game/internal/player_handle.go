@@ -244,7 +244,6 @@ func unbindAgentWithUser(userID int32) {
 
 // 客戶端登出
 func sendLogout(userID int32) {
-	// common.Debug_log("gameModule sendLogout")
 	common.GetInstance().Login.Go("UserLogout", userID)
 }
 
@@ -300,10 +299,6 @@ func SaveAllUserInfo() {
 
 // LogoutAllUsers 在服务器关闭时登出所有用户登出全部房间用户
 func LogoutAllUsers() {
-	// for _, v := range allUser {
-	// 	sendLogout(v.UserID)
-	// }
-
 	allUser_.Range(func(_, v interface{}) bool {
 		userID := common.Str2int32(v.(*msg.PlayerInfo).Id)
 		sendLogout(userID)

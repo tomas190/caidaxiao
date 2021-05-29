@@ -215,7 +215,6 @@ func clientbot(ctx context.Context) {
 //}
 
 func RandInRange(min int, max int) int {
-	rand.Seed(time.Now().UnixNano())
 	time.Sleep(1 * time.Nanosecond)
 	return rand.Intn(max-min) + min
 }

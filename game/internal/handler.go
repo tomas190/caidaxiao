@@ -276,14 +276,13 @@ func handleLogout(args []interface{}) {
 				p.SendMsg(leaveHall, "Logout_S2C")
 			}
 		} else {
+			log.Debug("正常登出:%v", p.Id)
 			// c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
 			p.IsOnline = false
 			hall.UserRecord.Delete(p.Id)
 			leaveHall := &msg.Logout_S2C{}
 			p.SendMsg(leaveHall, "Logout_S2C")
 			sendLogout(p.Id) // 登出
-			// a.WriteMsg(leaveHall)
-			// p.ConnAgent.Close()
 		}
 	} else {
 		log.Debug("UserData() err agent 找不到對應*Player")

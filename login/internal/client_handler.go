@@ -194,7 +194,7 @@ func CS2C_Login(data ResponseData) {
 		LockBalance: info.Account.LockBalance,
 		PackageID:   info.Base.PackageID,
 	})
-	common.Debug_log("登陆成功" + common.IntToStr(int(info.Base.ID)))
+	common.Debug_log("登陆成功:%v", info.Base.ID)
 }
 
 // 用戶登出 client -> centerserver
@@ -214,7 +214,7 @@ func CS2C_Logout(data ResponseData) {
 		Balance:     info.Account.Balance,
 		LockBalance: info.Account.LockBalance,
 	})
-	common.Debug_log("登出成功" + common.IntToStr(int(info.Base.id)))
+	common.Debug_log("登出成功:%v", info.Base.ID)
 }
 
 // 用戶贏錢 client -> centerserver

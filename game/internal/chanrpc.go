@@ -58,10 +58,7 @@ func rpcCloseAgent(args []interface{}) {
 		} else {
 			hall.UserRecord.Delete(p.Id)
 			p.PlayerExitRoom()
-			common.GetInstance().Login.Go("UserLogout", p.Id)
-			// c4c.UserLogoutCenter(p.Id, p.Password, p.Token) //todo
 			leaveHall := &msg.Logout_S2C{}
-			// a.WriteMsg(leaveHall)
 			p.SendMsg(leaveHall, "Logout_S2C")
 			unusualLogout(a, "连接断开")
 			a.Close()

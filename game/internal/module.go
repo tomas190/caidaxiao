@@ -2,6 +2,8 @@ package internal
 
 import (
 	common "caidaxiao/base"
+	"math/rand"
+	"time"
 
 	"github.com/name5566/leaf/module"
 )
@@ -34,6 +36,7 @@ func (m *Module) OnInit() {
 	// 中心服初始化并创建链接
 	// c4c.Init()
 	// c4c.CreatConnect()
+	rand.Seed(time.Now().UnixNano())
 
 	go StartHttpServer() // 监听接口
 
