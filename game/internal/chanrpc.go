@@ -173,7 +173,7 @@ func respondStart(args []interface{}) {
 	go func() {
 		StartHttpServer() // 监听接口
 	}()
-	common.Debug_log("财神到游戏服务器启动成功 version:" + versionCode)
+	common.Debug_log("彩源猜大小游戏服务器启动成功 version:" + versionCode)
 	arrPackages := args[0].([]common.LoginResponse)
 	mapTaxPercent = make(map[int]float64)
 	for _, v := range arrPackages {

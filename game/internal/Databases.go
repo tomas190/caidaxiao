@@ -56,6 +56,7 @@ func InitMongoDB() {
 
 	createUniqueIndex("PlayerDownBetDB", []string{"game_id"})
 	createUniqueIndex("PlayerGameDataDB", []string{"user_id"})
+	createUniqueIndex("accessData", []string{"id"})
 
 }
 
@@ -209,7 +210,7 @@ func InsertLoseMoney(base interface{}) {
 
 // 玩家的记录
 type PlayerDownBetRecode struct {
-	Id              int32             `json:"id" bson:"id"`                             // 玩家Id
+	Id              string            `json:"id" bson:"id"`                             // 玩家Id
 	GameId          string            `json:"game_id" bson:"game_id"`                   // gameId
 	RoundId         string            `json:"round_id" bson:"round_id"`                 // 随机Id
 	RoomId          string            `json:"room_id" bson:"room_id"`                   // 所在房间
@@ -241,36 +242,20 @@ func InsertAccessData(data *PlayerDownBetRecode) {
 
 //GetDownRecodeList 获取运营数据接入
 func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]PlayerDownBetRecode, int, error) {
-	// s, c := connect(dbName, accessDB)
-	// defer s.Close()
+	s, c := connect(dbName, accessDB)
+	defer s.Close()
 	var wts []PlayerDownBetRecode
-	log.Debug("%v", selector)
-	cmd := SearchCMD{
-		DBName: dbName,
-		CName:  accessDB,
-		Query:  selector,
+	n, err := c.Find(selector).Count()
+	if err != nil {
+		return nil, 0, err
 	}
-	n := FindCountByQuery(cmd)
-	// n, err := c.Find(selector).Count()
-	// if err != nil {
-	// return nil, 0, err
-	// }
 	log.Debug("获取 %v 条数据,limit:%v", n, limit)
 	skip := page * limit
-
-	err := session.DB(dbName).C(accessDB).Find(selector).Skip(skip).Limit(limit).All(&wts)
+	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
 	if err != nil {
-		log.Debug("%v读取所有数据 %v", cmd, err.Error())
 		return nil, 0, err
 	}
 	return wts, n, nil
-
-	// skip := page * limit
-	// err := c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
-	// if err != nil {
-	// 	return nil, 0, err
-	// }
-	// return wts, n, nil
 }
 
 // 玩家游戏数据

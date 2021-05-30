@@ -586,7 +586,7 @@ func (r *Room) ResultMoney() {
 
 					// 插入玩家下注记录
 					data := &PlayerDownBetRecode{}
-					data.Id = v.Id
+					data.Id = common.Int32ToStr(v.Id)
 					data.GameId = conf.Server.GameID
 					data.RoundId = v.RoundId
 					data.RoomId = r.RoomId

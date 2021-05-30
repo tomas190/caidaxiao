@@ -155,7 +155,7 @@ type GameLimitBet struct {
 const (
 	SuccCode    = 0
 	ErrCode     = -1
-	versionCode = "1.0.0"
+	versionCode = "1.0.1"
 )
 
 // HTTP端口监听
@@ -583,7 +583,7 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		gd.TimeFmt = FormatTime(pr.DownBetTime, "2006-01-02 15:04:05")
 		gd.StartTime = pr.StartTime
 		gd.EndTime = pr.EndTime
-		gd.PlayerId = common.Int32ToStr(pr.Id)
+		gd.PlayerId = pr.Id
 		gd.RoomId = pr.RoomId
 		gd.RoundId = pr.RoundId
 		gd.Lottery = pr.Lottery
