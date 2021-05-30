@@ -4,6 +4,7 @@ import (
 	common "caidaxiao/base"
 	"caidaxiao/conf"
 	"caidaxiao/msg"
+	"fmt"
 	"time"
 
 	"github.com/name5566/leaf/db/mongodb"
@@ -240,8 +241,8 @@ func InsertAccessData(data *PlayerDownBetRecode) {
 
 //GetDownRecodeList 获取运营数据接入
 func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]PlayerDownBetRecode, int, error) {
-	s, c := connect(dbName, accessDB)
-	defer s.Close()
+	// s, c := connect(dbName, accessDB)
+	// defer s.Close()
 	var wts []PlayerDownBetRecode
 	log.Debug("%v", selector)
 	cmd := SearchCMD{
@@ -256,11 +257,20 @@ func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]Playe
 	// }
 	log.Debug("获取 %v 条数据,limit:%v", n, limit)
 	skip := page * limit
-	err := c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+
+	err := session.DB(dbName).C(accessDB).Find(selector).Skip(skip).Limit(limit).All(&wts)
 	if err != nil {
+		log.Debug("%v读取所有数据 %v", cmd, err.Error())
 		return nil, 0, err
 	}
 	return wts, n, nil
+
+	// skip := page * limit
+	// err := c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+	// return wts, n, nil
 }
 
 // 玩家游戏数据
@@ -613,4 +623,25 @@ func BulkUpdateAll(cmd SearchCMD, pairs []interface{}) {
 		log.Debug("%v批量更新 %v", cmd, err.Error())
 
 	}
+}
+
+func FindPageItemsByQuery(cmd SearchCMD, result interface{}) bool {
+	session := dbContext.Ref()
+	defer dbContext.UnRef(session)
+
+	err := session.DB(cmd.DBName).C(cmd.CName).Find(cmd.Query).Sort(cmd.SortField).Skip(cmd.Skip).Limit(cmd.LenLimit).All(result)
+	if err != nil {
+		log.Debug("%查找 %v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
+func Printcmd(cmd SearchCMD) {
+	fmt.Printf("%v=>%v\n", "DBName", cmd.DBName)
+	fmt.Printf("%v=>%v\n", "CName", cmd.CName)
+	fmt.Printf("%v=>%v\n", "Query", cmd.Query)
+	fmt.Printf("%v=>%v\n", "SortField", cmd.SortField)
+	fmt.Printf("%v=>%v\n", "Skip", cmd.Skip)
+	fmt.Printf("%v=>%v\n", "LenLimit", cmd.LenLimit)
 }

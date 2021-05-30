@@ -134,6 +134,7 @@ func makeServerConfig() *SurPool {
 
 func FindCountByQuery(cmd SearchCMD) int {
 
+	Printcmd(cmd)
 	count, err := session.DB(cmd.DBName).C(cmd.CName).Find(cmd.Query).Count()
 	if err != nil {
 		common.Debug_log("%v查找v", cmd, err.Error())

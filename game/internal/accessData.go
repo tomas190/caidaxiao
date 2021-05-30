@@ -142,6 +142,16 @@ type GameLimitBet struct {
 	TimeFmt string `form:"time_fmt" bson:"time_fmt" json:"time_fmt"`
 }
 
+// type UserRoundDataRes struct {
+// 	Code int            `json:"code"`
+// 	Msg  string         `json:"msg"`
+// 	Data DataRoundsData `json:"data"`
+// }
+// type DataRoundsData struct {
+// 	Total int        `json:"total"`
+// 	List  []GameData `json:"list"`
+// }
+
 const (
 	SuccCode    = 0
 	ErrCode     = -1
@@ -189,6 +199,300 @@ func StartHttpServer() {
 		panic(err)
 	}
 }
+
+// // 獲取遊戲數據
+// func getAccessData(w http.ResponseWriter, r *http.Request) {
+// 	v := r.URL.Query()
+// 	_start := v.Get("start_time")
+// 	_end := v.Get("end_time")
+// 	_page := v.Get("page")
+// 	_limit := v.Get("limit")
+// 	gameId := v.Get("game_id")
+// 	roundID := v.Get("round_id")
+// 	uid := v.Get("id")
+// 	common.Debug_log("game_id:%v round_id:%v id:%v start_time:%v end_time:%v page:%v limit:%v", gameId, roundID, uid, _start, _end, _page, _limit)
+// 	if _page == "" {
+// 		_page = "1"
+// 	}
+
+// 	if roundID != "" {
+// 		reqOneRoundData(w, uid, gameId, roundID, _page, _limit) //請求所有玩家或某玩家某一輪數據
+// 	} else if _start != "" && _end != "" {
+// 		reqUserRoundsDuration(w, gameId, uid, _start, _end, _page, _limit)
+// 	}
+
+// }
+
+// func reqOneRoundData(w http.ResponseWriter, uid string, gameID string, roundID string, page string, limit string) {
+
+// 	data := &UserRoundDataRes{}
+
+// 	result := DataRoundsData{
+// 		Total: 0,
+// 		List:  make([]GameData, 0),
+// 	}
+
+// 	if len(gameID) == 0 {
+// 		data.Msg = "无game_id参数"
+// 		return
+// 	}
+
+// 	if gameID != conf.Server.GameID {
+// 		data.Code = -1
+// 		data.Msg = "game_id不匹配"
+// 		return
+// 	}
+
+// 	page_, err := strconv.Atoi(page)
+// 	if err != nil {
+// 		data.Msg = err.Error()
+// 		return
+// 	}
+// 	if page_ < 1 {
+// 		data.Msg = "page参数不合法"
+// 		return
+// 	}
+// 	page_ -= 1
+
+// 	if len(limit) == 0 {
+// 		limit = "50"
+// 	}
+
+// 	limit_, err := strconv.Atoi(limit)
+// 	if err != nil {
+// 		data.Msg = err.Error()
+// 		return
+// 	}
+
+// 	skip := limit_ * page_
+
+// 	defer func() {
+// 		if len(data.Msg) > 0 {
+// 			data.Code = -1
+// 		} else {
+// 			data.Data = result
+// 		}
+// 		bytes, err := json.Marshal(data)
+// 		if err != nil {
+// 			log.Error("json marshal error:%s", err.Error())
+// 		} else {
+// 			_, err := w.Write(bytes)
+// 			if err != nil {
+// 				log.Error("write getGameData result error:%s", err.Error())
+// 			}
+// 		}
+// 	}()
+
+// 	cmd := SearchCMD{}
+
+// 	if uid == "" {
+// 		cmd = SearchCMD{
+// 			DBName:    dbName,
+// 			CName:     accessDB,
+// 			Query:     bson.M{"round_id": roundID},
+// 			SortField: "-down_bet_time",
+// 			Skip:      skip,
+// 			LenLimit:  limit_,
+// 		}
+// 	} else {
+// 		uid, err := strconv.Atoi(uid)
+// 		if err == nil {
+// 			cmd = SearchCMD{
+// 				DBName:    dbName,
+// 				CName:     accessDB,
+// 				Query:     bson.M{"round_id": roundID, "id": uid},
+// 				SortField: "-down_bet_time",
+// 				Skip:      skip,
+// 				LenLimit:  limit_,
+// 			}
+// 		}
+// 	}
+
+// 	Printcmd(cmd)
+// 	result.Total = FindCountByQuery(cmd)
+// 	if result.Total <= 0 {
+// 		log.Debug("%v", cmd)
+// 		data.Msg = "未查询到数据"
+// 	} else {
+// 		var wts []PlayerDownBetRecode
+// 		FindPageItemsByQuery(cmd, &wts)
+
+// 		var gameData []GameData
+// 		for i := 0; i < len(wts); i++ {
+// 			var gd GameData
+// 			pr := wts[i]
+// 			gd.Time = pr.DownBetTime
+// 			gd.TimeFmt = FormatTime(pr.DownBetTime, "2006-01-02 15:04:05")
+// 			gd.StartTime = pr.StartTime
+// 			gd.EndTime = pr.EndTime
+// 			gd.PlayerId = common.Int32ToStr(pr.Id)
+// 			gd.RoomId = pr.RoomId
+// 			gd.RoundId = pr.RoundId
+// 			gd.Lottery = pr.Lottery
+// 			gd.BetInfo = pr.DownBetInfo
+// 			gd.Card = pr.CardResult
+// 			gd.SettlementFunds = pr.SettlementFunds
+// 			gd.SpareCash = pr.SpareCash
+// 			gd.TaxRate = pr.TaxRate
+// 			gd.CreatedAt = pr.DownBetTime
+// 			gd.PeriodsNum = pr.PeriodsNum
+// 			gameData = append(gameData, gd)
+// 		}
+
+// 		result.List = gameData
+// 	}
+// }
+
+// func reqUserRoundsDuration(w http.ResponseWriter, gameID string, uid string, startTime string, endTime string, page string, limit string) {
+
+// 	data := &UserRoundDataRes{}
+
+// 	result := DataRoundsData{
+// 		Total: 0,
+// 		List:  make([]GameData, 0),
+// 	}
+
+// 	if len(gameID) == 0 {
+// 		data.Msg = "无game_id参数"
+// 		return
+// 	}
+
+// 	if gameID != conf.Server.GameID {
+// 		data.Code = -1
+// 		data.Msg = "game_id不匹配"
+// 		return
+// 	}
+
+// 	page_, err := strconv.Atoi(page)
+// 	if err != nil {
+// 		data.Msg = err.Error()
+// 		return
+// 	}
+// 	if page_ < 1 {
+// 		data.Msg = "page参数不合法"
+// 		return
+// 	}
+// 	page_ -= 1
+
+// 	if len(limit) == 0 {
+// 		limit = "50"
+// 	}
+
+// 	limit_, err := strconv.Atoi(limit)
+// 	if err != nil {
+// 		data.Msg = err.Error()
+// 		return
+// 	}
+
+// 	skip := limit_ * page_
+
+// 	if gameID != conf.Server.GameID {
+// 		data.Code = -1
+// 		data.Msg = "game_id不匹配"
+// 		return
+// 	}
+
+// 	if len(startTime) == 0 {
+// 		data.Msg = "无start_time参数"
+// 		return
+// 	}
+// 	if len(endTime) == 0 {
+// 		data.Msg = "无end_time参数"
+// 		return
+// 	}
+
+// 	startTime_, err := strconv.ParseInt(startTime, 10, 64)
+// 	if err != nil {
+// 		data.Msg = err.Error()
+// 		return
+// 	}
+// 	endTime_, err := strconv.ParseInt(endTime, 10, 64)
+// 	if err != nil {
+// 		data.Msg = err.Error()
+// 		return
+// 	}
+// 	if startTime_ > endTime_ {
+// 		data.Msg = "start_time必须小于end_time"
+// 		return
+// 	}
+
+// 	defer func() {
+// 		if len(data.Msg) > 0 {
+// 			data.Code = -1
+// 		} else {
+// 			data.Data = result
+// 		}
+// 		bytes, err := json.Marshal(data)
+// 		if err != nil {
+// 			log.Error("json marshal error:%s", err.Error())
+// 		} else {
+// 			_, err := w.Write(bytes)
+// 			if err != nil {
+// 				log.Error("write getGameData result error:%s", err.Error())
+// 			}
+// 		}
+// 	}()
+
+// 	cmd := SearchCMD{}
+
+// 	if uid == "" {
+// 		cmd = SearchCMD{
+// 			DBName:    dbName,
+// 			CName:     accessDB,
+// 			Query:     bson.M{"down_bet_time": bson.M{"$gte": startTime_, "$lte": endTime_}},
+// 			SortField: "-down_bet_time",
+// 			Skip:      skip,
+// 			LenLimit:  limit_,
+// 		}
+// 	} else {
+// 		uid, err := strconv.Atoi(uid)
+// 		if err == nil {
+// 			cmd = SearchCMD{
+// 				DBName:    dbName,
+// 				CName:     accessDB,
+// 				Query:     bson.M{"down_bet_time": bson.M{"$gte": startTime_, "$lte": endTime_}, "id": uid},
+// 				SortField: "-down_bet_time",
+// 				Skip:      skip,
+// 				LenLimit:  limit_,
+// 			}
+
+// 		}
+
+// 	}
+
+// 	Printcmd(cmd)
+// 	result.Total = FindCountByQuery(cmd)
+// 	if result.Total <= 0 {
+// 		data.Msg = "未查询到数据"
+// 	} else {
+// 		var wts []PlayerDownBetRecode
+// 		FindPageItemsByQuery(cmd, &wts)
+
+// 		var gameData []GameData
+// 		for i := 0; i < len(wts); i++ {
+// 			var gd GameData
+// 			pr := wts[i]
+// 			gd.Time = pr.DownBetTime
+// 			gd.TimeFmt = FormatTime(pr.DownBetTime, "2006-01-02 15:04:05")
+// 			gd.StartTime = pr.StartTime
+// 			gd.EndTime = pr.EndTime
+// 			gd.PlayerId = common.Int32ToStr(pr.Id)
+// 			gd.RoomId = pr.RoomId
+// 			gd.RoundId = pr.RoundId
+// 			gd.Lottery = pr.Lottery
+// 			gd.BetInfo = pr.DownBetInfo
+// 			gd.Card = pr.CardResult
+// 			gd.SettlementFunds = pr.SettlementFunds
+// 			gd.SpareCash = pr.SpareCash
+// 			gd.TaxRate = pr.TaxRate
+// 			gd.CreatedAt = pr.DownBetTime
+// 			gd.PeriodsNum = pr.PeriodsNum
+// 			gameData = append(gameData, gd)
+// 		}
+
+// 		result.List = gameData
+// 	}
+// }
 
 func getAccessData(w http.ResponseWriter, r *http.Request) {
 	var req GameDataReq
