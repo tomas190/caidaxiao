@@ -548,18 +548,21 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		selector["end_time"] = bson.M{"$lte": eTime}
 	}
 
+	if req.Page == "" {
+		req.Page = "1"
+	}
+
 	page, err := strconv.Atoi(req.Page)
 	if err != nil {
 		msg = "page参数不合法"
-		log.Debug("req.Page轉int Error", err.Error())
+		log.Debug("req.Page轉int :%v Error:%v", req.Page, err.Error())
 		return
 	}
 	if page < 1 {
 		msg = "page参数不合法"
-		log.Debug("page参数不合法", err.Error())
+		log.Debug("page参数不合法 :%v Error:%v", page, err.Error())
 		return
 	}
-	page -= 1
 
 	var limits int
 	if len(req.Limit) == 0 {

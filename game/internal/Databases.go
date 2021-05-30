@@ -260,7 +260,7 @@ func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]Playe
 
 // 玩家游戏数据
 type PlayerGameData struct {
-	UserId          int32             `json:"user_id" bson:"user_id"`                   // 玩家Id
+	UserId          string            `json:"user_id" bson:"user_id"`                   // 玩家Id
 	RoomId          string            `json:"room_id" bson:"room_id"`                   // 所在房间
 	DownBetInfo     *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"`       // 玩家各注池下注的金额
 	DownBetTime     int64             `json:"down_bet_time" bson:"down_bet_time"`       // 下注时间

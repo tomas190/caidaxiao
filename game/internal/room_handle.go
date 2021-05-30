@@ -615,7 +615,7 @@ func (r *Room) ResultMoney() {
 
 					// 插入玩家数据
 					gameData := &PlayerGameData{}
-					gameData.UserId = v.Id
+					gameData.UserId = common.Int32ToStr(v.Id)
 					gameData.RoomId = r.RoomId
 					gameData.DownBetInfo = new(msg.DownBetMoney)
 					gameData.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
