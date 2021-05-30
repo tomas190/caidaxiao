@@ -250,7 +250,7 @@ func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]Playe
 		return nil, 0, err
 	}
 	log.Debug("获取 %v 条数据,limit:%v", n, limit)
-	skip := (page - 1) * limit
+	skip := page * limit
 	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
 	if err != nil {
 		return nil, 0, err

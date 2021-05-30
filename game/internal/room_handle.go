@@ -488,9 +488,9 @@ func (r *Room) ResultMoney() {
 					// taxMoney += float64(v.DownBetMoney.BigDownBet * WinBig) //clear
 				}
 
-				if v.IsRobot == false {
-					log.Debug("玩家:%v,贏分下注:%v 輸分下注:%v 玩家獲利:%v", v.Id, us.uBetWin, us.uBetLoss, us.uWinSum)
-				}
+				// if v.IsRobot == false {
+				// 	log.Debug("玩家:%v,贏分下注:%v 輸分下注:%v 玩家獲利:%v", v.Id, us.uBetWin, us.uBetLoss, us.uWinSum)
+				// }
 
 				nowTime := time.Now().Unix() //todo
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
@@ -552,7 +552,9 @@ func (r *Room) ResultMoney() {
 				}
 
 				v.Account += us.uBetWin + us.uWinSum - tax
-
+				// if v.IsRobot == false {
+				// 	log.Debug("玩家:%v,贏分下注:%v 輸分下注:%v 玩家獲利:%v", v.Id, us.uBetWin, us.uBetLoss, us.uWinSum)
+				// }
 				v.ResultMoney = us.uBetWin + us.uWinSum - tax - us.uBetLoss
 
 				// 玩家獲利一定金額廣播
@@ -576,10 +578,9 @@ func (r *Room) ResultMoney() {
 					}
 				}
 				v.WinTotalCount = count
-				//log.Debug("玩家Id:%v,玩家输赢:%v,玩家金额:%v", v.Id, v.ResultMoney, v.Account)
 
-				if v.WinResultMoney != 0 || v.LoseResultMoney != 0 { //todo
-
+				if (v.WinResultMoney != 0 || v.LoseResultMoney != 0) && v.IsRobot == false { //todo
+					log.Debug("玩家:%v,贏分下注:%v 輸分下注:%v 玩家獲利:%v \n 玩家输赢:%v,玩家金额:%v", v.Id, us.uBetWin, us.uBetLoss, us.uWinSum, v.ResultMoney, v.Account)
 					// 插入盈余池数据
 					// InsertSurplusPool(sur)
 

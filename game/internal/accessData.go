@@ -192,7 +192,8 @@ func StartHttpServer() {
 
 func getAccessData(w http.ResponseWriter, r *http.Request) {
 	var req GameDataReq
-
+	var msg = ""
+	var result pageData
 	req.Id = r.FormValue("id")
 	req.GameId = r.FormValue("game_id")
 	req.RoomId = r.FormValue("room_id")
@@ -202,6 +203,16 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 	req.Page = r.FormValue("page")
 	req.Limit = r.FormValue("limit")
 	log.Debug("获取分页数据:%v", req.Page)
+
+	defer func() {
+		js, err := json.Marshal(NewResp(SuccCode, msg, result))
+		if err != nil && msg != "" {
+			fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: msg, Data: nil})
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}()
 
 	selector := bson.M{}
 
@@ -227,25 +238,38 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 
 	if sTime != 0 && eTime != 0 {
 		selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
-	}
-
-	if sTime != 0 && eTime == 0 {
+	} else if sTime != 0 && eTime == 0 {
 		selector["start_time"] = bson.M{"$gte": sTime}
-	}
-
-	if eTime != 0 && sTime == 0 {
+	} else if eTime != 0 && sTime == 0 {
 		selector["end_time"] = bson.M{"$lte": eTime}
+	} else {
+		msg = "請輸入時間參數"
 	}
 
-	page, _ := strconv.Atoi(req.Page)
+	page, err := strconv.Atoi(req.Page)
+	if err != nil {
+		msg = "page参数不合法"
+		log.Debug("req.Page轉int Error", err.Error())
+		return
+	}
+	if page < 1 {
+		msg = "page参数不合法"
+		log.Debug("page参数不合法", err.Error())
+		return
+	}
+	page -= 1
 
-	limits, _ := strconv.Atoi(req.Limit)
-	//if limits != 0 {
-	//	selector["limit"] = limits
-	//}
+	var limits int
+	if len(req.Limit) == 0 {
+		limits = 50
+	} else {
+		limits, _ = strconv.Atoi(req.Limit)
+	}
 
 	recodes, count, err := GetDownRecodeList(page, limits, selector, "-down_bet_time")
 	if err != nil {
+		msg = "獲取數據錯誤"
+		log.Debug("獲取數據錯誤:%v", err)
 		return
 	}
 
@@ -271,18 +295,17 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		gameData = append(gameData, gd)
 	}
 
-	var result pageData
 	result.Total = count
 	result.List = gameData
 
-	//fmt.Fprintf(w, "%+v", ApiResp{Code: SuccCode, Msg: "", Data: result})
-	js, err := json.Marshal(NewResp(SuccCode, "", result))
-	if err != nil {
-		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	// //fmt.Fprintf(w, "%+v", ApiResp{Code: SuccCode, Msg: "", Data: result})
+	// js, err := json.Marshal(NewResp(SuccCode, msg, result))
+	// if err != nil {
+	// 	fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+	// 	return
+	// }
+	// w.Header().Set("Content-Type", "application/json")
+	// w.Write(js)
 }
 
 // 查询子游戏盈余池数据
