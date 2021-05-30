@@ -242,16 +242,21 @@ func InsertAccessData(data *PlayerDownBetRecode) {
 func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]PlayerDownBetRecode, int, error) {
 	s, c := connect(dbName, accessDB)
 	defer s.Close()
-
 	var wts []PlayerDownBetRecode
-
-	n, err := c.Find(selector).Count()
-	if err != nil {
-		return nil, 0, err
+	log.Debug("%v", selector)
+	cmd := SearchCMD{
+		DBName: dbName,
+		CName:  accessDB,
+		Query:  selector,
 	}
+	n := FindCountByQuery(cmd)
+	// n, err := c.Find(selector).Count()
+	// if err != nil {
+	// return nil, 0, err
+	// }
 	log.Debug("获取 %v 条数据,limit:%v", n, limit)
 	skip := page * limit
-	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+	err := c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
 	if err != nil {
 		return nil, 0, err
 	}
