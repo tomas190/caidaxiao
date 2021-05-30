@@ -242,8 +242,6 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		selector["start_time"] = bson.M{"$gte": sTime}
 	} else if eTime != 0 && sTime == 0 {
 		selector["end_time"] = bson.M{"$lte": eTime}
-	} else {
-		msg = "請輸入時間參數"
 	}
 
 	page, err := strconv.Atoi(req.Page)
