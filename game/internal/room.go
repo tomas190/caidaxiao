@@ -211,25 +211,27 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	rd.PotMoneyCount.PairDownBet = r.PotMoneyCount.PairDownBet
 	rd.PotMoneyCount.StraightDownBet = r.PotMoneyCount.StraightDownBet
 	rd.PotMoneyCount.LeopardDownBet = r.PotMoneyCount.LeopardDownBet
-	for _, v := range r.PotWinList {
-		pot := &msg.PotWinList{}
-		pot.CardType = v.CardType
-		pot.BigSmall = v.BigSmall
-		pot.SinDouble = v.SinDouble
-		pot.ResultNum = v.ResultNum
-		rd.PotWinList = append(rd.PotWinList, pot)
-	}
-	for _, v := range r.HistoryData {
-		his := &msg.HistoryData{}
-		his.TimeFmt = v.TimeFmt
-		his.ResNum = v.ResNum
-		his.Result = v.Result
-		his.BigSmall = v.BigSmall
-		his.SinDouble = v.SinDouble
-		his.CardType = v.CardType
-		his.IsLiuJu = v.IsLiuJu
-		rd.HistoryData = append(rd.HistoryData, his)
-	}
+	rd.PotWinList = r.PotWinList
+	// for _, v := range r.PotWinList {
+	// 	pot := &msg.PotWinList{}
+	// 	pot.CardType = v.CardType
+	// 	pot.BigSmall = v.BigSmall
+	// 	pot.SinDouble = v.SinDouble
+	// 	pot.ResultNum = v.ResultNum
+	// 	rd.PotWinList = append(rd.PotWinList, pot)
+	// }
+	rd.HistoryData = r.HistoryData
+	// for _, v := range r.HistoryData {
+	// 	his := &msg.HistoryData{}
+	// 	his.TimeFmt = v.TimeFmt
+	// 	his.ResNum = v.ResNum
+	// 	his.Result = v.Result
+	// 	his.BigSmall = v.BigSmall
+	// 	his.SinDouble = v.SinDouble
+	// 	his.CardType = v.CardType
+	// 	his.IsLiuJu = v.IsLiuJu
+	// 	rd.HistoryData = append(rd.HistoryData, his)
+	// }
 	// 这里只需要遍历桌面玩家，站起玩家不显示出来
 	for _, v := range r.PlayerList {
 		if v != nil {
@@ -249,17 +251,18 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
 			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
 			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-			for _, v := range v.DownBetHistory {
-				his := &msg.DownBetHistory{}
-				his.TimeFmt = v.TimeFmt
-				his.ResNum = v.ResNum
-				his.Result = v.Result
-				his.BigSmall = v.BigSmall
-				his.SinDouble = v.SinDouble
-				his.CardType = v.CardType
-				his.DownBetMoney = v.DownBetMoney
-				pd.DownBetHistory = append(pd.DownBetHistory, his)
-			}
+			pd.DownBetHistory = v.DownBetHistory
+			// for _, uHis := range v.DownBetHistory {
+			// 	his := &msg.DownBetHistory{}
+			// 	his.TimeFmt = uHis.TimeFmt
+			// 	his.ResNum = uHis.ResNum
+			// 	his.Result = uHis.Result
+			// 	his.BigSmall = uHis.BigSmall
+			// 	his.SinDouble = uHis.SinDouble
+			// 	his.CardType = uHis.CardType
+			// 	his.DownBetMoney = uHis.DownBetMoney
+			// 	pd.DownBetHistory = append(pd.DownBetHistory, his)
+			// }
 			pd.TotalDownBet = v.TotalDownBet
 			pd.WinTotalCount = v.WinTotalCount
 			pd.ResultMoney = v.ResultMoney
@@ -287,17 +290,18 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
 			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
 			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-			for _, v := range v.DownBetHistory {
-				his := &msg.DownBetHistory{}
-				his.TimeFmt = v.TimeFmt
-				his.ResNum = v.ResNum
-				his.Result = v.Result
-				his.BigSmall = v.BigSmall
-				his.SinDouble = v.SinDouble
-				his.CardType = v.CardType
-				his.DownBetMoney = v.DownBetMoney
-				pd.DownBetHistory = append(pd.DownBetHistory, his)
-			}
+			pd.DownBetHistory = v.DownBetHistory
+			// for _, v := range v.DownBetHistory {
+			// 	his := &msg.DownBetHistory{}
+			// 	his.TimeFmt = v.TimeFmt
+			// 	his.ResNum = v.ResNum
+			// 	his.Result = v.Result
+			// 	his.BigSmall = v.BigSmall
+			// 	his.SinDouble = v.SinDouble
+			// 	his.CardType = v.CardType
+			// 	his.DownBetMoney = v.DownBetMoney
+			// 	pd.DownBetHistory = append(pd.DownBetHistory, his)
+			// }
 			pd.TotalDownBet = v.TotalDownBet
 			pd.WinTotalCount = v.WinTotalCount
 			pd.ResultMoney = v.ResultMoney
@@ -310,35 +314,35 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	return rd
 }
 
-//RespRoomData 返回房间数据
-func (r *Room) RespUptPlayerList() []*msg.PlayerData {
-	var playerSlice []*msg.PlayerData
-	for _, v := range r.PlayerList {
-		if v != nil {
-			pd := &msg.PlayerData{}
-			pd.PlayerInfo = new(msg.PlayerInfo)
-			pd.PlayerInfo.Id = common.Int32ToStr(v.Id)
-			pd.PlayerInfo.NickName = v.NickName
-			pd.PlayerInfo.HeadImg = v.HeadImg
-			pd.PlayerInfo.Account = v.Account
-			pd.DownBetMoney = new(msg.DownBetMoney)
-			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
-			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
-			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
-			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
-			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
-			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
-			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-			pd.TotalDownBet = v.TotalDownBet
-			pd.WinTotalCount = v.WinTotalCount
-			pd.ResultMoney = v.ResultMoney
-			pd.IsAction = v.IsAction
-			pd.IsBanker = v.IsBanker
-			playerSlice = append(playerSlice, pd)
-		}
-	}
-	return playerSlice
-}
+// //RespRoomData 返回房间数据
+// func (r *Room) RespUptPlayerList() []*msg.PlayerData {
+// 	var playerSlice []*msg.PlayerData
+// 	for _, v := range r.PlayerList {
+// 		if v != nil {
+// 			pd := &msg.PlayerData{}
+// 			pd.PlayerInfo = new(msg.PlayerInfo)
+// 			pd.PlayerInfo.Id = common.Int32ToStr(v.Id)
+// 			pd.PlayerInfo.NickName = v.NickName
+// 			pd.PlayerInfo.HeadImg = v.HeadImg
+// 			pd.PlayerInfo.Account = v.Account
+// 			pd.DownBetMoney = new(msg.DownBetMoney)
+// 			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
+// 			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
+// 			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
+// 			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+// 			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
+// 			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
+// 			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+// 			pd.TotalDownBet = v.TotalDownBet
+// 			pd.WinTotalCount = v.WinTotalCount
+// 			pd.ResultMoney = v.ResultMoney
+// 			pd.IsAction = v.IsAction
+// 			pd.IsBanker = v.IsBanker
+// 			playerSlice = append(playerSlice, pd)
+// 		}
+// 	}
+// 	return playerSlice
+// }
 
 //GetGodGableId 获取赌神ID
 func (r *Room) GetGodGableId() {

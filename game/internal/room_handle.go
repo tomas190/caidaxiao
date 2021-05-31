@@ -275,19 +275,19 @@ func (r *Room) HandleLiuJu() {
 
 	r.GameStat = msg.GameStep_LiuJu
 
-	// 添加流局历史数据
+	// 添加流局历史数据(房間非玩家)
 	history := &msg.HistoryData{}
 	if r.resultTime == "" {
 		r.resultTime = getNextTime()
 	}
-	history.TimeFmt = r.resultTime
-	for _, v := range r.Lottery {
+	history.TimeFmt = r.resultTime // 結算時間
+	for _, v := range r.Lottery {  // 獎號(slice)
 		history.ResNum = append(history.ResNum, int32(v))
 	}
-	history.Result = r.LotteryResult.ResultNum
-	history.BigSmall = r.LotteryResult.BigSmall
-	history.SinDouble = r.LotteryResult.SinDouble
-	history.CardType = r.LotteryResult.CardType
+	history.Result = r.LotteryResult.ResultNum    // 獎號
+	history.BigSmall = r.LotteryResult.BigSmall   // 大小
+	history.SinDouble = r.LotteryResult.SinDouble // 沒有用到
+	history.CardType = r.LotteryResult.CardType   // 豹子
 	history.IsLiuJu = true
 	r.HistoryData = append(r.HistoryData, history)
 	sort.Slice(r.HistoryData, func(i, j int) bool {
@@ -373,9 +373,10 @@ func (r *Room) CompareSettlement() {
 	// 结算数据
 	r.ResultMoney()
 
+	RoomData := r.RespRoomData()
 	// 发送结算数据
 	resultData := &msg.ResultData_S2C{}
-	resultData.RoomData = r.RespRoomData()
+	resultData.RoomData = RoomData
 
 	// log.Debug("ResultData_S2C 房間: %v   playerData:%v  HistoryData:%v ", resultData.RoomData.RoomId, len(resultData.RoomData.PlayerData), len(resultData.RoomData.HistoryData))
 
@@ -384,7 +385,7 @@ func (r *Room) CompareSettlement() {
 	// 结算时间
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_Settle
-	data.RoomData = r.RespRoomData()
+	data.RoomData = RoomData
 	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 获取投注统计
@@ -590,23 +591,25 @@ func (r *Room) ResultMoney() {
 					data.GameId = conf.Server.GameID
 					data.RoundId = v.RoundId
 					data.RoomId = r.RoomId
-					data.DownBetInfo = new(msg.DownBetMoney)
-					data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
-					data.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
-					data.DownBetInfo.SingleDownBet = v.DownBetMoney.SingleDownBet
-					data.DownBetInfo.DoubleDownBet = v.DownBetMoney.DoubleDownBet
-					data.DownBetInfo.PairDownBet = v.DownBetMoney.PairDownBet
-					data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
-					data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+					data.DownBetInfo = v.DownBetMoney
+					// data.DownBetInfo = new(msg.DownBetMoney)
+					// data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
+					// data.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
+					// data.DownBetInfo.SingleDownBet = v.DownBetMoney.SingleDownBet
+					// data.DownBetInfo.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+					// data.DownBetInfo.PairDownBet = v.DownBetMoney.PairDownBet
+					// data.DownBetInfo.StraightDownBet = v.DownBetMoney.StraightDownBet
+					// data.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
 					data.DownBetTime = nowTime
 					data.StartTime = nowTime - 55
 					data.EndTime = nowTime + 5
 					data.Lottery = r.Lottery
-					data.CardResult = new(msg.PotWinList)
-					data.CardResult.ResultNum = r.LotteryResult.ResultNum
-					data.CardResult.BigSmall = r.LotteryResult.BigSmall
-					data.CardResult.SinDouble = r.LotteryResult.SinDouble
-					data.CardResult.CardType = r.LotteryResult.CardType
+					data.CardResult = &r.LotteryResult
+					// data.CardResult = new(msg.PotWinList)
+					// data.CardResult.ResultNum = r.LotteryResult.ResultNum
+					// data.CardResult.BigSmall = r.LotteryResult.BigSmall
+					// data.CardResult.SinDouble = r.LotteryResult.SinDouble
+					// data.CardResult.CardType = r.LotteryResult.CardType
 					data.SettlementFunds = v.ResultMoney
 					data.SpareCash = v.Account
 					data.TaxRate = getTaxPercent(v.PackageId)
@@ -617,10 +620,11 @@ func (r *Room) ResultMoney() {
 					gameData := &PlayerGameData{}
 					gameData.UserId = common.Int32ToStr(v.Id)
 					gameData.RoomId = r.RoomId
-					gameData.DownBetInfo = new(msg.DownBetMoney)
-					gameData.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
-					gameData.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
-					gameData.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+					gameData.DownBetInfo = v.DownBetMoney
+					// gameData.DownBetInfo = new(msg.DownBetMoney)
+					// gameData.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
+					// gameData.DownBetInfo.SmallDownBet = v.DownBetMoney.SmallDownBet
+					// gameData.DownBetInfo.LeopardDownBet = v.DownBetMoney.LeopardDownBet
 					gameData.DownBetTime = nowTime
 					gameData.StartTime = nowTime - 55
 					gameData.EndTime = nowTime + 5
@@ -703,26 +707,30 @@ func (r *Room) GetResultType() {
 	//r.HistoryData = removeDuplicate(r.HistoryData)
 
 	// 存储下注记录
-	downBetHis := &msg.DownBetHistory{}
-	downBetHis.TimeFmt = r.resultTime
-	for _, v := range r.Lottery {
-		downBetHis.ResNum = append(downBetHis.ResNum, int32(v))
-	}
-	downBetHis.Result = r.LotteryResult.ResultNum
-	downBetHis.BigSmall = r.LotteryResult.BigSmall
-	downBetHis.SinDouble = r.LotteryResult.SinDouble
-	downBetHis.CardType = r.LotteryResult.CardType
-	downBetHis.Result = r.LotteryResult.ResultNum
+
 	for _, v := range r.PlayerList {
-		if v != nil && v.IsAction == true {
-			downBetHis.DownBetMoney = new(msg.DownBetMoney)
-			downBetHis.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
-			downBetHis.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
-			downBetHis.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
-			downBetHis.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
-			downBetHis.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
-			downBetHis.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
-			downBetHis.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+		if v != nil && v.IsAction == true && v.IsRobot == false {
+			downBetHis := &msg.DownBetHistory{}
+			downBetHis.TimeFmt = r.resultTime
+			for _, v := range r.Lottery {
+				downBetHis.ResNum = append(downBetHis.ResNum, int32(v))
+			}
+			downBetHis.Result = r.LotteryResult.ResultNum
+			downBetHis.BigSmall = r.LotteryResult.BigSmall
+			downBetHis.SinDouble = r.LotteryResult.SinDouble
+			downBetHis.CardType = r.LotteryResult.CardType
+			downBetHis.Result = r.LotteryResult.ResultNum
+
+			playerHis := &msg.DownBetMoney{}
+
+			playerHis.SmallDownBet = v.DownBetMoney.SmallDownBet
+			playerHis.BigDownBet = v.DownBetMoney.BigDownBet
+			playerHis.SingleDownBet = v.DownBetMoney.SingleDownBet
+			playerHis.DoubleDownBet = v.DownBetMoney.DoubleDownBet
+			playerHis.PairDownBet = v.DownBetMoney.PairDownBet
+			playerHis.StraightDownBet = v.DownBetMoney.StraightDownBet
+			playerHis.LeopardDownBet = v.DownBetMoney.LeopardDownBet
+			downBetHis.DownBetMoney = playerHis
 			v.DownBetHistory = append(v.DownBetHistory, downBetHis)
 			sort.Slice(v.DownBetHistory, func(i, j int) bool {
 				if v.DownBetHistory[i].TimeFmt > v.DownBetHistory[j].TimeFmt {
