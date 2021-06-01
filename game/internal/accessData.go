@@ -959,10 +959,17 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 发送给所有玩家
+	// 发送给所有玩家房间变更
 	hall.UserRecord.Range(func(key, value interface{}) bool {
 		u := value.(*Player)
 		u.SendMsg(data, "ChangeRoomType_S2C")
+		room_id, ok := hall.UserRoom.Load(u.Id)
+		if ok {
+			if room_id.(string) == req.RoomId && req.IsOpen == "0" && u.IsRobot == false { //此次选择的房间关闭
+				kickUserInRoom(u.Id)
+			}
+		}
+
 		return true
 	})
 
