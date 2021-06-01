@@ -912,8 +912,9 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Debug("RoomId:%v, IsOpen:%v", req.RoomId, req.IsOpen)
-
+	var changeRoomID string // 变动的房间id
 	if req.RoomId == "01" {
+		changeRoomID = "1"
 		if req.IsOpen == "1" {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "1" {
@@ -931,6 +932,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.RoomId == "02" {
+		changeRoomID = "2"
 		if req.IsOpen == "1" {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "2" {
@@ -965,7 +967,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 		u.SendMsg(data, "ChangeRoomType_S2C")
 		room_id, ok := hall.UserRoom.Load(u.Id)
 		if ok {
-			if room_id.(string) == req.RoomId && req.IsOpen == "0" && u.IsRobot == false { //此次选择的房间关闭
+			if room_id.(string) == changeRoomID && req.IsOpen == "0" && u.IsRobot == false { //此次选择的房间关闭
 				kickUserInRoom(u.Id)
 			}
 		}
