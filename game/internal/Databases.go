@@ -250,7 +250,7 @@ func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]Playe
 		return nil, 0, err
 	}
 	log.Debug("获取 %v 条数据,limit:%v", n, limit)
-	skip := page * limit
+	skip := (page - 1) * limit
 	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
 	if err != nil {
 		return nil, 0, err
@@ -611,8 +611,8 @@ func BulkUpdateAll(cmd SearchCMD, pairs []interface{}) {
 }
 
 func FindPageItemsByQuery(cmd SearchCMD, result interface{}) bool {
-	session := dbContext.Ref()
-	defer dbContext.UnRef(session)
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
 
 	err := session.DB(cmd.DBName).C(cmd.CName).Find(cmd.Query).Sort(cmd.SortField).Skip(cmd.Skip).Limit(cmd.LenLimit).All(result)
 	if err != nil {
