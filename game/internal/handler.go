@@ -301,7 +301,7 @@ func findUserByAgent(a gate.Agent) *msg.PlayerInfo {
 		return nil
 	}
 	//查询用户信息
-	user, ok := allUser_.Load(common.Int32ToStr(userID.(int32)))
+	user, ok := allUser_.Load(userID.(int32))
 	if !ok {
 		log.Debug("userID找不到對應玩家PlayerInfo")
 		return nil

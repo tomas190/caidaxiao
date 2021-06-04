@@ -19,9 +19,9 @@ type ClientInfo struct {
 var (
 	// 下面兩個參數是已登錄子遊戲玩家為了後面方便mapping用的
 
-	userIDFromAgent_ sync.Map
-	AgentFromuserID_ sync.Map
-	allUser_         sync.Map
+	userIDFromAgent_ sync.Map // key:agent value:userid(int32)
+	AgentFromuserID_ sync.Map // key:userID(int32) value:&ClientInfo
+	allUser_         sync.Map // key:userID(int32) value:*msg.PlayerInfo
 	emptyRoundID     = ""
 )
 
@@ -211,7 +211,7 @@ func LoadUserList() {
 	}
 	for _, user := range users {
 		// allUser[user.UserID] = user
-		allUser_.Store(user.Id, user)
+		allUser_.Store(common.Str2int32(user.Id), user)
 	}
 	// serverData.SumUser = float64(len(allUser))
 	allUserlength := 0
@@ -249,7 +249,7 @@ func sendLogout(userID int32) {
 
 // 更新玩家資訊(玩家結算更新餘額)要存到DB
 func UpdateUserData(userID int32) {
-	user, ok := allUser_.Load(common.Int32ToStr(userID))
+	user, ok := allUser_.Load(userID)
 	if !ok {
 		return
 	}
