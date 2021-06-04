@@ -1083,7 +1083,7 @@ func HandleHeBaoPay(w http.ResponseWriter, r *http.Request) {
 		data.GameCount++
 
 		if v.SettlementFunds > 0 {
-			data.TotalWin += v.SettlementFunds
+			data.TotalWin += v.TotalWin
 		} else {
 			data.TotalLose += v.SettlementFunds
 		}
