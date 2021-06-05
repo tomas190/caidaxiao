@@ -83,6 +83,7 @@ func C2CS_Login(args []interface{}) {
 	userID := args[0].(int32)
 	pwd := args[1].(string)
 	token := args[2].(string)
+	common.Debug_log("C2CS_Login UserID:%v(%T) UserPW:%v(%T) UserToken:%v(%T)", userID, userID, pwd, pwd, token, token)
 	if len(pwd) == 6 {
 		auth := AuthUserPsw{
 			UserID:  userID,
