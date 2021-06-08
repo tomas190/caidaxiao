@@ -92,7 +92,7 @@ func (p *Player) InsertPlayerInfo() {
 	player.NickName = p.NickName
 	player.HeadImg = p.HeadImg
 	player.Account = p.Account
-
+	allUser_.Store(p.Id, player)
 	err := c.Insert(player)
 	if err != nil {
 		log.Debug("<----- 插入用户信息数据成功 ~ ----->")
