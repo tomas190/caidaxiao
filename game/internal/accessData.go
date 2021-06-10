@@ -1017,6 +1017,10 @@ func HandleHeBaoPay(w http.ResponseWriter, r *http.Request) {
 	if req.Lottery != "HNFFC" && req.Lottery != "PTXFFC" {
 		log.Debug("Lottery不存在 %v %v %v", req.Lottery, req.Lottery != "PTXFFC", "PTXFFC")
 		return
+	} else if req.Lottery == "HNFFC" {
+		selector["room_id"] = "1"
+	} else {
+		selector["room_id"] = "2"
 	}
 
 	if errmax != nil || errmin != nil {
