@@ -291,7 +291,7 @@ func GetPlayerGameData(selector bson.M, limit int, sortBy string) ([]PlayerGameD
 
 	var wts []PlayerGameData
 
-	log.Debug("获取玩家数据条件:%v", selector)
+	// log.Debug("获取玩家数据条件:%v %T", selector)
 	err := c.Find(selector).Sort(sortBy).Limit(limit).All(&wts)
 	if err != nil {
 		log.Debug("获取玩家游戏数据:%v", err)
@@ -580,7 +580,8 @@ func GetUserLimitBet(selector bson.M) ([]GameLimitBet, int, error) {
 func createUniqueIndex(cName string, keys []string) {
 	// DBSession := dbContext.Ref()
 	// defer dbContext.UnRef(DBSession)
-	col := session.DB(dbName).C(cName)
+	s, col := connect(dbName, cName)
+	defer s.Close()
 	// 設定統計表唯一索引
 	index := mgo.Index{
 		Key:        keys,  // 索引鍵
@@ -600,8 +601,9 @@ func createUniqueIndex(cName string, keys []string) {
 func BulkUpdateAll(cmd SearchCMD, pairs []interface{}) {
 	// session := dbContext.Ref()
 	// defer dbContext.UnRef(session)
-
-	bulk := session.DB(cmd.DBName).C(cmd.CName).Bulk()
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	bulk := c.Bulk()
 	bulk.Update(pairs...)
 	_, err := bulk.Run()
 	if err != nil {
@@ -613,8 +615,9 @@ func BulkUpdateAll(cmd SearchCMD, pairs []interface{}) {
 func FindPageItemsByQuery(cmd SearchCMD, result interface{}) bool {
 	// session := dbContext.Ref()
 	// defer dbContext.UnRef(session)
-
-	err := session.DB(cmd.DBName).C(cmd.CName).Find(cmd.Query).Sort(cmd.SortField).Skip(cmd.Skip).Limit(cmd.LenLimit).All(result)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.Find(cmd.Query).Sort(cmd.SortField).Skip(cmd.Skip).Limit(cmd.LenLimit).All(result)
 	if err != nil {
 		log.Debug("%查找 %v", cmd, err.Error())
 		return false

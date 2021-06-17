@@ -135,7 +135,9 @@ func makeServerConfig() *SurPool {
 func FindCountByQuery(cmd SearchCMD) int {
 
 	Printcmd(cmd)
-	count, err := session.DB(cmd.DBName).C(cmd.CName).Find(cmd.Query).Count()
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	count, err := c.Find(cmd.Query).Count()
 	if err != nil {
 		common.Debug_log("%v查找v", cmd, err.Error())
 		return 0
@@ -154,7 +156,7 @@ func SaveServerConfig() { //更新盈餘池表
 	}
 	ok := UpdateItemByID(cmd)
 	if !ok {
-		common.Debug_log("Error : 更新服务器配置数据出错")
+		common.Debug_log("Error : 更新服务器配置数据出错 ID:%v", cmd.ItemID)
 	}
 }
 
@@ -162,8 +164,9 @@ func SaveServerConfig() { //更新盈餘池表
 func RemoveItemsByQuery(cmd SearchCMD) bool {
 	// session := dbContext.Ref()
 	// defer dbContext.UnRef(session)
-
-	_, err := session.DB(cmd.DBName).C(cmd.CName).RemoveAll(cmd.Query)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	_, err := c.RemoveAll(cmd.Query)
 	if err != nil {
 		log.Debug("%v删除%v", cmd, err.Error())
 		return false
@@ -175,7 +178,9 @@ func RemoveItemsByQuery(cmd SearchCMD) bool {
 func AddOneItemRecord(cmd SearchCMD, doc interface{}) bool {
 	// session := dbContext.Ref()
 	// defer dbContext.UnRef(session)
-	err := session.DB(cmd.DBName).C(cmd.CName).Insert(doc)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.Insert(doc)
 	if err != nil {
 		log.Debug("%v插入单条数据 %v", cmd, err.Error())
 		return false
@@ -187,8 +192,9 @@ func AddOneItemRecord(cmd SearchCMD, doc interface{}) bool {
 func UpdateItemByID(cmd SearchCMD) bool {
 	// session := dbContext.Ref()
 	// defer dbContext.UnRef(session)
-
-	err := session.DB(cmd.DBName).C(cmd.CName).UpdateId(cmd.ItemID, cmd.Update)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.UpdateId(cmd.ItemID, cmd.Update)
 	if err != nil {
 		log.Debug("%v更新 %v", cmd, err.Error())
 		return false
@@ -199,8 +205,9 @@ func UpdateItemByID(cmd SearchCMD) bool {
 func FindAllItems(cmd SearchCMD, result interface{}) bool {
 	// session := dbContext.Ref()
 	// defer dbContext.UnRef(session)
-
-	err := session.DB(cmd.DBName).C(cmd.CName).Find(nil).All(result)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.Find(nil).All(result)
 	if err != nil {
 		log.Debug("%v读取所有数据 %v", cmd, err.Error())
 		return false
