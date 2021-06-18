@@ -364,3 +364,16 @@ func AddTurnoverRecord(event string, data common.AmountFlowReq) {
 		common.GetInstance().Login.Go(event, data)
 	}
 }
+
+/*注销掉所有的下注*/
+func (r *Room) unlockUserBetMoney(user *Player) {
+	AddTurnoverRecord("UserUnLockMoney", common.AmountFlowReq{
+		UserID:    user.Id,
+		Money:     user.LockMoney,
+		Order:     bson.NewObjectId().Hex(),
+		Reason:    "流局时解锁资金",
+		RoundID:   r.RoundID,
+		TimeStamp: time.Now().Unix(),
+	})
+	unlockMoney(user)
+}

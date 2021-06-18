@@ -488,6 +488,7 @@ func (r *Room) ResultMoney() {
 		for _, v := range r.PlayerList {
 			if v != nil && v.IsAction == true {
 				// 返回下注金额
+				r.unlockUserBetMoney(v)
 				downBet := float64(v.DownBetMoney.SmallDownBet + v.DownBetMoney.BigDownBet + v.DownBetMoney.LeopardDownBet)
 				v.Account += downBet
 			}

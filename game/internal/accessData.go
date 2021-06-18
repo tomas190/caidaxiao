@@ -948,15 +948,18 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-
+	var changeroom = &Room{}
 	data := &msg.ChangeRoomType_S2C{}
 	for _, v := range hall.roomList {
 		if v != nil {
 			if v.RoomId == "1" {
 				data.Room01 = v.IsOpenRoom
-			}
-			if v.RoomId == "2" {
+			} else if v.RoomId == "2" {
 				data.Room02 = v.IsOpenRoom
+			}
+
+			if v.RoomId == changeRoomID {
+				changeroom = v
 			}
 		}
 	}
@@ -969,6 +972,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 		if ok {
 			if room_id.(string) == changeRoomID && req.IsOpen == "0" && u.IsRobot == false { //此次选择的房间关闭
 				kickUserInRoom(u.Id)
+				changeroom.unlockUserBetMoney(u)
 			}
 		}
 
