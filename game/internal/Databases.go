@@ -106,7 +106,7 @@ func (p *Player) updateInfo(data common.UserInfo, playerInfo interface{}) {
 	playerInfo.(*msg.PlayerInfo).Id = common.Int32ToStr(data.UserID)
 	playerInfo.(*msg.PlayerInfo).NickName = data.UserName
 	playerInfo.(*msg.PlayerInfo).HeadImg = data.UserHead
-	playerInfo.(*msg.PlayerInfo).Account = data.Balance
+	playerInfo.(*msg.PlayerInfo).Account = data.Balance - data.LockBalance
 }
 
 //LoadPlayerCount 获取玩家数量
@@ -619,7 +619,24 @@ func FindPageItemsByQuery(cmd SearchCMD, result interface{}) bool {
 	defer s.Close()
 	err := c.Find(cmd.Query).Sort(cmd.SortField).Skip(cmd.Skip).Limit(cmd.LenLimit).All(result)
 	if err != nil {
-		log.Debug("%查找 %v", cmd, err.Error())
+		log.Debug("%v查找 %v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
+func FindAndUpdateItemByID(cmd SearchCMD, result interface{}) bool {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	change := mgo.Change{
+		Update:    cmd.Update,
+		ReturnNew: true,
+	}
+	_, err := c.FindId(cmd.ItemID).Apply(change, result)
+	if err != nil {
+		log.Debug("%查找并更新 %v", cmd, err.Error())
 		return false
 	}
 	return true

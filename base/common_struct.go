@@ -1,7 +1,5 @@
 package base
 
-import "sync"
-
 type UserInfo struct {
 	UserID      int32
 	UserName    string
@@ -62,5 +60,3 @@ type TurnoverInfo struct {
 	Kind         string
 	Turnoverdata AmountFlowReq
 }
-
-var TurnoverMap sync.Map

@@ -228,10 +228,43 @@ func LoadUserList() {
 func unusualLogout(a gate.Agent, reason string) {
 	userID, ok := userIDFromAgent_.Load(a)
 	if ok {
-		unbindAgentWithUser(userID.(int32))
 		common.Debug_log("用户ID:%d非正常退出游戏,原因:%s", userID, reason)
-		sendLogout(userID.(int32))
 	}
+	p, ok := a.UserData().(*Player)
+
+	if ok {
+		log.Debug("<-------------%v 主动断开链接--------------->", p.Id)
+		if p.IsAction == true { //有下注不能登出中心服等待結算後登出
+			var exist bool
+			rid, _ := hall.UserRoom.Load(p.Id)
+			v, _ := hall.RoomRecord.Load(rid)
+			if v != nil {
+				room := v.(*Room)
+				for _, v := range room.UserLeave {
+					if v == p.Id {
+						exist = true
+					}
+				}
+				if exist == false {
+					log.Debug("添加离线玩家UserLeave:%v", p.Id)
+					room.UserLeave = append(room.UserLeave, p.Id)
+				}
+				p.IsOnline = false
+				leaveHall := &msg.Logout_S2C{}
+				// a.WriteMsg(leaveHall)
+				p.SendMsg(leaveHall, "Logout_S2C")
+			}
+		} else {
+			hall.UserRecord.Delete(p.Id)
+			p.PlayerExitRoom()
+			leaveHall := &msg.Logout_S2C{}
+			p.SendMsg(leaveHall, "Logout_S2C")
+			unbindAgentWithUser(p.Id)
+			sendLogout(p.Id)
+			a.Close()
+		}
+	}
+
 }
 
 // 清除線上玩家map中的資料

@@ -8,6 +8,7 @@ import (
 
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func init() {
@@ -21,6 +22,10 @@ func init() {
 	// 玩家登入登出子遊戲
 	skeleton.RegisterChanRPC("UserLogin", playerEnterGame)
 	skeleton.RegisterChanRPC("UserLogout", playerExitGame)
+
+	// 用戶輸贏錢
+	skeleton.RegisterChanRPC("WinMoney", respondWinMoney)
+	skeleton.RegisterChanRPC("LoseMoney", respondLoseMoney)
 }
 
 func rpcNewAgent(args []interface{}) {
@@ -88,7 +93,7 @@ func playerEnterGame(args []interface{}) {
 	u.HeadImg = cInfo.UserHead
 	u.NickName = cInfo.UserName
 	u.PackageId = cInfo.PackageID
-	u.Account = cInfo.Balance
+	u.Account = cInfo.Balance - cInfo.LockBalance
 
 	log.Debug("玩家正常登陆:%v", u.Id)
 	login := &msg.Login_S2C{}
@@ -180,4 +185,70 @@ func respondStart(args []interface{}) {
 		mapTaxPercent[v.PackageID] = float64(v.TaxPercent) * math.Pow10(-2)
 	}
 	common.Debug_log("respondStart=%+v", mapTaxPercent)
+}
+
+func respondWinMoney(args []interface{}) {
+	// common.Debug_log("gameModule respondWinMoney")
+	data := args[0].(common.AmountFlowRes)
+	record := UpdateTurnoverRecord(data)
+	if record == nil {
+		return
+	}
+
+	client, ok := AgentFromuserID_.Load(data.UserID)
+	if !ok {
+		common.Debug_log("加钱,用户%d不存在\n", data.UserID)
+		return
+	}
+	a := client.(*ClientInfo).agent
+	p, ok := a.UserData().(*Player)
+	p.updateBalance(data)
+
+}
+
+func respondLoseMoney(args []interface{}) {
+	// common.Debug_log("gameModule respondLoseMoney")
+	data := args[0].(common.AmountFlowRes)
+	record := UpdateTurnoverRecord(data)
+	if record == nil {
+		return
+	}
+	client, ok := AgentFromuserID_.Load(data.UserID)
+	if !ok {
+		common.Debug_log("扣钱,用户%d不存在\n", data.UserID)
+		return
+	}
+	a := client.(*ClientInfo).agent
+	p, ok := a.UserData().(*Player)
+	p.updateBalance(data)
+
+}
+
+// UpdateTurnoverRecord 更新流水记录
+func UpdateTurnoverRecord(data common.AmountFlowRes) *TurnoverRecord {
+	cmd := SearchCMD{
+		DBName: dbName,
+		CName:  "TURNOVER", //DateFromTimeStamp(data.TimeStamp),
+		ItemID: bson.ObjectIdHex(data.Order),
+		Update: bson.M{"$set": bson.M{
+			"tax":         data.Tax,
+			"valid":       true,
+			"balance":     data.Balance,
+			"lockBalance": data.LockBalance,
+		}},
+	}
+	record := &TurnoverRecord{}
+	ok := FindAndUpdateItemByID(cmd, record)
+	if ok {
+		return record
+	}
+	return nil
+}
+
+// 更新用戶餘額
+func (user *Player) updateBalance(data common.AmountFlowRes) {
+	// common.Debug_log("gameModule *BaseUser updateBalance")
+	common.Debug_log("玩家:%v 餘額更新為:%v 鎖定金額更新為:%v", user.Id, data.Balance-data.LockBalance, data.LockBalance)
+	user.Account = data.Balance - data.LockBalance
+	user.LockMoney = data.LockBalance
 }

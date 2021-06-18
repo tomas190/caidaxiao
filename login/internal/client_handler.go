@@ -229,13 +229,6 @@ func CS2C_WinSettlement(data ResponseData) {
 		return
 	}
 
-	_, ok := common.TurnoverMap.Load(info.Order)
-	if !ok { // 已结算
-		common.Debug_log("赢钱已结算过")
-		return
-	}
-	defer common.TurnoverMap.Delete(info.Order)
-
 	// fmt.Printf("请求增加用户资金的返回数据=%+v", info)
 	offsetMoney := info.Money - info.Tax
 	common.GetInstance().Game.Go("WinMoney", common.AmountFlowRes{
@@ -265,13 +258,6 @@ func CS2C_LoseSettlement(data ResponseData) {
 	if info == nil {
 		return
 	}
-
-	_, ok := common.TurnoverMap.Load(info.Order)
-	if !ok { // 已结算
-		common.Debug_log("输钱已结算过")
-		return
-	}
-	defer common.TurnoverMap.Delete(info.Order)
 
 	// fmt.Printf("请求扣除用户资金的返回数据=%+v", info)
 	common.GetInstance().Game.Go("LoseMoney", common.AmountFlowRes{
