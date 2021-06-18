@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -78,11 +79,13 @@ type Room struct {
 	bankerList    map[string]int32 // 抢庄列表
 	IsConBanker   bool             // 是否继续连庄
 
-	resultTime       string             // 结算时间
-	Lottery          []int              // 开奖数据
-	LotteryResult    msg.PotWinList     // 开奖结果
-	PeriodsNum       string             // 开奖期数
-	ResultNum        string             // 期数
+	resultTime    string         // 结算时间
+	Lottery       []int          // 开奖数据
+	LotteryResult msg.PotWinList // 开奖结果
+	PeriodsNum    string         // 开奖期数
+	ResultNum     string         // 期数
+	RoundID       string
+
 	PeriodsTime      string             // 开奖时间
 	GameStat         msg.GameStep       // 游戏状态
 	PotMoneyCount    msg.DownBetMoney   // 注池下注总金额(用于客户端显示)
@@ -136,13 +139,13 @@ func (r *Room) Init() {
 }
 
 //BroadCastExcept 向当前玩家之外的玩家广播
-func (r *Room) BroadCastExcept(msg interface{}, p *Player) {
-	for _, v := range r.PlayerList {
-		if v != nil && v.Id != p.Id {
-			v.SendMsg(msg, "沒在用")
-		}
-	}
-}
+// func (r *Room) BroadCastExcept(msg interface{}, p *Player) {
+// 	for _, v := range r.PlayerList {
+// 		if v != nil && v.Id != p.Id {
+// 			v.SendMsg(msg, "沒在用")
+// 		}
+// 	}
+// }
 
 //BroadCastMsg 进行广播消息
 func (r *Room) BroadCastMsg(msg interface{}, event string) {
@@ -221,6 +224,37 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	// 	rd.PotWinList = append(rd.PotWinList, pot)
 	// }
 	rd.HistoryData = r.HistoryData
+	// if len(rd.PotWinList) != 0 && len(rd.HistoryData) != 0 && len(rd.ResultInt) != 0 {
+	// 	var num = 0
+	// 	for i := 0; i < 5; i++ {
+	// 		if rd.HistoryData[0].ResNum[i] == rd.ResultInt[i] {
+	// 			num++
+	// 		}
+	// 	}
+	// 	if num == 5 {
+	// 		common.Debug_log("room:%v \n左上 rd.HistoryData：%v \n中間 rd.ResultInt：%v \n第六 rd.PotWinList：%v", r.RoomId, rd.HistoryData[0].ResNum, rd.ResultInt, rd.PotWinList[0].ResultNum)
+	// 	} else {
+	// 		var wireteString = fmt.Sprintln("room:", r.RoomId, " \n左上 rd.HistoryData：", rd.HistoryData[0].ResNum, " \n中間 rd.ResultInt：", rd.ResultInt, " \n不一樣!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	// 		var filename = "./errorlottery.txt"
+	// 		var f *os.File
+	// 		var err1 error
+	// 		if checkFileIsExist(filename) {
+	// 			//如果檔案存在
+	// 			f, err1 = os.OpenFile(filename, os.O_APPEND, 0666) //開啟檔案
+	// 			fmt.Println("檔案存在")
+	// 		} else {
+	// 			f, err1 = os.Create(filename) //建立檔案
+	// 			fmt.Println("檔案不存在")
+	// 		}
+	// 		defer f.Close()
+	// 		n, err1 := io.WriteString(f, wireteString) //寫入檔案(字串)
+	// 		if err1 != nil {
+	// 			panic(err1)
+	// 		}
+	// 		fmt.Printf("寫入 %d 個位元組n", n)
+	// 	}
+	// }
+
 	// for _, v := range r.HistoryData {
 	// 	his := &msg.HistoryData{}
 	// 	his.TimeFmt = v.TimeFmt
@@ -1016,4 +1050,11 @@ func (r *Room) DeleteUserRoom(p *Player) {
 	r.userRoomMutex.Lock()
 	defer r.userRoomMutex.Unlock()
 	hall.UserRoom.Delete(p.Id)
+}
+
+func checkFileIsExist(filename string) bool {
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }

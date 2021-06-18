@@ -4,6 +4,7 @@ import (
 	common "caidaxiao/base"
 	"caidaxiao/msg"
 	"sync"
+	"time"
 
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
@@ -79,10 +80,9 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			return
 		}
 
-		// TODO Switch//
 		// 当下玩家下注限红设定
 		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
-		log.Debug("玩家最大限注:%v", p.MaxBet)
+		log.Debug("玩家:%v 下注金額:%v 下注類型:%v 最大限注:%v", p.Id, m.DownBet, m.DownPot, p.MaxBet)
 		if p.MinBet > 0 || p.MaxBet > 0 {
 			if m.DownBet < p.MinBet || totalBet+m.DownBet > p.MaxBet {
 				data := &msg.ErrorMsg_S2C{}
@@ -148,7 +148,9 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 			p.Account -= float64(m.DownBet)
 			p.TotalDownBet += m.DownBet
-
+			if p.IsRobot == false {
+				lockMoney(p, float64(m.DownBet), room.RoundID)
+			}
 			// 返回玩家行动数据
 			action := &msg.PlayerAction_S2C{}
 			action.Id = common.Int32ToStr(p.Id)
@@ -304,4 +306,61 @@ func LogoutAllUsers() {
 		sendLogout(userID)
 		return true
 	})
+}
+
+// 锁定金额
+func lockMoney(user *Player, moneyLock float64, round_id string) {
+	user.LockMoney += moneyLock
+	AddTurnoverRecord("UserLockMoney", common.AmountFlowReq{
+		UserID:    user.Id,
+		Money:     moneyLock,
+		RoundID:   round_id,
+		Order:     bson.NewObjectId().Hex(),
+		Reason:    "锁定用户投注的钱",
+		TimeStamp: time.Now().Unix(),
+	})
+}
+
+// 解锁全部金额
+func unlockMoney(user *Player) float64 {
+	user.LockMoney = 0
+	return user.Account
+}
+
+//TurnoverRecord 流水记录
+type TurnoverRecord struct {
+	ID           bson.ObjectId `bson:"_id"`          //与中心服务器通信中的order字段
+	UserID       int32         `bson:"userID"`       //用户ID
+	MoneyChanged float64       `bson:"moneyChanged"` //资金变化
+	Balance      float64       `bson:"balance"`      //用户余额
+	BetMoney     float64       `bson:"betMoney"`     //用户余额
+	LockBalance  float64       `bson:"lockBalance"`  //锁定金额
+	Tax          float64       `bson:"tax"`          //扣税金额
+	Reason       string        `bson:"reason"`       //流水产生原因
+	TimeStamp    int64         `bson:"timestamp"`    //流水产生时间
+	PackID       string        `bson:"packID"`       //流水产生时间
+	Valid        bool          `bson:"valid"`        //是否有效
+	Date         string        `bson:"date"`
+}
+
+// AddTurnoverRecord 增加一条流水记录
+func AddTurnoverRecord(event string, data common.AmountFlowReq) {
+	cmd := SearchCMD{
+		DBName: dbName,
+		CName:  "TURNOVER", // DateFromTimeStamp(data.TimeStamp),
+	}
+	record := &TurnoverRecord{
+		ID:           bson.ObjectIdHex(data.Order),
+		Date:         common.DateFromTimeStamp(data.TimeStamp),
+		UserID:       data.UserID,
+		MoneyChanged: data.Money,
+		BetMoney:     data.BetMoney,
+		Reason:       data.Reason,
+		TimeStamp:    data.TimeStamp,
+		PackID:       data.RoundID,
+	}
+	ok := AddOneItemRecord(cmd, record)
+	if ok {
+		common.GetInstance().Login.Go(event, data)
+	}
 }

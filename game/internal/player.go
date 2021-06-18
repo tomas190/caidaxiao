@@ -26,6 +26,7 @@ type Player struct {
 	ResultMoney     float64               // 结算金额
 	WinResultMoney  float64               // 本局赢钱金额
 	LoseResultMoney float64               // 本局输钱金额
+	LockMoney       float64               // 运行中使用，不需要存入数据库 (下注被鎖定的錢)
 	TotalDownBet    int32                 // 房间下注总金额
 	WinTotalCount   int32                 // 玩家房间获胜Win总次数
 	TwentyData      []int32               // 20局Win数据,1Lose,2Win
@@ -66,8 +67,8 @@ func (p *Player) Init() {
 func (p *Player) SendMsg(msg interface{}, event string) {
 
 	if p.IsRobot != true {
-		// if  event != "SendActTime_S2C" && event != "PlayerAction_S2C" && event != "PotChangeMoney_S2C" && event != "JoinRoom_S2C" && event != "ActionTime_S2C" && event != "ResultData_S2C" { //過濾:1.反回遊戲時間(表演) 2.玩家、機器人下注(表演) 3.更新注池金额 4.加入房間 5.結算資料
-		// 	log.Debug("Send To Client playerID: %v Event:%v Message : %v", p.Id, event, msg)
+		// if event != "PlayerAction_S2C" && event != "PotChangeMoney_S2C" && event != "JoinRoom_S2C" && event != "ResultData_S2C" { //過濾:1.反回遊戲時間(表演) 2.玩家、機器人下注(表演) 3.更新注池金额 4.加入房間 5.結算資料
+		// 	common.Debug_log("Send To Client playerID: %v Event:%v Message : %v", p.Id, event, msg)
 		// }
 		client, ok := AgentFromuserID_.Load(p.Id)
 		if !ok {

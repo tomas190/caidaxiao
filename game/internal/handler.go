@@ -338,7 +338,7 @@ func handlePlayerAction(args []interface{}) {
 
 	p, ok := a.UserData().(*Player)
 	if ok {
-		log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
+		// log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
 		p.PlayerAction(m)
 	}
 }

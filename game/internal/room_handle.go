@@ -63,6 +63,53 @@ func (r *Room) JoinGameRoom(p *Player) {
 
 }
 
+// 計算房間剩餘時間(每個階段還有多少時間)
+func (r *Room) RoomCounter() int32 {
+	var GameTime int
+	switch r.GameStat {
+
+	case msg.GameStep_GetRes: // 5~18 (14s)
+		GameTime = GetResStep + GetResTime - time.Now().Second()
+
+	case msg.GameStep_Settle, msg.GameStep_LiuJu: //19~24(6)
+		GameTime = SettleStep + SettleTime - time.Now().Second()
+
+	case msg.GameStep_DownBet: //25~44(20s)
+		GameTime = DownBetStep + DownBetTime - time.Now().Second()
+
+	case msg.GameStep_Close: // 45~59,00~04 (20s)
+		if time.Now().Second() < 5 {
+			GameTime = time.Now().Second()
+		} else if time.Now().Second() < 60 {
+			GameTime = CloseStep + CloseTime + 5 - time.Now().Second()
+		}
+
+	default:
+		break
+
+	}
+
+	// if r.GameStat == msg.GameStep_DownBet {
+	// GameTime = DownBetTime - r.counter
+	// } else if r.GameStat == msg.GameStep_Close {
+	// GameTime = CloseTime - r.counter
+	// } else if r.GameStat == msg.GameStep_GetRes {
+	// GameTime = GetResTime - r.counter
+	// } else if r.GameStat == msg.GameStep_Settle {
+	// GameTime = SettleTime - r.counter
+	// } else if r.GameStat == msg.GameStep_LiuJu {
+	// GameTime = SettleTime - r.counter
+	// }
+	return int32(GameTime)
+}
+
+/*
+遊戲階段(每分鐘)
+取號階段5(14s)
+結算階段19(6s)
+下注阶段25(20s)
+封單階段45(20s)
+*/
 func (r *Room) GetRoomType() {
 	t := time.NewTicker(time.Second)
 	go func() {
@@ -115,7 +162,7 @@ func (r *Room) GetRoomType() {
 func (r *Room) DownBetTimerTask() {
 
 	r.GameStat = msg.GameStep_DownBet
-
+	r.RoundID = r.RoomId + bson.NewObjectId().Hex()
 	// 更新玩家列表
 	r.UpdatePlayerList()
 
@@ -165,7 +212,7 @@ func (r *Room) DownBetTimerTask() {
 	}()
 }
 
-// HandleCloseOver
+// 封单HandleCloseOver
 func (r *Room) HandleCloseOver() {
 
 	r.GameStat = msg.GameStep_Close
@@ -193,8 +240,9 @@ func (r *Room) HandleCloseOver() {
 	r.SetPlayerDownBet()
 
 	// 定时
-	t := time.NewTicker(time.Second)
+
 	go func() {
+		t := time.NewTicker(time.Second)
 		for range t.C {
 			r.counter++
 			//log.Debug("封单时间:%v", r.counter)
@@ -212,6 +260,7 @@ func (r *Room) HandleCloseOver() {
 	}()
 }
 
+//取奖号时间
 func (r *Room) HandleGetRes() {
 
 	r.GameStat = msg.GameStep_GetRes
@@ -406,8 +455,8 @@ func (r *Room) CompareSettlement() {
 	send.GameStep = msg.GameStep_Settle
 	r.BroadCastMsg(send, "SendActTime_S2C")
 
-	t := time.NewTicker(time.Second)
 	go func() {
+		t := time.NewTicker(time.Second)
 		for range t.C {
 			r.counter++
 			//log.Debug("结算时间:%v", r.counter)
@@ -495,7 +544,16 @@ func (r *Room) ResultMoney() {
 
 				nowTime := time.Now().Unix() //todo
 				v.RoundId = fmt.Sprintf("%+v-%+v", time.Now().Unix(), r.RoomId)
-
+				if v.IsRobot == false {
+					AddTurnoverRecord("UserUnLockMoney", common.AmountFlowReq{
+						UserID:    v.Id,
+						Money:     v.LockMoney,
+						RoundID:   r.RoundID,
+						Order:     bson.NewObjectId().Hex(),
+						Reason:    "撤回投注解锁资金",
+						TimeStamp: time.Now().Unix(),
+					})
+				}
 				if us.uWinSum > 0 {
 					v.WinResultMoney = us.uWinSum
 
@@ -504,13 +562,14 @@ func (r *Room) ResultMoney() {
 						reason := "彩源猜大小赢钱" //todo
 						//同时同步赢分和输分
 						// c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, us.uBetWin)
-						common.GetInstance().Login.Go("UserWinMoney", common.AmountFlowReq{
+
+						AddTurnoverRecord("UserWinMoney", common.AmountFlowReq{
 							UserID:     v.Id,
 							UserName:   v.NickName,
 							Money:      v.WinResultMoney, //本局盈虧(未扣稅)
 							RoomNumber: r.RoomId,
 							BetMoney:   us.uBetWin,
-							RoundID:    v.RoundId,
+							RoundID:    r.RoundID,
 							Order:      bson.NewObjectId().Hex(),
 							Reason:     reason,
 							TimeStamp:  nowTime,
@@ -528,13 +587,13 @@ func (r *Room) ResultMoney() {
 
 						if v.LoseResultMoney != 0 {
 							// c4c.UserSyncLoseScore(v, nowTime, v.RoundId, reason, us.uBetLoss)
-							common.GetInstance().Login.Go("UserLoseMoney", common.AmountFlowReq{
+							AddTurnoverRecord("UserLoseMoney", common.AmountFlowReq{
 								UserID:     v.Id,
 								UserName:   v.NickName,
 								RoomNumber: r.RoomId,
 								Money:      v.LoseResultMoney,
 								BetMoney:   us.uBetLoss,
-								RoundID:    v.RoundId,
+								RoundID:    r.RoundID,
 								Order:      bson.NewObjectId().Hex(),
 								Reason:     reason,
 								TimeStamp:  nowTime,
@@ -579,7 +638,7 @@ func (r *Room) ResultMoney() {
 					}
 				}
 				v.WinTotalCount = count
-
+				unlockMoney(v)
 				if (v.WinResultMoney != 0 || v.LoseResultMoney != 0) && v.IsRobot == false { //todo
 					log.Debug("玩家:%v,贏分下注:%v 輸分下注:%v 玩家獲利:%v \n 玩家输赢:%v,玩家金额:%v", v.Id, us.uBetWin, us.uBetLoss, us.uWinSum, v.ResultMoney, v.Account)
 					// 插入盈余池数据
@@ -589,7 +648,7 @@ func (r *Room) ResultMoney() {
 					data := &PlayerDownBetRecode{}
 					data.Id = common.Int32ToStr(v.Id)
 					data.GameId = conf.Server.GameID
-					data.RoundId = v.RoundId
+					data.RoundId = r.RoundID
 					data.RoomId = r.RoomId
 					data.DownBetInfo = v.DownBetMoney
 					// data.DownBetInfo = new(msg.DownBetMoney)
