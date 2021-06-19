@@ -25,7 +25,9 @@ func (r *Room) JoinGameRoom(p *Player) {
 	r.SetUserRoom(p)
 
 	// 将用户添加到用户列表
-	r.PlayerList = append(r.PlayerList, p)
+	if PlayerExists(r.PlayerList, p) {
+		r.PlayerList = append(r.PlayerList, p)
+	}
 
 	// 只要不小于两人,就属于游戏状态
 	p.Status = msg.PlayerStatus_PlayGame
@@ -111,8 +113,9 @@ func (r *Room) RoomCounter() int32 {
 封單階段45(20s)
 */
 func (r *Room) GetRoomType() {
-	t := time.NewTicker(time.Second)
+
 	go func() {
+		t := time.NewTicker(time.Second)
 		for {
 			// log.Debug("时间:%v", time.Now().Second())
 			//log.Debug("go数量:%v", runtime.NumGoroutine())
@@ -177,7 +180,6 @@ func (r *Room) DownBetTimerTask() {
 	data := &msg.ActionTime_S2C{}
 	data.GameStep = msg.GameStep_DownBet
 	data.RoomData = r.RespRoomData()
-
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -234,7 +236,7 @@ func (r *Room) HandleCloseOver() {
 
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
-	r.BroadCastMsg(send, "SendActTime_S2C")
+	r.BroadCastMsg(send, "SendActTime_S2C-1")
 
 	// 获取派奖前的玩家投注数据
 	r.SetPlayerDownBet()
@@ -251,8 +253,8 @@ func (r *Room) HandleCloseOver() {
 			send.StartTime = r.counter
 			send.GameTime = CloseTime
 			send.GameStep = msg.GameStep_Close
-			r.BroadCastMsg(send, "SendActTime_S2C")
-			if r.GameStat == msg.GameStep_GetRes {
+			r.BroadCastMsg(send, "SendActTime_S2C-2")
+			if r.GameStat == msg.GameStep_GetRes { // 6
 				r.counter = 0
 				return
 			}
@@ -279,13 +281,13 @@ func (r *Room) HandleGetRes() {
 
 	// 发送时间
 	send := &msg.SendActTime_S2C{}
-	send.StartTime = r.counter
+	send.StartTime = r.counter // 0
 	send.GameTime = GetResTime
 	send.GameStep = msg.GameStep_GetRes
 
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
-	r.BroadCastMsg(send, "SendActTime_S2C")
+	r.BroadCastMsg(send, "SendActTime_S2C-3")
 
 	// sur = &SurplusPoolDB{}
 	// sur.UpdateTime = time.Now()
@@ -310,7 +312,7 @@ func (r *Room) HandleGetRes() {
 			send.StartTime = r.counter
 			send.GameTime = GetResTime
 			send.GameStep = msg.GameStep_GetRes
-			r.BroadCastMsg(send, "SendActTime_S2C")
+			r.BroadCastMsg(send, "SendActTime_S2C-4")
 			if r.GameStat == msg.GameStep_Settle || r.GameStat == msg.GameStep_LiuJu {
 				r.counter = 0
 				return
@@ -384,10 +386,10 @@ func (r *Room) HandleLiuJu() {
 
 	// 发送时间
 	send := &msg.SendActTime_S2C{}
-	send.StartTime = r.counter
+	send.StartTime = r.counter //0
 	send.GameTime = SettleTime
 	send.GameStep = msg.GameStep_LiuJu
-	r.BroadCastMsg(send, "SendActTime_S2C")
+	r.BroadCastMsg(send, "SendActTime_S2C-5")
 
 	t := time.NewTicker(time.Second)
 	go func() {
@@ -399,9 +401,9 @@ func (r *Room) HandleLiuJu() {
 			send.StartTime = r.counter
 			send.GameTime = SettleTime
 			send.GameStep = msg.GameStep_LiuJu
-			r.BroadCastMsg(send, "SendActTime_S2C")
+			r.BroadCastMsg(send, "SendActTime_S2C-6")
 
-			if r.GameStat == msg.GameStep_DownBet {
+			if r.GameStat == msg.GameStep_DownBet { //3
 				r.counter = 0
 				return
 			}
@@ -450,10 +452,10 @@ func (r *Room) CompareSettlement() {
 
 	// 发送时间
 	send := &msg.SendActTime_S2C{}
-	send.StartTime = r.counter
+	send.StartTime = r.counter //0
 	send.GameTime = SettleTime
 	send.GameStep = msg.GameStep_Settle
-	r.BroadCastMsg(send, "SendActTime_S2C")
+	r.BroadCastMsg(send, "SendActTime_S2C-7")
 
 	go func() {
 		t := time.NewTicker(time.Second)
@@ -465,8 +467,8 @@ func (r *Room) CompareSettlement() {
 			send.StartTime = r.counter
 			send.GameTime = SettleTime
 			send.GameStep = msg.GameStep_Settle
-			r.BroadCastMsg(send, "SendActTime_S2C")
-			if r.GameStat == msg.GameStep_DownBet {
+			r.BroadCastMsg(send, "SendActTime_S2C-8")
+			if r.GameStat == msg.GameStep_DownBet { //3秒
 				r.counter = 0
 				return
 			}
@@ -831,4 +833,14 @@ func getTaxPercent(packageID int) float64 {
 	}
 	// common.Debug_log("存在对应ID(%d)的Tax：%.2f", packageID, t)
 	return t
+}
+
+// 避免玩家切後台重覆加入列表
+func PlayerExists(PlayerList []*Player, Player *Player) bool {
+	for _, v := range PlayerList {
+		if v.Id == Player.Id {
+			return false
+		}
+	}
+	return true
 }

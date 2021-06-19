@@ -62,8 +62,7 @@ const (
 )
 
 var (
-	packageTax map[uint16]float64
-
+	packageTax  map[uint16]float64
 	keyReqPrize sync.Mutex //取號鎖
 )
 
@@ -79,13 +78,12 @@ type Room struct {
 	bankerList    map[string]int32 // 抢庄列表
 	IsConBanker   bool             // 是否继续连庄
 
-	resultTime    string         // 结算时间
-	Lottery       []int          // 开奖数据
-	LotteryResult msg.PotWinList // 开奖结果
-	PeriodsNum    string         // 开奖期数
-	ResultNum     string         // 期数
-	RoundID       string
-
+	resultTime       string         // 结算时间
+	Lottery          []int          // 开奖数据
+	LotteryResult    msg.PotWinList // 开奖结果
+	PeriodsNum       string         // 开奖期数
+	ResultNum        string         // 期数
+	RoundID          string
 	PeriodsTime      string             // 开奖时间
 	GameStat         msg.GameStep       // 游戏状态
 	PotMoneyCount    msg.DownBetMoney   // 注池下注总金额(用于客户端显示)
@@ -150,7 +148,7 @@ func (r *Room) Init() {
 //BroadCastMsg 进行广播消息
 func (r *Room) BroadCastMsg(msg interface{}, event string) {
 	for _, v := range r.PlayerList {
-		if v != nil {
+		if v != nil && v.IsRobot == false {
 			v.SendMsg(msg, event)
 		}
 	}

@@ -88,21 +88,16 @@ func playerEnterGame(args []interface{}) {
 		return
 	}
 	//从中心服务器获取到的用户信息
-	u := &Player{}
-	u.Id = cInfo.UserID
-	u.HeadImg = cInfo.UserHead
-	u.NickName = cInfo.UserName
-	u.PackageId = cInfo.PackageID
-	u.Account = cInfo.Balance - cInfo.LockBalance
 
-	log.Debug("玩家正常登陆:%v", u.Id)
+	log.Debug("玩家正常登陆:%v", cInfo.UserID)
 	login := &msg.Login_S2C{}
 	login.PlayerInfo = new(msg.PlayerInfo)
-	login.PlayerInfo.Id = common.Int32ToStr(u.Id)
-	login.PlayerInfo.NickName = u.NickName
-	login.PlayerInfo.HeadImg = u.HeadImg
-	login.PlayerInfo.Account = u.Account
+	login.PlayerInfo.Id = common.Int32ToStr(cInfo.UserID)
+	login.PlayerInfo.NickName = cInfo.UserName
+	login.PlayerInfo.HeadImg = cInfo.UserHead
+	login.PlayerInfo.Account = cInfo.Balance - cInfo.LockBalance
 
+	u := &Player{}
 	for _, v := range hall.roomList {
 		if v != nil {
 			if v.RoomId == "1" {
@@ -112,11 +107,23 @@ func playerEnterGame(args []interface{}) {
 				login.PlayerNumR2 = v.PlayerLength()
 				login.Room02 = v.IsOpenRoom
 			}
+			for _, v := range v.PlayerList {
+				if v.Id == cInfo.UserID {
+					u = v
+				}
+			}
 		}
 	}
 	log.Debug("Room01:%v,Room02:%v", login.Room01, login.Room02)
 
-	u.Init()
+	if u.Id != cInfo.UserID {
+		u.Id = cInfo.UserID
+		u.HeadImg = cInfo.UserHead
+		u.NickName = cInfo.UserName
+		u.PackageId = cInfo.PackageID
+		u.Account = cInfo.Balance - cInfo.LockBalance
+		u.Init()
+	}
 
 	//游戏数据库中缓存的用户数据
 	// lInfo, ok := allUser[cInfo.UserID]
