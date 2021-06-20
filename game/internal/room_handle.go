@@ -513,7 +513,7 @@ func (r *Room) ResultMoney() {
 					// 中豹子 大.小下注額退一半給玩家
 					refund := float64(v.DownBetMoney.SmallDownBet+v.DownBetMoney.BigDownBet) / 2
 					v.Account += refund
-					us.uBetLoss -= float64(v.DownBetMoney.LeopardDownBet) - refund
+					us.uBetLoss -= float64(v.DownBetMoney.LeopardDownBet) + refund
 					us.uBetWin += float64(v.DownBetMoney.LeopardDownBet)
 					us.uWinSum += float64(v.DownBetMoney.LeopardDownBet * WinLeopard)
 
