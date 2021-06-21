@@ -54,7 +54,7 @@ func handleLogin(args []interface{}) {
 	common.Debug_log("gameModule protobuf userLogin 用户登陆 UserID:%v(%T) UserPW:%v(%T) UserToken:%v(%T)", m.GetId(), m.GetId(), m.GetPassWord(), m.GetPassWord(), m.GetToken(), m.GetToken())
 
 	//检查用户是否已登陆
-	userID := common.Str2int32(m.GetId())
+	userID, _ := common.Str2int32(m.GetId())
 
 	// if userID == "77777777" { //壓測robot測試
 	// 	// common.Debug_log("機器人登陆")

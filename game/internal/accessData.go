@@ -192,6 +192,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/kickUser", kickUser)
 	// 退资金
 	http.HandleFunc("/api/logoutUser", logoutUser)
+	// 解鎖资金
+	http.HandleFunc("/api/unLockUserMoney", unLockUserMoney)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -1255,9 +1257,14 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 	minBet, _ := strconv.Atoi(req.MinBet)
 	maxBet, _ := strconv.Atoi(req.MaxBet)
 
+	uidNum, errU := common.Str2int32(req.UserId)
+	if errU != nil {
+		return
+	}
+
 	hall.UserRecord.Range(func(key, value interface{}) bool {
 		u := value.(*Player)
-		if u.Id == common.Str2int32(req.UserId) {
+		if u.Id == uidNum {
 			log.Debug("玩家id:%v,限制:%v,%v", u.Id, minBet, maxBet)
 			u.MinBet = int32(minBet)
 			u.MaxBet = int32(maxBet)
@@ -1377,6 +1384,52 @@ func logoutUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		sendLogout(int32(uidNum))
 	}
+
+	b4, err := json.Marshal(m1)
+	if err != nil {
+		common.Debug_log("%v\n", err)
+	}
+	//bridge.LogC("S->C = %v", dt.Data)
+	_, errW := fmt.Fprintf(w, "%+v", string(b4))
+	if errW != nil {
+		common.Debug_log("unlockUserMoneyUnexpected 返回错误 %v", errW)
+	}
+
+}
+
+func unLockUserMoney(w http.ResponseWriter, r *http.Request) {
+
+	m1 := make(map[string]interface{})
+	m1["msg"] = "succeed"
+
+	uid := r.FormValue("id")
+	GameId := r.FormValue("game_id")
+	unlockmoney := r.FormValue("money")
+
+	uidNum, errU := common.Str2int32(uid)
+	if errU != nil {
+		m1["msg"] = "非法用户ID"
+	}
+
+	if GameId == "" || GameId != conf.Server.GameID { //檢測game_id
+		log.Debug("game_id 有誤")
+		return
+	}
+
+	unlockMoney, errU := strconv.Atoi(unlockmoney)
+	if errU != nil {
+		m1["msg"] = "非法用户ID"
+	}
+
+	AddTurnoverRecord("UserUnLockMoney", common.AmountFlowReq{
+		UserID:    int32(uidNum),
+		Money:     float64(unlockMoney),
+		RoundID:   bson.NewObjectId().Hex(),
+		Order:     bson.NewObjectId().Hex(),
+		Reason:    "接口手動撤回投注解锁资金",
+		TimeStamp: time.Now().Unix(),
+	})
+	m1["msg"] = uid + " unlockmoney " + unlockmoney + " succeed."
 
 	b4, err := json.Marshal(m1)
 	if err != nil {

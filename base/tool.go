@@ -194,12 +194,12 @@ func Str2Int(str string) int {
 	return num
 }
 
-func Str2int32(str string) int32 {
+func Str2int32(str string) (int32, error) {
 	num, err := strconv.ParseInt(str, 10, 32) //轉完可能變int64
 	if err != nil {
 		Debug_log("轉int32出錯")
 	}
-	return int32(num)
+	return int32(num), err
 }
 
 ///////HTTP 請求///////

@@ -29,7 +29,7 @@ func (rc *RobotsCenter) CreateRobot() *Player {
 
 	r.IsRobot = true
 	//生成随机ID
-	r.Id = common.Str2int32(RandomID())
+	r.Id, _ = common.Str2int32(RandomID())
 	//生成随机头像IMG
 	r.HeadImg = RandomIMG()
 	//生成随机机器人NickName

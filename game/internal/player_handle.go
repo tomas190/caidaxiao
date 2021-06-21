@@ -213,7 +213,8 @@ func LoadUserList() {
 	}
 	for _, user := range users {
 		// allUser[user.UserID] = user
-		allUser_.Store(common.Str2int32(user.Id), user)
+		uid, _ := common.Str2int32(user.Id)
+		allUser_.Store(uid, user)
 	}
 	// serverData.SumUser = float64(len(allUser))
 	allUserlength := 0
@@ -335,7 +336,7 @@ func SaveAllUserInfo() {
 // LogoutAllUsers 在服务器关闭时登出所有用户登出全部房间用户
 func LogoutAllUsers() {
 	allUser_.Range(func(_, v interface{}) bool {
-		userID := common.Str2int32(v.(*msg.PlayerInfo).Id)
+		userID, _ := common.Str2int32(v.(*msg.PlayerInfo).Id)
 		sendLogout(userID)
 		return true
 	})
