@@ -155,7 +155,7 @@ type GameLimitBet struct {
 const (
 	SuccCode    = 0
 	ErrCode     = -1
-	versionCode = "1.0.3"
+	versionCode = "1.0.4"
 )
 
 // HTTP端口监听
@@ -729,31 +729,31 @@ func uptSurplusOne(w http.ResponseWriter, r *http.Request) {
 }
 
 func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
-	Id := r.FormValue("id")
-	log.Debug("reqPlayerLeave 踢出玩家:%v", Id)
-	rid, _ := hall.UserRoom.Load(Id)
-	v, _ := hall.RoomRecord.Load(rid)
-	if v != nil {
-		room := v.(*Room)
-		user, _ := hall.UserRecord.Load(Id)
-		if user != nil {
-			p := user.(*Player)
-			room.IsConBanker = false
-			hall.UserRecord.Delete(p.Id)
-			p.PlayerExitRoom()
-			sendLogout(p.Id) // 登出
-			// c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
-			leaveHall := &msg.Logout_S2C{}
-			p.SendMsg(leaveHall, "Logout_S2C")
+	// Id := r.FormValue("id")
+	// log.Debug("reqPlayerLeave 踢出玩家:%v", Id)
+	// rid, _ := hall.UserRoom.Load(Id)
+	// v, _ := hall.RoomRecord.Load(rid)
+	// if v != nil {
+	// 	room := v.(*Room)
+	// 	user, _ := hall.UserRecord.Load(Id)
+	// 	if user != nil {
+	// 		p := user.(*Player)
+	// 		room.IsConBanker = false
+	// 		hall.UserRecord.Delete(p.Id)
+	// 		p.PlayerExitRoom()
+	// 		sendLogout(p.Id) // 登出
+	// 		// c4c.UserLogoutCenter(p.Id, p.Password, p.Token)
+	// 		leaveHall := &msg.Logout_S2C{}
+	// 		p.SendMsg(leaveHall, "Logout_S2C")
 
-			js, err := json.Marshal(NewResp(SuccCode, "", "已成功T出房间!"))
-			if err != nil {
-				fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
-				return
-			}
-			w.Write(js)
-		}
-	}
+	// 		js, err := json.Marshal(NewResp(SuccCode, "", "已成功T出房间!"))
+	// 		if err != nil {
+	// 			fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+	// 			return
+	// 		}
+	// 		w.Write(js)
+	// 	}
+	// }
 }
 
 func getRobotData(w http.ResponseWriter, r *http.Request) {
@@ -928,6 +928,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "1" {
 					v.IsOpenRoom = false
+					v.GameStat = msg.GameStep_LiuJu
 				}
 			}
 		}
@@ -946,6 +947,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 			for _, v := range hall.roomList {
 				if v != nil && v.RoomId == "2" {
 					v.IsOpenRoom = false
+					v.GameStat = msg.GameStep_LiuJu
 				}
 			}
 		}

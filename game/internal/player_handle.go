@@ -13,8 +13,9 @@ import (
 
 //ClientInfo 在线用户数据结构 (心跳用)
 type ClientInfo struct {
-	agent  gate.Agent //连接
-	expire int64      //连接过期时间戳 (心跳)
+	agent     gate.Agent //连接
+	expire    int64      //连接过期时间戳 (心跳)
+	lastLogin int64      // 上次連接時間(毫秒)
 }
 
 var (
@@ -63,7 +64,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 	rid, _ := hall.UserRoom.Load(p.Id)
 	v, _ := hall.RoomRecord.Load(rid)
 
-	if v != nil {
+	if v != nil && m.IsAction == true {
 		room := v.(*Room)
 		// 不是下注阶段，不能进行下注
 		if room.GameStat != msg.GameStep_DownBet {
@@ -82,7 +83,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 		// 当下玩家下注限红设定
 		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
-		log.Debug("玩家:%v 下注金額:%v 下注類型:%v 最大限注:%v", p.Id, m.DownBet, m.DownPot, p.MaxBet)
+		log.Debug("玩家:%v 下注金額:%v 下注類型:%v 餘額:%v", p.Id, m.DownBet, m.DownPot, p.Account)
 		if p.MinBet > 0 || p.MaxBet > 0 {
 			if m.DownBet < p.MinBet || totalBet+m.DownBet > p.MaxBet {
 				data := &msg.ErrorMsg_S2C{}
@@ -228,14 +229,15 @@ func LoadUserList() {
 // 客戶端非正常退出
 func unusualLogout(a gate.Agent, reason string) {
 	userID, ok := userIDFromAgent_.Load(a)
-	if ok {
-		common.Debug_log("用户ID:%d非正常退出游戏,原因:%s", userID, reason)
+	if !ok {
+		return
 	}
 	p, ok := a.UserData().(*Player)
 
 	if ok {
-		log.Debug("<-------------%v 主动断开链接--------------->", p.Id)
+		// log.Debug("<-------------%v 主动断开链接--------------->", p.Id)
 		if p.IsAction == true { //有下注不能登出中心服等待結算後登出
+			common.Debug_log("用户ID:%d非正常退出游戏,原因:%s (有下注待結算後登出)", userID, reason)
 			var exist bool
 			rid, _ := hall.UserRoom.Load(p.Id)
 			v, _ := hall.RoomRecord.Load(rid)
@@ -256,13 +258,12 @@ func unusualLogout(a gate.Agent, reason string) {
 				p.SendMsg(leaveHall, "Logout_S2C")
 			}
 		} else {
+			common.Debug_log("用户ID:%d非正常退出游戏,原因:%s", userID, reason)
 			hall.UserRecord.Delete(p.Id)
 			p.PlayerExitRoom()
 			leaveHall := &msg.Logout_S2C{}
 			p.SendMsg(leaveHall, "Logout_S2C")
-			unbindAgentWithUser(p.Id)
 			sendLogout(p.Id)
-			a.Close()
 		}
 	}
 
@@ -272,7 +273,7 @@ func unusualLogout(a gate.Agent, reason string) {
 func unbindAgentWithUser(userID int32) {
 	client, ok := AgentFromuserID_.Load(userID)
 	if ok {
-		client.(*ClientInfo).agent.Destroy()
+		CloseAgent(client.(*ClientInfo).agent)
 		AgentFromuserID_.Delete(userID)
 		userIDFromAgent_.Delete(client.(*ClientInfo).agent)
 	}
@@ -335,9 +336,28 @@ func SaveAllUserInfo() {
 
 // LogoutAllUsers 在服务器关闭时登出所有用户登出全部房间用户
 func LogoutAllUsers() {
+
 	allUser_.Range(func(_, v interface{}) bool {
 		userID, _ := common.Str2int32(v.(*msg.PlayerInfo).Id)
-		sendLogout(userID)
+		client, ok := AgentFromuserID_.Load(userID)
+		if ok {
+			a := client.(*ClientInfo).agent
+			p, ok := a.UserData().(*Player)
+			if ok {
+				if p.IsAction == true { //有下注先解鎖資金再退出
+					rid, _ := hall.UserRoom.Load(p.Id)
+					v, _ := hall.RoomRecord.Load(rid)
+					if v != nil {
+						room := v.(*Room)
+						room.unlockUserBetMoney(p)
+						sendLogout(userID)
+					}
+				} else {
+					sendLogout(userID)
+				}
+			}
+		}
+
 		return true
 	})
 }

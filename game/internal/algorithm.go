@@ -8,7 +8,8 @@ func (r *Room) GetType(numSlice []int) {
 	// log.Debug("numSlice %v", numSlice)
 	// 判断豹子
 	if numSlice[1] == numSlice[2] && numSlice[1] == numSlice[4] {
-		r.LotteryResult.CardType = msg.CardsType_Leopard
+		r.LotteryResult.Result.CardType = msg.CardsType_Leopard
+		r.LotteryResult.ResultFX.CardType = msg.CardsType_Leopard
 		return
 	}
 }

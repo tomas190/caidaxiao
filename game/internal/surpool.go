@@ -35,8 +35,10 @@ type SurPool struct {
 	CountAfterLose      float64 `bson:"random_count_after_lose"`      // 玩家輸錢重新開獎次數
 	PercertageAfterLose float64 `bson:"random_percentage_after_lose"` // 玩家輸錢重新開獎機率
 
-	TaxPercent float64 `bson:"-"` //平台扣税比例
+	TaxPercent float64 `bson:"-"` // 平台扣税比例
 	UpdateTime string  `bson:"-"`
+
+	AgentNum int32 `bson:"-"` // 目前線上玩家連線數
 }
 
 type SearchCMD struct {
@@ -108,6 +110,7 @@ func LoadServerSurpool() {
 		SaveServerConfig()
 		log.Debug("Release : 初始化服务器配置并写入成功")
 	}
+	ServerSurPool.AgentNum = 0 // 重啟 agent 歸0
 
 }
 

@@ -73,8 +73,8 @@ export namespace msg {
     /** CardsType enum. */
     enum CardsType {
         XX_Card = 0,
-        Pair = 1,
-        Straight = 2,
+        Small = 1,
+        Big = 2,
         Leopard = 3
     }
 
@@ -750,132 +750,6 @@ export namespace msg {
         public toJSON(): { [k: string]: any };
     }
 
-    /** Properties of a DownBetMoney. */
-    interface IDownBetMoney {
-
-        /** DownBetMoney BigDownBet */
-        BigDownBet?: (number|null);
-
-        /** DownBetMoney SmallDownBet */
-        SmallDownBet?: (number|null);
-
-        /** DownBetMoney SingleDownBet */
-        SingleDownBet?: (number|null);
-
-        /** DownBetMoney DoubleDownBet */
-        DoubleDownBet?: (number|null);
-
-        /** DownBetMoney PairDownBet */
-        PairDownBet?: (number|null);
-
-        /** DownBetMoney StraightDownBet */
-        StraightDownBet?: (number|null);
-
-        /** DownBetMoney LeopardDownBet */
-        LeopardDownBet?: (number|null);
-    }
-
-    /** Represents a DownBetMoney. */
-    class DownBetMoney implements IDownBetMoney {
-
-        /**
-         * Constructs a new DownBetMoney.
-         * @param [properties] Properties to set
-         */
-        constructor(properties?: msg.IDownBetMoney);
-
-        /** DownBetMoney BigDownBet. */
-        public BigDownBet: number;
-
-        /** DownBetMoney SmallDownBet. */
-        public SmallDownBet: number;
-
-        /** DownBetMoney SingleDownBet. */
-        public SingleDownBet: number;
-
-        /** DownBetMoney DoubleDownBet. */
-        public DoubleDownBet: number;
-
-        /** DownBetMoney PairDownBet. */
-        public PairDownBet: number;
-
-        /** DownBetMoney StraightDownBet. */
-        public StraightDownBet: number;
-
-        /** DownBetMoney LeopardDownBet. */
-        public LeopardDownBet: number;
-
-        /**
-         * Creates a new DownBetMoney instance using the specified properties.
-         * @param [properties] Properties to set
-         * @returns DownBetMoney instance
-         */
-        public static create(properties?: msg.IDownBetMoney): msg.DownBetMoney;
-
-        /**
-         * Encodes the specified DownBetMoney message. Does not implicitly {@link msg.DownBetMoney.verify|verify} messages.
-         * @param message DownBetMoney message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: msg.IDownBetMoney, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Encodes the specified DownBetMoney message, length delimited. Does not implicitly {@link msg.DownBetMoney.verify|verify} messages.
-         * @param message DownBetMoney message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: msg.IDownBetMoney, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Decodes a DownBetMoney message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns DownBetMoney
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): msg.DownBetMoney;
-
-        /**
-         * Decodes a DownBetMoney message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns DownBetMoney
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): msg.DownBetMoney;
-
-        /**
-         * Verifies a DownBetMoney message.
-         * @param message Plain object to verify
-         * @returns `null` if valid, otherwise the reason why it is not
-         */
-        public static verify(message: { [k: string]: any }): (string|null);
-
-        /**
-         * Creates a DownBetMoney message from a plain object. Also converts values to their respective internal types.
-         * @param object Plain object
-         * @returns DownBetMoney
-         */
-        public static fromObject(object: { [k: string]: any }): msg.DownBetMoney;
-
-        /**
-         * Creates a plain object from a DownBetMoney message. Also converts values to other types if specified.
-         * @param message DownBetMoney
-         * @param [options] Conversion options
-         * @returns Plain object
-         */
-        public static toObject(message: msg.DownBetMoney, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-        /**
-         * Converts this DownBetMoney to JSON.
-         * @returns JSON object
-         */
-        public toJSON(): { [k: string]: any };
-    }
-
     /** Properties of a PotWinList. */
     interface IPotWinList {
 
@@ -1011,9 +885,6 @@ export namespace msg {
         /** PlayerData resultMoney */
         resultMoney?: (number|null);
 
-        /** PlayerData potWinList */
-        potWinList?: (msg.IPotWinList[]|null);
-
         /** PlayerData downBetHistory */
         downBetHistory?: (msg.IDownBetHistory[]|null);
 
@@ -1059,9 +930,6 @@ export namespace msg {
 
         /** PlayerData resultMoney. */
         public resultMoney: number;
-
-        /** PlayerData potWinList. */
-        public potWinList: msg.IPotWinList[];
 
         /** PlayerData downBetHistory. */
         public downBetHistory: msg.IDownBetHistory[];
@@ -1146,6 +1014,132 @@ export namespace msg {
         public toJSON(): { [k: string]: any };
     }
 
+    /** Properties of a DownBetMoney. */
+    interface IDownBetMoney {
+
+        /** DownBetMoney BigDownBet */
+        BigDownBet?: (number|null);
+
+        /** DownBetMoney SmallDownBet */
+        SmallDownBet?: (number|null);
+
+        /** DownBetMoney SingleDownBet */
+        SingleDownBet?: (number|null);
+
+        /** DownBetMoney DoubleDownBet */
+        DoubleDownBet?: (number|null);
+
+        /** DownBetMoney PairDownBet */
+        PairDownBet?: (number|null);
+
+        /** DownBetMoney StraightDownBet */
+        StraightDownBet?: (number|null);
+
+        /** DownBetMoney LeopardDownBet */
+        LeopardDownBet?: (number|null);
+    }
+
+    /** Represents a DownBetMoney. */
+    class DownBetMoney implements IDownBetMoney {
+
+        /**
+         * Constructs a new DownBetMoney.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: msg.IDownBetMoney);
+
+        /** DownBetMoney BigDownBet. */
+        public BigDownBet: number;
+
+        /** DownBetMoney SmallDownBet. */
+        public SmallDownBet: number;
+
+        /** DownBetMoney SingleDownBet. */
+        public SingleDownBet: number;
+
+        /** DownBetMoney DoubleDownBet. */
+        public DoubleDownBet: number;
+
+        /** DownBetMoney PairDownBet. */
+        public PairDownBet: number;
+
+        /** DownBetMoney StraightDownBet. */
+        public StraightDownBet: number;
+
+        /** DownBetMoney LeopardDownBet. */
+        public LeopardDownBet: number;
+
+        /**
+         * Creates a new DownBetMoney instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DownBetMoney instance
+         */
+        public static create(properties?: msg.IDownBetMoney): msg.DownBetMoney;
+
+        /**
+         * Encodes the specified DownBetMoney message. Does not implicitly {@link msg.DownBetMoney.verify|verify} messages.
+         * @param message DownBetMoney message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: msg.IDownBetMoney, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DownBetMoney message, length delimited. Does not implicitly {@link msg.DownBetMoney.verify|verify} messages.
+         * @param message DownBetMoney message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: msg.IDownBetMoney, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DownBetMoney message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DownBetMoney
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): msg.DownBetMoney;
+
+        /**
+         * Decodes a DownBetMoney message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DownBetMoney
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): msg.DownBetMoney;
+
+        /**
+         * Verifies a DownBetMoney message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DownBetMoney message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DownBetMoney
+         */
+        public static fromObject(object: { [k: string]: any }): msg.DownBetMoney;
+
+        /**
+         * Creates a plain object from a DownBetMoney message. Also converts values to other types if specified.
+         * @param message DownBetMoney
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: msg.DownBetMoney, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DownBetMoney to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
     /** Properties of a DownBetHistory. */
     interface IDownBetHistory {
 
@@ -1156,16 +1150,10 @@ export namespace msg {
         resNum?: (number[]|null);
 
         /** DownBetHistory result */
-        result?: (number|null);
+        result?: (msg.ILotteryResult|null);
 
-        /** DownBetHistory sinDouble */
-        sinDouble?: (number|null);
-
-        /** DownBetHistory bigSmall */
-        bigSmall?: (number|null);
-
-        /** DownBetHistory cardType */
-        cardType?: (msg.CardsType|null);
+        /** DownBetHistory resultFX */
+        resultFX?: (msg.ILotteryResultFX|null);
 
         /** DownBetHistory downBetMoney */
         downBetMoney?: (msg.IDownBetMoney|null);
@@ -1187,16 +1175,10 @@ export namespace msg {
         public resNum: number[];
 
         /** DownBetHistory result. */
-        public result: number;
+        public result?: (msg.ILotteryResult|null);
 
-        /** DownBetHistory sinDouble. */
-        public sinDouble: number;
-
-        /** DownBetHistory bigSmall. */
-        public bigSmall: number;
-
-        /** DownBetHistory cardType. */
-        public cardType: msg.CardsType;
+        /** DownBetHistory resultFX. */
+        public resultFX?: (msg.ILotteryResultFX|null);
 
         /** DownBetHistory downBetMoney. */
         public downBetMoney?: (msg.IDownBetMoney|null);
@@ -1272,127 +1254,307 @@ export namespace msg {
         public toJSON(): { [k: string]: any };
     }
 
-    /** Properties of a HistoryData. */
-    interface IHistoryData {
+    /** Properties of a LotteryResult. */
+    interface ILotteryResult {
 
-        /** HistoryData timeFmt */
-        timeFmt?: (string|null);
+        /** LotteryResult luckyNum */
+        luckyNum?: (number|null);
 
-        /** HistoryData resNum */
-        resNum?: (number[]|null);
-
-        /** HistoryData result */
-        result?: (number|null);
-
-        /** HistoryData sinDouble */
-        sinDouble?: (number|null);
-
-        /** HistoryData bigSmall */
-        bigSmall?: (number|null);
-
-        /** HistoryData cardType */
+        /** LotteryResult cardType */
         cardType?: (msg.CardsType|null);
-
-        /** HistoryData IsLiuJu */
-        IsLiuJu?: (boolean|null);
     }
 
-    /** Represents a HistoryData. */
-    class HistoryData implements IHistoryData {
+    /** Represents a LotteryResult. */
+    class LotteryResult implements ILotteryResult {
 
         /**
-         * Constructs a new HistoryData.
+         * Constructs a new LotteryResult.
          * @param [properties] Properties to set
          */
-        constructor(properties?: msg.IHistoryData);
+        constructor(properties?: msg.ILotteryResult);
 
-        /** HistoryData timeFmt. */
-        public timeFmt: string;
+        /** LotteryResult luckyNum. */
+        public luckyNum: number;
 
-        /** HistoryData resNum. */
-        public resNum: number[];
-
-        /** HistoryData result. */
-        public result: number;
-
-        /** HistoryData sinDouble. */
-        public sinDouble: number;
-
-        /** HistoryData bigSmall. */
-        public bigSmall: number;
-
-        /** HistoryData cardType. */
+        /** LotteryResult cardType. */
         public cardType: msg.CardsType;
 
-        /** HistoryData IsLiuJu. */
-        public IsLiuJu: boolean;
-
         /**
-         * Creates a new HistoryData instance using the specified properties.
+         * Creates a new LotteryResult instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns HistoryData instance
+         * @returns LotteryResult instance
          */
-        public static create(properties?: msg.IHistoryData): msg.HistoryData;
+        public static create(properties?: msg.ILotteryResult): msg.LotteryResult;
 
         /**
-         * Encodes the specified HistoryData message. Does not implicitly {@link msg.HistoryData.verify|verify} messages.
-         * @param message HistoryData message or plain object to encode
+         * Encodes the specified LotteryResult message. Does not implicitly {@link msg.LotteryResult.verify|verify} messages.
+         * @param message LotteryResult message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: msg.IHistoryData, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: msg.ILotteryResult, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified HistoryData message, length delimited. Does not implicitly {@link msg.HistoryData.verify|verify} messages.
-         * @param message HistoryData message or plain object to encode
+         * Encodes the specified LotteryResult message, length delimited. Does not implicitly {@link msg.LotteryResult.verify|verify} messages.
+         * @param message LotteryResult message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: msg.IHistoryData, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: msg.ILotteryResult, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a HistoryData message from the specified reader or buffer.
+         * Decodes a LotteryResult message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns HistoryData
+         * @returns LotteryResult
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): msg.HistoryData;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): msg.LotteryResult;
 
         /**
-         * Decodes a HistoryData message from the specified reader or buffer, length delimited.
+         * Decodes a LotteryResult message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns HistoryData
+         * @returns LotteryResult
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): msg.HistoryData;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): msg.LotteryResult;
 
         /**
-         * Verifies a HistoryData message.
+         * Verifies a LotteryResult message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a HistoryData message from a plain object. Also converts values to their respective internal types.
+         * Creates a LotteryResult message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns HistoryData
+         * @returns LotteryResult
          */
-        public static fromObject(object: { [k: string]: any }): msg.HistoryData;
+        public static fromObject(object: { [k: string]: any }): msg.LotteryResult;
 
         /**
-         * Creates a plain object from a HistoryData message. Also converts values to other types if specified.
-         * @param message HistoryData
+         * Creates a plain object from a LotteryResult message. Also converts values to other types if specified.
+         * @param message LotteryResult
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: msg.HistoryData, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: msg.LotteryResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this HistoryData to JSON.
+         * Converts this LotteryResult to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a LotteryResultFX. */
+    interface ILotteryResultFX {
+
+        /** LotteryResultFX luckyNum */
+        luckyNum?: (number|null);
+
+        /** LotteryResultFX cardType */
+        cardType?: (msg.CardsType|null);
+    }
+
+    /** Represents a LotteryResultFX. */
+    class LotteryResultFX implements ILotteryResultFX {
+
+        /**
+         * Constructs a new LotteryResultFX.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: msg.ILotteryResultFX);
+
+        /** LotteryResultFX luckyNum. */
+        public luckyNum: number;
+
+        /** LotteryResultFX cardType. */
+        public cardType: msg.CardsType;
+
+        /**
+         * Creates a new LotteryResultFX instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns LotteryResultFX instance
+         */
+        public static create(properties?: msg.ILotteryResultFX): msg.LotteryResultFX;
+
+        /**
+         * Encodes the specified LotteryResultFX message. Does not implicitly {@link msg.LotteryResultFX.verify|verify} messages.
+         * @param message LotteryResultFX message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: msg.ILotteryResultFX, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified LotteryResultFX message, length delimited. Does not implicitly {@link msg.LotteryResultFX.verify|verify} messages.
+         * @param message LotteryResultFX message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: msg.ILotteryResultFX, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a LotteryResultFX message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns LotteryResultFX
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): msg.LotteryResultFX;
+
+        /**
+         * Decodes a LotteryResultFX message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns LotteryResultFX
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): msg.LotteryResultFX;
+
+        /**
+         * Verifies a LotteryResultFX message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a LotteryResultFX message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns LotteryResultFX
+         */
+        public static fromObject(object: { [k: string]: any }): msg.LotteryResultFX;
+
+        /**
+         * Creates a plain object from a LotteryResultFX message. Also converts values to other types if specified.
+         * @param message LotteryResultFX
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: msg.LotteryResultFX, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this LotteryResultFX to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
+
+    /** Properties of a LotteryData. */
+    interface ILotteryData {
+
+        /** LotteryData timeFmt */
+        timeFmt?: (string|null);
+
+        /** LotteryData resNum */
+        resNum?: (number[]|null);
+
+        /** LotteryData result */
+        result?: (msg.ILotteryResult|null);
+
+        /** LotteryData resultFX */
+        resultFX?: (msg.ILotteryResultFX|null);
+
+        /** LotteryData IsLiuJu */
+        IsLiuJu?: (boolean|null);
+    }
+
+    /** Represents a LotteryData. */
+    class LotteryData implements ILotteryData {
+
+        /**
+         * Constructs a new LotteryData.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: msg.ILotteryData);
+
+        /** LotteryData timeFmt. */
+        public timeFmt: string;
+
+        /** LotteryData resNum. */
+        public resNum: number[];
+
+        /** LotteryData result. */
+        public result?: (msg.ILotteryResult|null);
+
+        /** LotteryData resultFX. */
+        public resultFX?: (msg.ILotteryResultFX|null);
+
+        /** LotteryData IsLiuJu. */
+        public IsLiuJu: boolean;
+
+        /**
+         * Creates a new LotteryData instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns LotteryData instance
+         */
+        public static create(properties?: msg.ILotteryData): msg.LotteryData;
+
+        /**
+         * Encodes the specified LotteryData message. Does not implicitly {@link msg.LotteryData.verify|verify} messages.
+         * @param message LotteryData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: msg.ILotteryData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified LotteryData message, length delimited. Does not implicitly {@link msg.LotteryData.verify|verify} messages.
+         * @param message LotteryData message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: msg.ILotteryData, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a LotteryData message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns LotteryData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): msg.LotteryData;
+
+        /**
+         * Decodes a LotteryData message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns LotteryData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): msg.LotteryData;
+
+        /**
+         * Verifies a LotteryData message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a LotteryData message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns LotteryData
+         */
+        public static fromObject(object: { [k: string]: any }): msg.LotteryData;
+
+        /**
+         * Creates a plain object from a LotteryData message. Also converts values to other types if specified.
+         * @param message LotteryData
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: msg.LotteryData, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this LotteryData to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
@@ -1419,11 +1581,8 @@ export namespace msg {
         /** RoomData potMoneyCount */
         potMoneyCount?: (msg.IDownBetMoney|null);
 
-        /** RoomData potWinList */
-        potWinList?: (msg.IPotWinList[]|null);
-
         /** RoomData historyData */
-        historyData?: (msg.IHistoryData[]|null);
+        historyData?: (msg.ILotteryData[]|null);
 
         /** RoomData tablePlayer */
         tablePlayer?: (msg.IPlayerData[]|null);
@@ -1459,11 +1618,8 @@ export namespace msg {
         /** RoomData potMoneyCount. */
         public potMoneyCount?: (msg.IDownBetMoney|null);
 
-        /** RoomData potWinList. */
-        public potWinList: msg.IPotWinList[];
-
         /** RoomData historyData. */
-        public historyData: msg.IHistoryData[];
+        public historyData: msg.ILotteryData[];
 
         /** RoomData tablePlayer. */
         public tablePlayer: msg.IPlayerData[];
@@ -1637,6 +1793,9 @@ export namespace msg {
 
         /** JoinRoom_S2C roomData */
         roomData?: (msg.IRoomData|null);
+
+        /** JoinRoom_S2C leftTime */
+        leftTime?: (number|null);
     }
 
     /** Represents a JoinRoom_S2C. */
@@ -1650,6 +1809,9 @@ export namespace msg {
 
         /** JoinRoom_S2C roomData. */
         public roomData?: (msg.IRoomData|null);
+
+        /** JoinRoom_S2C leftTime. */
+        public leftTime: number;
 
         /**
          * Creates a new JoinRoom_S2C instance using the specified properties.
@@ -1994,6 +2156,9 @@ export namespace msg {
 
         /** ActionTime_S2C roomData */
         roomData?: (msg.IRoomData|null);
+
+        /** ActionTime_S2C leftTime */
+        leftTime?: (number|null);
     }
 
     /** Represents an ActionTime_S2C. */
@@ -2010,6 +2175,9 @@ export namespace msg {
 
         /** ActionTime_S2C roomData. */
         public roomData?: (msg.IRoomData|null);
+
+        /** ActionTime_S2C leftTime. */
+        public leftTime: number;
 
         /**
          * Creates a new ActionTime_S2C instance using the specified properties.

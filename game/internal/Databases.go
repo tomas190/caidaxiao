@@ -155,7 +155,7 @@ func InsertRobotData(rb *RobotDATA) {
 		log.Debug("插入机器人数据失败:%v", err)
 		return
 	}
-	log.Debug("插入机器人数据成功~")
+	// log.Debug("插入机器人数据成功~")
 }
 
 //GetRobotData 获取机器人数据
@@ -178,7 +178,7 @@ func GetRobotData() ([]RobotDATA, error) {
 		log.Debug("获取机器人数据失败:%v", err)
 		return nil, err
 	}
-	log.Debug("获取机器人数据成功:%v,长度为:%v", rd, len(rd))
+	// log.Debug("获取机器人数据成功:%v,长度为:%v", rd, len(rd))
 	return rd, nil
 }
 
@@ -219,7 +219,7 @@ type PlayerDownBetRecode struct {
 	StartTime       int64             `json:"start_time" bson:"start_time"`             // 开始时间
 	EndTime         int64             `json:"end_time" bson:"end_time"`                 // 结束时间
 	Lottery         []int             `json:"lottery" bson:"lottery"`                   // 开奖号码
-	CardResult      *msg.PotWinList   `json:"card_result" bson:"card_result"`           // 当局开牌结果
+	CardResult      *msg.LotteryData  `json:"card_result" bson:"card_result"`           // 当局开牌结果
 	SettlementFunds float64           `json:"settlement_funds" bson:"settlement_funds"` // 当局输赢结果(税后)
 	SpareCash       float64           `json:"spare_cash" bson:"spare_cash"`             // 剩余金额
 	TaxRate         float64           `json:"tax_rate" bson:"tax_rate"`                 // 税率

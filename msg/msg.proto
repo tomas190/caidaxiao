@@ -72,8 +72,8 @@ enum PotType {
 //卡牌类型
 enum CardsType {
     XX_Card = 0;
-    Pair = 1; // 对子
-    Straight = 2; // 顺子
+    Small = 1; // 小
+    Big = 2; // 大
     Leopard = 3; // 豹子
 }
 
@@ -112,16 +112,6 @@ message Logout_C2S {
 message Logout_S2C {
 }
 
-//玩家各注池下注的金额
-message DownBetMoney {
-    int32 BigDownBet = 1;
-    int32 SmallDownBet = 2;
-    int32 SingleDownBet = 3;
-    int32 DoubleDownBet = 4;
-    int32 PairDownBet = 5;
-    int32 StraightDownBet = 6;
-    int32 LeopardDownBet = 7;
-}
 
 message PotWinList {
     int32 resultNum = 1; // 开奖结果
@@ -139,45 +129,61 @@ message PlayerData {
     int32 totalDownBet = 6; // 玩家房间总下注
     int32 winTotalCount = 7; // 玩家房间Win总次数
     double resultMoney = 8; // 本局结算金额
-    repeated PotWinList potWinList = 9; // 游戏记录开奖列表
     repeated DownBetHistory downBetHistory = 10; // 下注记录
     bool IsAction = 11; // 玩家是否行动
     bool IsBanker = 12; // 玩家是否庄家
     bool IsRobot = 13; // 玩家是否机器人
 }
 
-message DownBetHistory {
-    string timeFmt = 1;
-    repeated int32 resNum = 2;
-    int32 result = 3;
-    int32 sinDouble = 4;
-    int32 bigSmall = 5;
-    CardsType cardType = 6; // 比牌类型 1对,2顺,3豹
-    DownBetMoney downBetMoney = 7;
-
+//玩家各注池下注的金额
+message DownBetMoney {
+    int32 BigDownBet = 1;
+    int32 SmallDownBet = 2;
+    int32 SingleDownBet = 3;
+    int32 DoubleDownBet = 4;
+    int32 PairDownBet = 5;
+    int32 StraightDownBet = 6;
+    int32 LeopardDownBet = 7;
 }
 
-message HistoryData {
+message DownBetHistory {
+    string timeFmt = 1;            // 時間戳
+    repeated int32 resNum = 2;     // 獎號
+    LotteryResult result = 3;      // 一般開獎結果
+    LotteryResultFX resultFX = 4;  // 富鑫II開獎結果
+    DownBetMoney downBetMoney = 5; // 玩家下注金額
+}
+
+// 一般公式結果
+message LotteryResult {
+    int32 luckyNum =1 ; // 公式計算結果（万位+十位）x（千位-个位）-百位 
+    CardsType cardType = 2; // 比牌类型 1小,2大,3豹
+}
+
+// 富鑫II公式結果
+message LotteryResultFX {
+    int32 luckyNum =1 ;  // 公式計算結果 千位+百位+個位
+    CardsType cardType = 2; // 比牌类型 1小,2大,3豹
+}
+
+message LotteryData {
     string timeFmt = 1;
     repeated int32 resNum = 2;
-    int32 result = 3;
-    int32 sinDouble = 4;
-    int32 bigSmall = 5;
-    CardsType cardType = 6; // 比牌类型 1对,2顺,3豹
-    bool IsLiuJu = 7; // 是否流局
+    LotteryResult result = 3;
+    LotteryResultFX resultFX = 4;
+    bool IsLiuJu = 5; // 是否流局
 }
 
 message RoomData {
     string roomId = 1;
     repeated PlayerData playerData = 2;
-    int32 gameTime = 3; // 游戏时间
+    int32 gameTime = 3; // 游戏时间(之後階段改結構這個可以拿掉)
     GameStep gameStep = 4; // 当前游戏阶段状态
     repeated int32 resultInt = 5; // 结算数据
     DownBetMoney potMoneyCount = 6; // 注池金额集合
-    repeated PotWinList potWinList = 7; // 游戏记录开奖列表
-    repeated HistoryData historyData = 8; // 历史记录数据
-    repeated PlayerData tablePlayer = 9; // 桌面玩家
-    string PeriodsNum = 10; // 当前奖期
+    repeated LotteryData historyData = 7; // 历史记录数据
+    repeated PlayerData tablePlayer = 8; // 桌面玩家
+    string PeriodsNum = 9; // 当前奖期
 }
 
 message JoinRoom_C2S {
@@ -186,6 +192,7 @@ message JoinRoom_C2S {
 
 message JoinRoom_S2C {
     RoomData roomData = 1;
+    int32 leftTime = 2; // 階段剩餘時間
 }
 
 message EnterRoom_S2C {
@@ -200,8 +207,9 @@ message LeaveRoom_S2C {
 }
 
 message ActionTime_S2C {
-    GameStep gameStep = 1; // 当前状态
+    GameStep gameStep = 1; // 当前階段
     RoomData roomData = 2; // 房间数据
+    int32 leftTime = 3; // 階段剩餘時間
 }
 
 message PlayerAction_C2S {
@@ -257,7 +265,7 @@ message BankerList {
     int32 takeMoney = 2;
 }
 
-// 发送时间
+// 发送时间(之後拿掉換成Action就好)
 message SendActTime_S2C {
     int32 startTime = 1;
     int32 gameTime = 2;

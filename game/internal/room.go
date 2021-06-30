@@ -26,30 +26,50 @@ type PrizeRecord struct {
 	OpenDate string `json:"opendate"` // 开奖时间
 }
 
+// const ( // 舊的
+// 	BankerTime  = 8  // 庄家时间 8秒
+// 	Banker2Time = 3  // 庄家连庄 3秒
+// 	DownBetTime = 20 // 下注时间 20秒
+// 	SettleTime  = 5  // 结算时间 5秒
+// 	GetResTime  = 13 // 开奖时间 13秒
+// 	CloseTime   = 15 // 封单时间 15秒
+// )
+
+// const (
+// 	DownBetStep = 25 // 下注时间阶段
+// 	CloseStep   = 45 // 封单时间阶段
+// 	GetResStep  = 5  // 开奖时间阶段
+// 	SettleStep  = 19 // 结算时间阶段
+// )
+
+// const (
+// 	WinBig      int32 = 1  //大 1倍
+// 	WinSmall    int32 = 1  //小 1倍
+// 	WinSingle   int32 = 1  //单 1倍
+// 	WinDouble   int32 = 1  //双 1倍
+// 	WinPair     int32 = 2  //对 2倍
+// 	WinStraight int32 = 5  //顺 5倍
+// 	WinLeopard  int32 = 66 //豹 66倍
+// )
 const (
-	BankerTime  = 8  // 庄家时间 8秒
-	Banker2Time = 3  // 庄家连庄 3秒
-	DownBetTime = 20 // 下注时间 20秒
-	SettleTime  = 5  // 结算时间 5秒
-	GetResTime  = 13 // 开奖时间 13秒
-	CloseTime   = 15 // 封单时间 15秒
+	DownBetTime = 20 // 下注總时间 20秒
+	CloseTime   = 20 // 封单總时间 20秒
+	GetResTime  = 14 // 开奖總时间 14秒
+	SettleTime  = 6  // 结算總时间 6秒
+
+)
+
+const ( //切換狀態時間點
+	DownBetStep = 25 // 下注时间點
+	CloseStep   = 45 // 封单时间點
+	GetResStep  = 5  // 开奖时间點
+	SettleStep  = 19 // 结算时间點
 )
 
 const (
-	DownBetStep = 25 // 下注时间阶段
-	CloseStep   = 45 // 封单时间阶段
-	GetResStep  = 5  // 开奖时间阶段
-	SettleStep  = 19 // 结算时间阶段
-)
-
-const (
-	WinBig      int32 = 1  //大 1倍
-	WinSmall    int32 = 1  //小 1倍
-	WinSingle   int32 = 1  //单 1倍
-	WinDouble   int32 = 1  //双 1倍
-	WinPair     int32 = 2  //对 2倍
-	WinStraight int32 = 5  //顺 5倍
-	WinLeopard  int32 = 66 //豹 66倍
+	WinBig     int32 = 1  //大 1倍
+	WinSmall   int32 = 1  //小 1倍
+	WinLeopard int32 = 66 //豹 66倍
 )
 
 const (
@@ -78,22 +98,22 @@ type Room struct {
 	bankerList    map[string]int32 // 抢庄列表
 	IsConBanker   bool             // 是否继续连庄
 
-	resultTime       string         // 结算时间
-	Lottery          []int          // 开奖数据
-	LotteryResult    msg.PotWinList // 开奖结果
-	PeriodsNum       string         // 开奖期数
-	ResultNum        string         // 期数
-	RoundID          string
-	PeriodsTime      string             // 开奖时间
-	GameStat         msg.GameStep       // 游戏状态
-	PotMoneyCount    msg.DownBetMoney   // 注池下注总金额(用于客户端显示)
-	PlayerTotalMoney *msg.DownBetMoney  // 所有真实玩家注池下注(用于计算金额)
-	PotWinList       []*msg.PotWinList  // 游戏开奖记录
-	HistoryData      []*msg.HistoryData // 历史开奖数据
-	counter          int32              // 已经过去多少秒
-	clock            *time.Ticker       // 计时器
+	resultTime       string            // 结算时间
+	Lottery          []int             // 开奖数据
+	LotteryResult    msg.LotteryData   // 开奖结果
+	PeriodsNum       string            // 开奖期数
+	ResultNum        string            // 期数
+	RoundID          string            // 房間回合
+	PeriodsTime      string            // 开奖时间
+	GameStat         msg.GameStep      // 游戏状态
+	PotMoneyCount    msg.DownBetMoney  // 注池下注总金额(用于客户端显示)
+	PlayerTotalMoney *msg.DownBetMoney // 所有真实玩家注池下注(用于计算金额)
+	// PotWinList       []*msg.PotWinList  // [packageid]游戏开奖记录
+	HistoryData []msg.LotteryData // 历史开奖数据
+	counter     int32             // 已经过去多少秒
+	clock       *time.Ticker      // 计时器
 
-	Lock sync.Mutex // 锁
+	// Lock sync.Mutex // 锁
 
 	UserLeave []int32 // 用户是否在房间
 
@@ -118,14 +138,16 @@ func (r *Room) Init() {
 
 	r.resultTime = ""
 	r.Lottery = nil
-	r.LotteryResult = msg.PotWinList{}
+	r.LotteryResult = msg.LotteryData{}
+	r.LotteryResult.Result = &msg.LotteryResult{}
+	r.LotteryResult.ResultFX = &msg.LotteryResultFX{}
 	r.PeriodsNum = ""
 	r.PeriodsTime = ""
 	r.GameStat = msg.GameStep_XX_Step
 	r.PlayerTotalMoney = &msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
-	r.PotWinList = make([]*msg.PotWinList, 0)
-	r.HistoryData = make([]*msg.HistoryData, 0)
+	// r.PotWinList = make([]*msg.PotWinList, 0)
+	r.HistoryData = make([]msg.LotteryData, 0)
 
 	r.counter = 0
 	r.clock = time.NewTicker(time.Second)
@@ -198,7 +220,8 @@ func (r *Room) LoadRoomRobots(num int) {
 func (r *Room) RespRoomData() *msg.RoomData {
 	rd := &msg.RoomData{}
 	rd.RoomId = r.RoomId
-	rd.GameTime = r.counter
+	// rd.GameTime = r.counter //舊的
+	rd.GameTime = r.RoomCounter()
 	rd.GameStep = r.GameStat
 	for _, v := range r.Lottery {
 		rd.ResultInt = append(rd.ResultInt, int32(v))
@@ -212,16 +235,20 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	rd.PotMoneyCount.PairDownBet = r.PotMoneyCount.PairDownBet
 	rd.PotMoneyCount.StraightDownBet = r.PotMoneyCount.StraightDownBet
 	rd.PotMoneyCount.LeopardDownBet = r.PotMoneyCount.LeopardDownBet
-	rd.PotWinList = r.PotWinList
-	// for _, v := range r.PotWinList {
-	// 	pot := &msg.PotWinList{}
-	// 	pot.CardType = v.CardType
-	// 	pot.BigSmall = v.BigSmall
-	// 	pot.SinDouble = v.SinDouble
-	// 	pot.ResultNum = v.ResultNum
-	// 	rd.PotWinList = append(rd.PotWinList, pot)
-	// }
-	rd.HistoryData = r.HistoryData
+	// rd.HistoryData = r.HistoryData // 要針對不同品牌處理
+	for _, v := range r.HistoryData {
+		lotterydata := &msg.LotteryData{
+			TimeFmt:  v.TimeFmt,
+			ResNum:   v.ResNum,
+			Result:   v.Result,
+			ResultFX: v.ResultFX,
+			IsLiuJu:  v.IsLiuJu,
+		}
+
+		rd.HistoryData = append(rd.HistoryData, lotterydata)
+	}
+	// fmt.Printf("//////////////////////////////////\nRoom：%v RoomData：\n%v\n//////////////////////////////////\n", r.RoomId, rd.HistoryData)
+
 	// if len(rd.PotWinList) != 0 && len(rd.HistoryData) != 0 && len(rd.ResultInt) != 0 {
 	// 	var num = 0
 	// 	for i := 0; i < 5; i++ {
@@ -253,17 +280,6 @@ func (r *Room) RespRoomData() *msg.RoomData {
 	// 	}
 	// }
 
-	// for _, v := range r.HistoryData {
-	// 	his := &msg.HistoryData{}
-	// 	his.TimeFmt = v.TimeFmt
-	// 	his.ResNum = v.ResNum
-	// 	his.Result = v.Result
-	// 	his.BigSmall = v.BigSmall
-	// 	his.SinDouble = v.SinDouble
-	// 	his.CardType = v.CardType
-	// 	his.IsLiuJu = v.IsLiuJu
-	// 	rd.HistoryData = append(rd.HistoryData, his)
-	// }
 	// 这里只需要遍历桌面玩家，站起玩家不显示出来
 	for _, v := range r.PlayerList {
 		if v != nil {
@@ -284,17 +300,6 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
 			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
 			pd.DownBetHistory = v.DownBetHistory
-			// for _, uHis := range v.DownBetHistory {
-			// 	his := &msg.DownBetHistory{}
-			// 	his.TimeFmt = uHis.TimeFmt
-			// 	his.ResNum = uHis.ResNum
-			// 	his.Result = uHis.Result
-			// 	his.BigSmall = uHis.BigSmall
-			// 	his.SinDouble = uHis.SinDouble
-			// 	his.CardType = uHis.CardType
-			// 	his.DownBetMoney = uHis.DownBetMoney
-			// 	pd.DownBetHistory = append(pd.DownBetHistory, his)
-			// }
 			pd.TotalDownBet = v.TotalDownBet
 			pd.WinTotalCount = v.WinTotalCount
 			pd.ResultMoney = v.ResultMoney
@@ -304,6 +309,7 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			rd.PlayerData = append(rd.PlayerData, pd)
 		}
 	}
+
 	for _, v := range r.TablePlayer {
 		if v != nil {
 			pd := &msg.PlayerData{}
@@ -323,17 +329,6 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
 			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
 			pd.DownBetHistory = v.DownBetHistory
-			// for _, v := range v.DownBetHistory {
-			// 	his := &msg.DownBetHistory{}
-			// 	his.TimeFmt = v.TimeFmt
-			// 	his.ResNum = v.ResNum
-			// 	his.Result = v.Result
-			// 	his.BigSmall = v.BigSmall
-			// 	his.SinDouble = v.SinDouble
-			// 	his.CardType = v.CardType
-			// 	his.DownBetMoney = v.DownBetMoney
-			// 	pd.DownBetHistory = append(pd.DownBetHistory, his)
-			// }
 			pd.TotalDownBet = v.TotalDownBet
 			pd.WinTotalCount = v.WinTotalCount
 			pd.ResultMoney = v.ResultMoney
@@ -343,38 +338,9 @@ func (r *Room) RespRoomData() *msg.RoomData {
 			rd.TablePlayer = append(rd.TablePlayer, pd)
 		}
 	}
+
 	return rd
 }
-
-// //RespRoomData 返回房间数据
-// func (r *Room) RespUptPlayerList() []*msg.PlayerData {
-// 	var playerSlice []*msg.PlayerData
-// 	for _, v := range r.PlayerList {
-// 		if v != nil {
-// 			pd := &msg.PlayerData{}
-// 			pd.PlayerInfo = new(msg.PlayerInfo)
-// 			pd.PlayerInfo.Id = common.Int32ToStr(v.Id)
-// 			pd.PlayerInfo.NickName = v.NickName
-// 			pd.PlayerInfo.HeadImg = v.HeadImg
-// 			pd.PlayerInfo.Account = v.Account
-// 			pd.DownBetMoney = new(msg.DownBetMoney)
-// 			pd.DownBetMoney.BigDownBet = v.DownBetMoney.BigDownBet
-// 			pd.DownBetMoney.SmallDownBet = v.DownBetMoney.SmallDownBet
-// 			pd.DownBetMoney.SingleDownBet = v.DownBetMoney.SingleDownBet
-// 			pd.DownBetMoney.DoubleDownBet = v.DownBetMoney.DoubleDownBet
-// 			pd.DownBetMoney.PairDownBet = v.DownBetMoney.PairDownBet
-// 			pd.DownBetMoney.StraightDownBet = v.DownBetMoney.StraightDownBet
-// 			pd.DownBetMoney.LeopardDownBet = v.DownBetMoney.LeopardDownBet
-// 			pd.TotalDownBet = v.TotalDownBet
-// 			pd.WinTotalCount = v.WinTotalCount
-// 			pd.ResultMoney = v.ResultMoney
-// 			pd.IsAction = v.IsAction
-// 			pd.IsBanker = v.IsBanker
-// 			playerSlice = append(playerSlice, pd)
-// 		}
-// 	}
-// 	return playerSlice
-// }
 
 //GetGodGableId 获取赌神ID
 func (r *Room) GetGodGableId() {
@@ -557,7 +523,9 @@ func (r *Room) CleanRoomData() {
 	r.TablePlayer = nil
 	r.resultTime = ""
 	r.Lottery = nil
-	r.LotteryResult = msg.PotWinList{}
+	r.LotteryResult = msg.LotteryData{}
+	r.LotteryResult.Result = &msg.LotteryResult{}
+	r.LotteryResult.ResultFX = &msg.LotteryResultFX{}
 	r.PlayerTotalMoney = &msg.DownBetMoney{}
 	r.PotMoneyCount = msg.DownBetMoney{}
 	r.counter = 0
@@ -597,7 +565,7 @@ func (r *Room) KickOutPlayer() {
 	// 清理断线玩家
 	for _, uid := range r.UserLeave {
 		for _, v := range r.PlayerList {
-			if v != nil && v.Id == uid {
+			if v != nil && v.Id == uid && v.IsAction == false {
 				// 玩家断线的话，退出房间信息，也要断开链接
 				if v.IsOnline == true {
 					v.PlayerExitRoom()

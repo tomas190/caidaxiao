@@ -17,24 +17,34 @@ const (
 )
 
 func init() {
-	handlerReg(&msg.Ping{}, HeartBeatHandler)
+	Gamehandler(&msg.Ping{}, HeartBeatHandler)
 
-	handlerReg(&msg.Login_C2S{}, handleLogin)
-	handlerReg(&msg.Logout_C2S{}, handleLogout)
-	handlerReg(&msg.JoinRoom_C2S{}, handleJoinRoom)
-	handlerReg(&msg.LeaveRoom_C2S{}, handleLeaveRoom)
+	Gamehandler(&msg.Login_C2S{}, handleLogin)
+	Gamehandler(&msg.Logout_C2S{}, handleLogout)
+	Gamehandler(&msg.JoinRoom_C2S{}, handleJoinRoom)
+	Gamehandler(&msg.LeaveRoom_C2S{}, handleLeaveRoom)
 
-	handlerReg(&msg.PlayerAction_C2S{}, handlePlayerAction)
+	Gamehandler(&msg.PlayerAction_C2S{}, handlePlayerAction)
 
 	// handlerReg(&msg.BankerData_C2S{}, handleBankerData)
-	handlerReg(&msg.EmojiChat_C2S{}, handleEmojiChat)
+	Gamehandler(&msg.EmojiChat_C2S{}, handleEmojiChat)
 
-	handlerReg(&msg.ShowTableInfo_C2S{}, ShowTableInfo)
+	Gamehandler(&msg.ShowTableInfo_C2S{}, ShowTableInfo)
 }
 
 // 注册消息处理函数
 func handlerReg(m interface{}, h interface{}) {
 	skeleton.RegisterChanRPC(reflect.TypeOf(m), h)
+}
+
+func Gamehandler(m interface{}, h interface{}) {
+	// skeleton.RegisterChanRPC(reflect.TypeOf(m), h)
+	skeleton.RegisterChanRPC(reflect.TypeOf(m), func(args []interface{}) {
+		// 调用 handler
+		skeleton.Go(func() {
+			h.(func([]interface{}))(args)
+		}, func() {})
+	})
 }
 
 // func handlePing(args []interface{}) {
@@ -64,6 +74,10 @@ func handleLogin(args []interface{}) {
 
 	client, ok := AgentFromuserID_.Load(userID)
 	if ok {
+
+		if client.(*ClientInfo).lastLogin+800 > time.Now().UnixNano()/1e6 {
+			return
+		}
 		common.Debug_log("-------------- 踢人成功 --------------")
 
 		// 如果已经登陆过，需要通知之前登陆的用户被踢出游戏
@@ -74,6 +88,7 @@ func handleLogin(args []interface{}) {
 		}
 		client.(*ClientInfo).agent.WriteMsg(kickedBuf) //通知用戶 client.agent 前端踢掉
 		userIDFromAgent_.Delete(client.(*ClientInfo).agent)
+		CloseAgent(client.(*ClientInfo).agent) // 切斷先前Agent
 	}
 
 	bindAgentWithUser(a, userID)
@@ -298,6 +313,7 @@ func findUserByAgent(a gate.Agent) *msg.PlayerInfo {
 
 	if !ok {
 		log.Debug("userIDFromAgent_ err agent 找不到對應userID")
+		CloseAgent(a) //沒有此玩家還戳登出讓他斷線
 		return nil
 	}
 	//查询用户信息
@@ -318,6 +334,8 @@ func handleJoinRoom(args []interface{}) {
 	if ok {
 		log.Debug("handleJoinRoom 玩家加入房间~ : %v", p.Id)
 		hall.PlayerJoinRoom(m.RoomId, p)
+	} else {
+		CloseAgent(a) //沒有此玩家還加入房間讓他斷線
 	}
 }
 
@@ -325,10 +343,13 @@ func handleLeaveRoom(args []interface{}) {
 	a := args[1].(gate.Agent)
 
 	p, ok := a.UserData().(*Player)
-
 	if ok {
-		log.Debug("handleLeaveRoom 玩家退出房间~ : %v", p.Id)
-		p.PlayerExitRoom()
+		if p.IsAction == false {
+			log.Debug("handleLeaveRoom 玩家退出房间~ : %v", p.Id)
+			p.PlayerExitRoom()
+		}
+	} else {
+		CloseAgent(a) //沒有此玩家還離開房間讓他斷線
 	}
 }
 
@@ -340,6 +361,8 @@ func handlePlayerAction(args []interface{}) {
 	if ok {
 		// log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
 		p.PlayerAction(m)
+	} else {
+		CloseAgent(a) //沒有此玩家還下注讓他斷線
 	}
 }
 
@@ -373,6 +396,8 @@ func handleEmojiChat(args []interface{}) {
 			data.GoalId = m.GoalId
 			room.BroadCastMsg(data, "EmojiChat_S2C")
 		}
+	} else {
+		CloseAgent(a) //沒有此玩家還發送表情讓他斷線
 	}
 }
 
@@ -391,6 +416,8 @@ func ShowTableInfo(args []interface{}) {
 			data.RoomData = room.RespRoomData()
 			p.SendMsg(data, "ShowTableInfo_S2C")
 		}
+	} else {
+		CloseAgent(a) //沒有此玩家還想查看玩家列表讓他斷線
 	}
 }
 
@@ -398,9 +425,23 @@ func ShowTableInfo(args []interface{}) {
 func bindAgentWithUser(a gate.Agent, userID int32) {
 
 	AgentFromuserID_.Store(userID, &ClientInfo{
-		agent:  a,
-		expire: time.Now().Unix() + 10,
+		agent:     a,
+		expire:    time.Now().Unix() + 10,
+		lastLogin: time.Now().UnixNano() / 1e6, // 時間戳(毫秒)
 	})
 	userIDFromAgent_.Store(a, userID)
 
+}
+
+func CloseAgent(a gate.Agent) {
+	skeleton.AfterFunc(1*time.Second, func() {
+		DestroyAgent(a)
+	})
+}
+
+//避免先断前端收不到踢人
+func DestroyAgent(a gate.Agent) {
+	ServerSurPool.AgentNum--
+	a.Close()
+	a.Destroy()
 }

@@ -169,15 +169,15 @@ $root.msg = (function() {
      * @name msg.CardsType
      * @enum {number}
      * @property {number} XX_Card=0 XX_Card value
-     * @property {number} Pair=1 Pair value
-     * @property {number} Straight=2 Straight value
+     * @property {number} Small=1 Small value
+     * @property {number} Big=2 Big value
      * @property {number} Leopard=3 Leopard value
      */
     msg.CardsType = (function() {
         var valuesById = {}, values = Object.create(valuesById);
         values[valuesById[0] = "XX_Card"] = 0;
-        values[valuesById[1] = "Pair"] = 1;
-        values[valuesById[2] = "Straight"] = 2;
+        values[valuesById[1] = "Small"] = 1;
+        values[valuesById[2] = "Big"] = 2;
         values[valuesById[3] = "Leopard"] = 3;
         return values;
     })();
@@ -1652,6 +1652,763 @@ $root.msg = (function() {
         return Logout_S2C;
     })();
 
+    msg.PotWinList = (function() {
+
+        /**
+         * Properties of a PotWinList.
+         * @memberof msg
+         * @interface IPotWinList
+         * @property {number|null} [resultNum] PotWinList resultNum
+         * @property {number|null} [bigSmall] PotWinList bigSmall
+         * @property {number|null} [sinDouble] PotWinList sinDouble
+         * @property {msg.CardsType|null} [cardType] PotWinList cardType
+         */
+
+        /**
+         * Constructs a new PotWinList.
+         * @memberof msg
+         * @classdesc Represents a PotWinList.
+         * @implements IPotWinList
+         * @constructor
+         * @param {msg.IPotWinList=} [properties] Properties to set
+         */
+        function PotWinList(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * PotWinList resultNum.
+         * @member {number} resultNum
+         * @memberof msg.PotWinList
+         * @instance
+         */
+        PotWinList.prototype.resultNum = 0;
+
+        /**
+         * PotWinList bigSmall.
+         * @member {number} bigSmall
+         * @memberof msg.PotWinList
+         * @instance
+         */
+        PotWinList.prototype.bigSmall = 0;
+
+        /**
+         * PotWinList sinDouble.
+         * @member {number} sinDouble
+         * @memberof msg.PotWinList
+         * @instance
+         */
+        PotWinList.prototype.sinDouble = 0;
+
+        /**
+         * PotWinList cardType.
+         * @member {msg.CardsType} cardType
+         * @memberof msg.PotWinList
+         * @instance
+         */
+        PotWinList.prototype.cardType = 0;
+
+        /**
+         * Creates a new PotWinList instance using the specified properties.
+         * @function create
+         * @memberof msg.PotWinList
+         * @static
+         * @param {msg.IPotWinList=} [properties] Properties to set
+         * @returns {msg.PotWinList} PotWinList instance
+         */
+        PotWinList.create = function create(properties) {
+            return new PotWinList(properties);
+        };
+
+        /**
+         * Encodes the specified PotWinList message. Does not implicitly {@link msg.PotWinList.verify|verify} messages.
+         * @function encode
+         * @memberof msg.PotWinList
+         * @static
+         * @param {msg.IPotWinList} message PotWinList message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PotWinList.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.resultNum != null && Object.hasOwnProperty.call(message, "resultNum"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.resultNum);
+            if (message.bigSmall != null && Object.hasOwnProperty.call(message, "bigSmall"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.bigSmall);
+            if (message.sinDouble != null && Object.hasOwnProperty.call(message, "sinDouble"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sinDouble);
+            if (message.cardType != null && Object.hasOwnProperty.call(message, "cardType"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.cardType);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified PotWinList message, length delimited. Does not implicitly {@link msg.PotWinList.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msg.PotWinList
+         * @static
+         * @param {msg.IPotWinList} message PotWinList message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PotWinList.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a PotWinList message from the specified reader or buffer.
+         * @function decode
+         * @memberof msg.PotWinList
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msg.PotWinList} PotWinList
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PotWinList.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.PotWinList();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.resultNum = reader.int32();
+                    break;
+                case 2:
+                    message.bigSmall = reader.int32();
+                    break;
+                case 3:
+                    message.sinDouble = reader.int32();
+                    break;
+                case 4:
+                    message.cardType = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a PotWinList message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msg.PotWinList
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msg.PotWinList} PotWinList
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PotWinList.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a PotWinList message.
+         * @function verify
+         * @memberof msg.PotWinList
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        PotWinList.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.resultNum != null && message.hasOwnProperty("resultNum"))
+                if (!$util.isInteger(message.resultNum))
+                    return "resultNum: integer expected";
+            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
+                if (!$util.isInteger(message.bigSmall))
+                    return "bigSmall: integer expected";
+            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
+                if (!$util.isInteger(message.sinDouble))
+                    return "sinDouble: integer expected";
+            if (message.cardType != null && message.hasOwnProperty("cardType"))
+                switch (message.cardType) {
+                default:
+                    return "cardType: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    break;
+                }
+            return null;
+        };
+
+        /**
+         * Creates a PotWinList message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msg.PotWinList
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msg.PotWinList} PotWinList
+         */
+        PotWinList.fromObject = function fromObject(object) {
+            if (object instanceof $root.msg.PotWinList)
+                return object;
+            var message = new $root.msg.PotWinList();
+            if (object.resultNum != null)
+                message.resultNum = object.resultNum | 0;
+            if (object.bigSmall != null)
+                message.bigSmall = object.bigSmall | 0;
+            if (object.sinDouble != null)
+                message.sinDouble = object.sinDouble | 0;
+            switch (object.cardType) {
+            case "XX_Card":
+            case 0:
+                message.cardType = 0;
+                break;
+            case "Small":
+            case 1:
+                message.cardType = 1;
+                break;
+            case "Big":
+            case 2:
+                message.cardType = 2;
+                break;
+            case "Leopard":
+            case 3:
+                message.cardType = 3;
+                break;
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a PotWinList message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msg.PotWinList
+         * @static
+         * @param {msg.PotWinList} message PotWinList
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        PotWinList.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.resultNum = 0;
+                object.bigSmall = 0;
+                object.sinDouble = 0;
+                object.cardType = options.enums === String ? "XX_Card" : 0;
+            }
+            if (message.resultNum != null && message.hasOwnProperty("resultNum"))
+                object.resultNum = message.resultNum;
+            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
+                object.bigSmall = message.bigSmall;
+            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
+                object.sinDouble = message.sinDouble;
+            if (message.cardType != null && message.hasOwnProperty("cardType"))
+                object.cardType = options.enums === String ? $root.msg.CardsType[message.cardType] : message.cardType;
+            return object;
+        };
+
+        /**
+         * Converts this PotWinList to JSON.
+         * @function toJSON
+         * @memberof msg.PotWinList
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        PotWinList.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return PotWinList;
+    })();
+
+    msg.PlayerData = (function() {
+
+        /**
+         * Properties of a PlayerData.
+         * @memberof msg
+         * @interface IPlayerData
+         * @property {msg.IPlayerInfo|null} [playerInfo] PlayerData playerInfo
+         * @property {msg.IDownBetMoney|null} [downBetMoney] PlayerData downBetMoney
+         * @property {msg.PlayerStatus|null} [status] PlayerData status
+         * @property {number|null} [bankerMoney] PlayerData bankerMoney
+         * @property {number|null} [bankerCount] PlayerData bankerCount
+         * @property {number|null} [totalDownBet] PlayerData totalDownBet
+         * @property {number|null} [winTotalCount] PlayerData winTotalCount
+         * @property {number|null} [resultMoney] PlayerData resultMoney
+         * @property {Array.<msg.IDownBetHistory>|null} [downBetHistory] PlayerData downBetHistory
+         * @property {boolean|null} [IsAction] PlayerData IsAction
+         * @property {boolean|null} [IsBanker] PlayerData IsBanker
+         * @property {boolean|null} [IsRobot] PlayerData IsRobot
+         */
+
+        /**
+         * Constructs a new PlayerData.
+         * @memberof msg
+         * @classdesc Represents a PlayerData.
+         * @implements IPlayerData
+         * @constructor
+         * @param {msg.IPlayerData=} [properties] Properties to set
+         */
+        function PlayerData(properties) {
+            this.downBetHistory = [];
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * PlayerData playerInfo.
+         * @member {msg.IPlayerInfo|null|undefined} playerInfo
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.playerInfo = null;
+
+        /**
+         * PlayerData downBetMoney.
+         * @member {msg.IDownBetMoney|null|undefined} downBetMoney
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.downBetMoney = null;
+
+        /**
+         * PlayerData status.
+         * @member {msg.PlayerStatus} status
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.status = 0;
+
+        /**
+         * PlayerData bankerMoney.
+         * @member {number} bankerMoney
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.bankerMoney = 0;
+
+        /**
+         * PlayerData bankerCount.
+         * @member {number} bankerCount
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.bankerCount = 0;
+
+        /**
+         * PlayerData totalDownBet.
+         * @member {number} totalDownBet
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.totalDownBet = 0;
+
+        /**
+         * PlayerData winTotalCount.
+         * @member {number} winTotalCount
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.winTotalCount = 0;
+
+        /**
+         * PlayerData resultMoney.
+         * @member {number} resultMoney
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.resultMoney = 0;
+
+        /**
+         * PlayerData downBetHistory.
+         * @member {Array.<msg.IDownBetHistory>} downBetHistory
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.downBetHistory = $util.emptyArray;
+
+        /**
+         * PlayerData IsAction.
+         * @member {boolean} IsAction
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.IsAction = false;
+
+        /**
+         * PlayerData IsBanker.
+         * @member {boolean} IsBanker
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.IsBanker = false;
+
+        /**
+         * PlayerData IsRobot.
+         * @member {boolean} IsRobot
+         * @memberof msg.PlayerData
+         * @instance
+         */
+        PlayerData.prototype.IsRobot = false;
+
+        /**
+         * Creates a new PlayerData instance using the specified properties.
+         * @function create
+         * @memberof msg.PlayerData
+         * @static
+         * @param {msg.IPlayerData=} [properties] Properties to set
+         * @returns {msg.PlayerData} PlayerData instance
+         */
+        PlayerData.create = function create(properties) {
+            return new PlayerData(properties);
+        };
+
+        /**
+         * Encodes the specified PlayerData message. Does not implicitly {@link msg.PlayerData.verify|verify} messages.
+         * @function encode
+         * @memberof msg.PlayerData
+         * @static
+         * @param {msg.IPlayerData} message PlayerData message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PlayerData.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.playerInfo != null && Object.hasOwnProperty.call(message, "playerInfo"))
+                $root.msg.PlayerInfo.encode(message.playerInfo, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.downBetMoney != null && Object.hasOwnProperty.call(message, "downBetMoney"))
+                $root.msg.DownBetMoney.encode(message.downBetMoney, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.status);
+            if (message.bankerMoney != null && Object.hasOwnProperty.call(message, "bankerMoney"))
+                writer.uint32(/* id 4, wireType 1 =*/33).double(message.bankerMoney);
+            if (message.bankerCount != null && Object.hasOwnProperty.call(message, "bankerCount"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bankerCount);
+            if (message.totalDownBet != null && Object.hasOwnProperty.call(message, "totalDownBet"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.totalDownBet);
+            if (message.winTotalCount != null && Object.hasOwnProperty.call(message, "winTotalCount"))
+                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.winTotalCount);
+            if (message.resultMoney != null && Object.hasOwnProperty.call(message, "resultMoney"))
+                writer.uint32(/* id 8, wireType 1 =*/65).double(message.resultMoney);
+            if (message.downBetHistory != null && message.downBetHistory.length)
+                for (var i = 0; i < message.downBetHistory.length; ++i)
+                    $root.msg.DownBetHistory.encode(message.downBetHistory[i], writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
+            if (message.IsAction != null && Object.hasOwnProperty.call(message, "IsAction"))
+                writer.uint32(/* id 11, wireType 0 =*/88).bool(message.IsAction);
+            if (message.IsBanker != null && Object.hasOwnProperty.call(message, "IsBanker"))
+                writer.uint32(/* id 12, wireType 0 =*/96).bool(message.IsBanker);
+            if (message.IsRobot != null && Object.hasOwnProperty.call(message, "IsRobot"))
+                writer.uint32(/* id 13, wireType 0 =*/104).bool(message.IsRobot);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified PlayerData message, length delimited. Does not implicitly {@link msg.PlayerData.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msg.PlayerData
+         * @static
+         * @param {msg.IPlayerData} message PlayerData message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PlayerData.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a PlayerData message from the specified reader or buffer.
+         * @function decode
+         * @memberof msg.PlayerData
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msg.PlayerData} PlayerData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PlayerData.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.PlayerData();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.playerInfo = $root.msg.PlayerInfo.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.downBetMoney = $root.msg.DownBetMoney.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.status = reader.int32();
+                    break;
+                case 4:
+                    message.bankerMoney = reader.double();
+                    break;
+                case 5:
+                    message.bankerCount = reader.int32();
+                    break;
+                case 6:
+                    message.totalDownBet = reader.int32();
+                    break;
+                case 7:
+                    message.winTotalCount = reader.int32();
+                    break;
+                case 8:
+                    message.resultMoney = reader.double();
+                    break;
+                case 10:
+                    if (!(message.downBetHistory && message.downBetHistory.length))
+                        message.downBetHistory = [];
+                    message.downBetHistory.push($root.msg.DownBetHistory.decode(reader, reader.uint32()));
+                    break;
+                case 11:
+                    message.IsAction = reader.bool();
+                    break;
+                case 12:
+                    message.IsBanker = reader.bool();
+                    break;
+                case 13:
+                    message.IsRobot = reader.bool();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a PlayerData message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msg.PlayerData
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msg.PlayerData} PlayerData
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PlayerData.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a PlayerData message.
+         * @function verify
+         * @memberof msg.PlayerData
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        PlayerData.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.playerInfo != null && message.hasOwnProperty("playerInfo")) {
+                var error = $root.msg.PlayerInfo.verify(message.playerInfo);
+                if (error)
+                    return "playerInfo." + error;
+            }
+            if (message.downBetMoney != null && message.hasOwnProperty("downBetMoney")) {
+                var error = $root.msg.DownBetMoney.verify(message.downBetMoney);
+                if (error)
+                    return "downBetMoney." + error;
+            }
+            if (message.status != null && message.hasOwnProperty("status"))
+                switch (message.status) {
+                default:
+                    return "status: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                    break;
+                }
+            if (message.bankerMoney != null && message.hasOwnProperty("bankerMoney"))
+                if (typeof message.bankerMoney !== "number")
+                    return "bankerMoney: number expected";
+            if (message.bankerCount != null && message.hasOwnProperty("bankerCount"))
+                if (!$util.isInteger(message.bankerCount))
+                    return "bankerCount: integer expected";
+            if (message.totalDownBet != null && message.hasOwnProperty("totalDownBet"))
+                if (!$util.isInteger(message.totalDownBet))
+                    return "totalDownBet: integer expected";
+            if (message.winTotalCount != null && message.hasOwnProperty("winTotalCount"))
+                if (!$util.isInteger(message.winTotalCount))
+                    return "winTotalCount: integer expected";
+            if (message.resultMoney != null && message.hasOwnProperty("resultMoney"))
+                if (typeof message.resultMoney !== "number")
+                    return "resultMoney: number expected";
+            if (message.downBetHistory != null && message.hasOwnProperty("downBetHistory")) {
+                if (!Array.isArray(message.downBetHistory))
+                    return "downBetHistory: array expected";
+                for (var i = 0; i < message.downBetHistory.length; ++i) {
+                    var error = $root.msg.DownBetHistory.verify(message.downBetHistory[i]);
+                    if (error)
+                        return "downBetHistory." + error;
+                }
+            }
+            if (message.IsAction != null && message.hasOwnProperty("IsAction"))
+                if (typeof message.IsAction !== "boolean")
+                    return "IsAction: boolean expected";
+            if (message.IsBanker != null && message.hasOwnProperty("IsBanker"))
+                if (typeof message.IsBanker !== "boolean")
+                    return "IsBanker: boolean expected";
+            if (message.IsRobot != null && message.hasOwnProperty("IsRobot"))
+                if (typeof message.IsRobot !== "boolean")
+                    return "IsRobot: boolean expected";
+            return null;
+        };
+
+        /**
+         * Creates a PlayerData message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msg.PlayerData
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msg.PlayerData} PlayerData
+         */
+        PlayerData.fromObject = function fromObject(object) {
+            if (object instanceof $root.msg.PlayerData)
+                return object;
+            var message = new $root.msg.PlayerData();
+            if (object.playerInfo != null) {
+                if (typeof object.playerInfo !== "object")
+                    throw TypeError(".msg.PlayerData.playerInfo: object expected");
+                message.playerInfo = $root.msg.PlayerInfo.fromObject(object.playerInfo);
+            }
+            if (object.downBetMoney != null) {
+                if (typeof object.downBetMoney !== "object")
+                    throw TypeError(".msg.PlayerData.downBetMoney: object expected");
+                message.downBetMoney = $root.msg.DownBetMoney.fromObject(object.downBetMoney);
+            }
+            switch (object.status) {
+            case "XX_Status":
+            case 0:
+                message.status = 0;
+                break;
+            case "PlayGame":
+            case 1:
+                message.status = 1;
+                break;
+            case "WatchGame":
+            case 2:
+                message.status = 2;
+                break;
+            }
+            if (object.bankerMoney != null)
+                message.bankerMoney = Number(object.bankerMoney);
+            if (object.bankerCount != null)
+                message.bankerCount = object.bankerCount | 0;
+            if (object.totalDownBet != null)
+                message.totalDownBet = object.totalDownBet | 0;
+            if (object.winTotalCount != null)
+                message.winTotalCount = object.winTotalCount | 0;
+            if (object.resultMoney != null)
+                message.resultMoney = Number(object.resultMoney);
+            if (object.downBetHistory) {
+                if (!Array.isArray(object.downBetHistory))
+                    throw TypeError(".msg.PlayerData.downBetHistory: array expected");
+                message.downBetHistory = [];
+                for (var i = 0; i < object.downBetHistory.length; ++i) {
+                    if (typeof object.downBetHistory[i] !== "object")
+                        throw TypeError(".msg.PlayerData.downBetHistory: object expected");
+                    message.downBetHistory[i] = $root.msg.DownBetHistory.fromObject(object.downBetHistory[i]);
+                }
+            }
+            if (object.IsAction != null)
+                message.IsAction = Boolean(object.IsAction);
+            if (object.IsBanker != null)
+                message.IsBanker = Boolean(object.IsBanker);
+            if (object.IsRobot != null)
+                message.IsRobot = Boolean(object.IsRobot);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a PlayerData message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msg.PlayerData
+         * @static
+         * @param {msg.PlayerData} message PlayerData
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        PlayerData.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.arrays || options.defaults)
+                object.downBetHistory = [];
+            if (options.defaults) {
+                object.playerInfo = null;
+                object.downBetMoney = null;
+                object.status = options.enums === String ? "XX_Status" : 0;
+                object.bankerMoney = 0;
+                object.bankerCount = 0;
+                object.totalDownBet = 0;
+                object.winTotalCount = 0;
+                object.resultMoney = 0;
+                object.IsAction = false;
+                object.IsBanker = false;
+                object.IsRobot = false;
+            }
+            if (message.playerInfo != null && message.hasOwnProperty("playerInfo"))
+                object.playerInfo = $root.msg.PlayerInfo.toObject(message.playerInfo, options);
+            if (message.downBetMoney != null && message.hasOwnProperty("downBetMoney"))
+                object.downBetMoney = $root.msg.DownBetMoney.toObject(message.downBetMoney, options);
+            if (message.status != null && message.hasOwnProperty("status"))
+                object.status = options.enums === String ? $root.msg.PlayerStatus[message.status] : message.status;
+            if (message.bankerMoney != null && message.hasOwnProperty("bankerMoney"))
+                object.bankerMoney = options.json && !isFinite(message.bankerMoney) ? String(message.bankerMoney) : message.bankerMoney;
+            if (message.bankerCount != null && message.hasOwnProperty("bankerCount"))
+                object.bankerCount = message.bankerCount;
+            if (message.totalDownBet != null && message.hasOwnProperty("totalDownBet"))
+                object.totalDownBet = message.totalDownBet;
+            if (message.winTotalCount != null && message.hasOwnProperty("winTotalCount"))
+                object.winTotalCount = message.winTotalCount;
+            if (message.resultMoney != null && message.hasOwnProperty("resultMoney"))
+                object.resultMoney = options.json && !isFinite(message.resultMoney) ? String(message.resultMoney) : message.resultMoney;
+            if (message.downBetHistory && message.downBetHistory.length) {
+                object.downBetHistory = [];
+                for (var j = 0; j < message.downBetHistory.length; ++j)
+                    object.downBetHistory[j] = $root.msg.DownBetHistory.toObject(message.downBetHistory[j], options);
+            }
+            if (message.IsAction != null && message.hasOwnProperty("IsAction"))
+                object.IsAction = message.IsAction;
+            if (message.IsBanker != null && message.hasOwnProperty("IsBanker"))
+                object.IsBanker = message.IsBanker;
+            if (message.IsRobot != null && message.hasOwnProperty("IsRobot"))
+                object.IsRobot = message.IsRobot;
+            return object;
+        };
+
+        /**
+         * Converts this PlayerData to JSON.
+         * @function toJSON
+         * @memberof msg.PlayerData
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        PlayerData.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return PlayerData;
+    })();
+
     msg.DownBetMoney = (function() {
 
         /**
@@ -1972,807 +2729,6 @@ $root.msg = (function() {
         return DownBetMoney;
     })();
 
-    msg.PotWinList = (function() {
-
-        /**
-         * Properties of a PotWinList.
-         * @memberof msg
-         * @interface IPotWinList
-         * @property {number|null} [resultNum] PotWinList resultNum
-         * @property {number|null} [bigSmall] PotWinList bigSmall
-         * @property {number|null} [sinDouble] PotWinList sinDouble
-         * @property {msg.CardsType|null} [cardType] PotWinList cardType
-         */
-
-        /**
-         * Constructs a new PotWinList.
-         * @memberof msg
-         * @classdesc Represents a PotWinList.
-         * @implements IPotWinList
-         * @constructor
-         * @param {msg.IPotWinList=} [properties] Properties to set
-         */
-        function PotWinList(properties) {
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * PotWinList resultNum.
-         * @member {number} resultNum
-         * @memberof msg.PotWinList
-         * @instance
-         */
-        PotWinList.prototype.resultNum = 0;
-
-        /**
-         * PotWinList bigSmall.
-         * @member {number} bigSmall
-         * @memberof msg.PotWinList
-         * @instance
-         */
-        PotWinList.prototype.bigSmall = 0;
-
-        /**
-         * PotWinList sinDouble.
-         * @member {number} sinDouble
-         * @memberof msg.PotWinList
-         * @instance
-         */
-        PotWinList.prototype.sinDouble = 0;
-
-        /**
-         * PotWinList cardType.
-         * @member {msg.CardsType} cardType
-         * @memberof msg.PotWinList
-         * @instance
-         */
-        PotWinList.prototype.cardType = 0;
-
-        /**
-         * Creates a new PotWinList instance using the specified properties.
-         * @function create
-         * @memberof msg.PotWinList
-         * @static
-         * @param {msg.IPotWinList=} [properties] Properties to set
-         * @returns {msg.PotWinList} PotWinList instance
-         */
-        PotWinList.create = function create(properties) {
-            return new PotWinList(properties);
-        };
-
-        /**
-         * Encodes the specified PotWinList message. Does not implicitly {@link msg.PotWinList.verify|verify} messages.
-         * @function encode
-         * @memberof msg.PotWinList
-         * @static
-         * @param {msg.IPotWinList} message PotWinList message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        PotWinList.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.resultNum != null && Object.hasOwnProperty.call(message, "resultNum"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.resultNum);
-            if (message.bigSmall != null && Object.hasOwnProperty.call(message, "bigSmall"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.bigSmall);
-            if (message.sinDouble != null && Object.hasOwnProperty.call(message, "sinDouble"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.sinDouble);
-            if (message.cardType != null && Object.hasOwnProperty.call(message, "cardType"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.cardType);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified PotWinList message, length delimited. Does not implicitly {@link msg.PotWinList.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof msg.PotWinList
-         * @static
-         * @param {msg.IPotWinList} message PotWinList message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        PotWinList.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a PotWinList message from the specified reader or buffer.
-         * @function decode
-         * @memberof msg.PotWinList
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {msg.PotWinList} PotWinList
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        PotWinList.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.PotWinList();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.resultNum = reader.int32();
-                    break;
-                case 2:
-                    message.bigSmall = reader.int32();
-                    break;
-                case 3:
-                    message.sinDouble = reader.int32();
-                    break;
-                case 4:
-                    message.cardType = reader.int32();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a PotWinList message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof msg.PotWinList
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {msg.PotWinList} PotWinList
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        PotWinList.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a PotWinList message.
-         * @function verify
-         * @memberof msg.PotWinList
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        PotWinList.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.resultNum != null && message.hasOwnProperty("resultNum"))
-                if (!$util.isInteger(message.resultNum))
-                    return "resultNum: integer expected";
-            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
-                if (!$util.isInteger(message.bigSmall))
-                    return "bigSmall: integer expected";
-            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
-                if (!$util.isInteger(message.sinDouble))
-                    return "sinDouble: integer expected";
-            if (message.cardType != null && message.hasOwnProperty("cardType"))
-                switch (message.cardType) {
-                default:
-                    return "cardType: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                    break;
-                }
-            return null;
-        };
-
-        /**
-         * Creates a PotWinList message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof msg.PotWinList
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {msg.PotWinList} PotWinList
-         */
-        PotWinList.fromObject = function fromObject(object) {
-            if (object instanceof $root.msg.PotWinList)
-                return object;
-            var message = new $root.msg.PotWinList();
-            if (object.resultNum != null)
-                message.resultNum = object.resultNum | 0;
-            if (object.bigSmall != null)
-                message.bigSmall = object.bigSmall | 0;
-            if (object.sinDouble != null)
-                message.sinDouble = object.sinDouble | 0;
-            switch (object.cardType) {
-            case "XX_Card":
-            case 0:
-                message.cardType = 0;
-                break;
-            case "Pair":
-            case 1:
-                message.cardType = 1;
-                break;
-            case "Straight":
-            case 2:
-                message.cardType = 2;
-                break;
-            case "Leopard":
-            case 3:
-                message.cardType = 3;
-                break;
-            }
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a PotWinList message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof msg.PotWinList
-         * @static
-         * @param {msg.PotWinList} message PotWinList
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        PotWinList.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.defaults) {
-                object.resultNum = 0;
-                object.bigSmall = 0;
-                object.sinDouble = 0;
-                object.cardType = options.enums === String ? "XX_Card" : 0;
-            }
-            if (message.resultNum != null && message.hasOwnProperty("resultNum"))
-                object.resultNum = message.resultNum;
-            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
-                object.bigSmall = message.bigSmall;
-            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
-                object.sinDouble = message.sinDouble;
-            if (message.cardType != null && message.hasOwnProperty("cardType"))
-                object.cardType = options.enums === String ? $root.msg.CardsType[message.cardType] : message.cardType;
-            return object;
-        };
-
-        /**
-         * Converts this PotWinList to JSON.
-         * @function toJSON
-         * @memberof msg.PotWinList
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        PotWinList.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return PotWinList;
-    })();
-
-    msg.PlayerData = (function() {
-
-        /**
-         * Properties of a PlayerData.
-         * @memberof msg
-         * @interface IPlayerData
-         * @property {msg.IPlayerInfo|null} [playerInfo] PlayerData playerInfo
-         * @property {msg.IDownBetMoney|null} [downBetMoney] PlayerData downBetMoney
-         * @property {msg.PlayerStatus|null} [status] PlayerData status
-         * @property {number|null} [bankerMoney] PlayerData bankerMoney
-         * @property {number|null} [bankerCount] PlayerData bankerCount
-         * @property {number|null} [totalDownBet] PlayerData totalDownBet
-         * @property {number|null} [winTotalCount] PlayerData winTotalCount
-         * @property {number|null} [resultMoney] PlayerData resultMoney
-         * @property {Array.<msg.IPotWinList>|null} [potWinList] PlayerData potWinList
-         * @property {Array.<msg.IDownBetHistory>|null} [downBetHistory] PlayerData downBetHistory
-         * @property {boolean|null} [IsAction] PlayerData IsAction
-         * @property {boolean|null} [IsBanker] PlayerData IsBanker
-         * @property {boolean|null} [IsRobot] PlayerData IsRobot
-         */
-
-        /**
-         * Constructs a new PlayerData.
-         * @memberof msg
-         * @classdesc Represents a PlayerData.
-         * @implements IPlayerData
-         * @constructor
-         * @param {msg.IPlayerData=} [properties] Properties to set
-         */
-        function PlayerData(properties) {
-            this.potWinList = [];
-            this.downBetHistory = [];
-            if (properties)
-                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
-        }
-
-        /**
-         * PlayerData playerInfo.
-         * @member {msg.IPlayerInfo|null|undefined} playerInfo
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.playerInfo = null;
-
-        /**
-         * PlayerData downBetMoney.
-         * @member {msg.IDownBetMoney|null|undefined} downBetMoney
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.downBetMoney = null;
-
-        /**
-         * PlayerData status.
-         * @member {msg.PlayerStatus} status
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.status = 0;
-
-        /**
-         * PlayerData bankerMoney.
-         * @member {number} bankerMoney
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.bankerMoney = 0;
-
-        /**
-         * PlayerData bankerCount.
-         * @member {number} bankerCount
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.bankerCount = 0;
-
-        /**
-         * PlayerData totalDownBet.
-         * @member {number} totalDownBet
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.totalDownBet = 0;
-
-        /**
-         * PlayerData winTotalCount.
-         * @member {number} winTotalCount
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.winTotalCount = 0;
-
-        /**
-         * PlayerData resultMoney.
-         * @member {number} resultMoney
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.resultMoney = 0;
-
-        /**
-         * PlayerData potWinList.
-         * @member {Array.<msg.IPotWinList>} potWinList
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.potWinList = $util.emptyArray;
-
-        /**
-         * PlayerData downBetHistory.
-         * @member {Array.<msg.IDownBetHistory>} downBetHistory
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.downBetHistory = $util.emptyArray;
-
-        /**
-         * PlayerData IsAction.
-         * @member {boolean} IsAction
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.IsAction = false;
-
-        /**
-         * PlayerData IsBanker.
-         * @member {boolean} IsBanker
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.IsBanker = false;
-
-        /**
-         * PlayerData IsRobot.
-         * @member {boolean} IsRobot
-         * @memberof msg.PlayerData
-         * @instance
-         */
-        PlayerData.prototype.IsRobot = false;
-
-        /**
-         * Creates a new PlayerData instance using the specified properties.
-         * @function create
-         * @memberof msg.PlayerData
-         * @static
-         * @param {msg.IPlayerData=} [properties] Properties to set
-         * @returns {msg.PlayerData} PlayerData instance
-         */
-        PlayerData.create = function create(properties) {
-            return new PlayerData(properties);
-        };
-
-        /**
-         * Encodes the specified PlayerData message. Does not implicitly {@link msg.PlayerData.verify|verify} messages.
-         * @function encode
-         * @memberof msg.PlayerData
-         * @static
-         * @param {msg.IPlayerData} message PlayerData message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        PlayerData.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.playerInfo != null && Object.hasOwnProperty.call(message, "playerInfo"))
-                $root.msg.PlayerInfo.encode(message.playerInfo, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.downBetMoney != null && Object.hasOwnProperty.call(message, "downBetMoney"))
-                $root.msg.DownBetMoney.encode(message.downBetMoney, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.status);
-            if (message.bankerMoney != null && Object.hasOwnProperty.call(message, "bankerMoney"))
-                writer.uint32(/* id 4, wireType 1 =*/33).double(message.bankerMoney);
-            if (message.bankerCount != null && Object.hasOwnProperty.call(message, "bankerCount"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bankerCount);
-            if (message.totalDownBet != null && Object.hasOwnProperty.call(message, "totalDownBet"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.totalDownBet);
-            if (message.winTotalCount != null && Object.hasOwnProperty.call(message, "winTotalCount"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.winTotalCount);
-            if (message.resultMoney != null && Object.hasOwnProperty.call(message, "resultMoney"))
-                writer.uint32(/* id 8, wireType 1 =*/65).double(message.resultMoney);
-            if (message.potWinList != null && message.potWinList.length)
-                for (var i = 0; i < message.potWinList.length; ++i)
-                    $root.msg.PotWinList.encode(message.potWinList[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-            if (message.downBetHistory != null && message.downBetHistory.length)
-                for (var i = 0; i < message.downBetHistory.length; ++i)
-                    $root.msg.DownBetHistory.encode(message.downBetHistory[i], writer.uint32(/* id 10, wireType 2 =*/82).fork()).ldelim();
-            if (message.IsAction != null && Object.hasOwnProperty.call(message, "IsAction"))
-                writer.uint32(/* id 11, wireType 0 =*/88).bool(message.IsAction);
-            if (message.IsBanker != null && Object.hasOwnProperty.call(message, "IsBanker"))
-                writer.uint32(/* id 12, wireType 0 =*/96).bool(message.IsBanker);
-            if (message.IsRobot != null && Object.hasOwnProperty.call(message, "IsRobot"))
-                writer.uint32(/* id 13, wireType 0 =*/104).bool(message.IsRobot);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified PlayerData message, length delimited. Does not implicitly {@link msg.PlayerData.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof msg.PlayerData
-         * @static
-         * @param {msg.IPlayerData} message PlayerData message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        PlayerData.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a PlayerData message from the specified reader or buffer.
-         * @function decode
-         * @memberof msg.PlayerData
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {msg.PlayerData} PlayerData
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        PlayerData.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.PlayerData();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1:
-                    message.playerInfo = $root.msg.PlayerInfo.decode(reader, reader.uint32());
-                    break;
-                case 2:
-                    message.downBetMoney = $root.msg.DownBetMoney.decode(reader, reader.uint32());
-                    break;
-                case 3:
-                    message.status = reader.int32();
-                    break;
-                case 4:
-                    message.bankerMoney = reader.double();
-                    break;
-                case 5:
-                    message.bankerCount = reader.int32();
-                    break;
-                case 6:
-                    message.totalDownBet = reader.int32();
-                    break;
-                case 7:
-                    message.winTotalCount = reader.int32();
-                    break;
-                case 8:
-                    message.resultMoney = reader.double();
-                    break;
-                case 9:
-                    if (!(message.potWinList && message.potWinList.length))
-                        message.potWinList = [];
-                    message.potWinList.push($root.msg.PotWinList.decode(reader, reader.uint32()));
-                    break;
-                case 10:
-                    if (!(message.downBetHistory && message.downBetHistory.length))
-                        message.downBetHistory = [];
-                    message.downBetHistory.push($root.msg.DownBetHistory.decode(reader, reader.uint32()));
-                    break;
-                case 11:
-                    message.IsAction = reader.bool();
-                    break;
-                case 12:
-                    message.IsBanker = reader.bool();
-                    break;
-                case 13:
-                    message.IsRobot = reader.bool();
-                    break;
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a PlayerData message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof msg.PlayerData
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {msg.PlayerData} PlayerData
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        PlayerData.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
-
-        /**
-         * Verifies a PlayerData message.
-         * @function verify
-         * @memberof msg.PlayerData
-         * @static
-         * @param {Object.<string,*>} message Plain object to verify
-         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-         */
-        PlayerData.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            if (message.playerInfo != null && message.hasOwnProperty("playerInfo")) {
-                var error = $root.msg.PlayerInfo.verify(message.playerInfo);
-                if (error)
-                    return "playerInfo." + error;
-            }
-            if (message.downBetMoney != null && message.hasOwnProperty("downBetMoney")) {
-                var error = $root.msg.DownBetMoney.verify(message.downBetMoney);
-                if (error)
-                    return "downBetMoney." + error;
-            }
-            if (message.status != null && message.hasOwnProperty("status"))
-                switch (message.status) {
-                default:
-                    return "status: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                    break;
-                }
-            if (message.bankerMoney != null && message.hasOwnProperty("bankerMoney"))
-                if (typeof message.bankerMoney !== "number")
-                    return "bankerMoney: number expected";
-            if (message.bankerCount != null && message.hasOwnProperty("bankerCount"))
-                if (!$util.isInteger(message.bankerCount))
-                    return "bankerCount: integer expected";
-            if (message.totalDownBet != null && message.hasOwnProperty("totalDownBet"))
-                if (!$util.isInteger(message.totalDownBet))
-                    return "totalDownBet: integer expected";
-            if (message.winTotalCount != null && message.hasOwnProperty("winTotalCount"))
-                if (!$util.isInteger(message.winTotalCount))
-                    return "winTotalCount: integer expected";
-            if (message.resultMoney != null && message.hasOwnProperty("resultMoney"))
-                if (typeof message.resultMoney !== "number")
-                    return "resultMoney: number expected";
-            if (message.potWinList != null && message.hasOwnProperty("potWinList")) {
-                if (!Array.isArray(message.potWinList))
-                    return "potWinList: array expected";
-                for (var i = 0; i < message.potWinList.length; ++i) {
-                    var error = $root.msg.PotWinList.verify(message.potWinList[i]);
-                    if (error)
-                        return "potWinList." + error;
-                }
-            }
-            if (message.downBetHistory != null && message.hasOwnProperty("downBetHistory")) {
-                if (!Array.isArray(message.downBetHistory))
-                    return "downBetHistory: array expected";
-                for (var i = 0; i < message.downBetHistory.length; ++i) {
-                    var error = $root.msg.DownBetHistory.verify(message.downBetHistory[i]);
-                    if (error)
-                        return "downBetHistory." + error;
-                }
-            }
-            if (message.IsAction != null && message.hasOwnProperty("IsAction"))
-                if (typeof message.IsAction !== "boolean")
-                    return "IsAction: boolean expected";
-            if (message.IsBanker != null && message.hasOwnProperty("IsBanker"))
-                if (typeof message.IsBanker !== "boolean")
-                    return "IsBanker: boolean expected";
-            if (message.IsRobot != null && message.hasOwnProperty("IsRobot"))
-                if (typeof message.IsRobot !== "boolean")
-                    return "IsRobot: boolean expected";
-            return null;
-        };
-
-        /**
-         * Creates a PlayerData message from a plain object. Also converts values to their respective internal types.
-         * @function fromObject
-         * @memberof msg.PlayerData
-         * @static
-         * @param {Object.<string,*>} object Plain object
-         * @returns {msg.PlayerData} PlayerData
-         */
-        PlayerData.fromObject = function fromObject(object) {
-            if (object instanceof $root.msg.PlayerData)
-                return object;
-            var message = new $root.msg.PlayerData();
-            if (object.playerInfo != null) {
-                if (typeof object.playerInfo !== "object")
-                    throw TypeError(".msg.PlayerData.playerInfo: object expected");
-                message.playerInfo = $root.msg.PlayerInfo.fromObject(object.playerInfo);
-            }
-            if (object.downBetMoney != null) {
-                if (typeof object.downBetMoney !== "object")
-                    throw TypeError(".msg.PlayerData.downBetMoney: object expected");
-                message.downBetMoney = $root.msg.DownBetMoney.fromObject(object.downBetMoney);
-            }
-            switch (object.status) {
-            case "XX_Status":
-            case 0:
-                message.status = 0;
-                break;
-            case "PlayGame":
-            case 1:
-                message.status = 1;
-                break;
-            case "WatchGame":
-            case 2:
-                message.status = 2;
-                break;
-            }
-            if (object.bankerMoney != null)
-                message.bankerMoney = Number(object.bankerMoney);
-            if (object.bankerCount != null)
-                message.bankerCount = object.bankerCount | 0;
-            if (object.totalDownBet != null)
-                message.totalDownBet = object.totalDownBet | 0;
-            if (object.winTotalCount != null)
-                message.winTotalCount = object.winTotalCount | 0;
-            if (object.resultMoney != null)
-                message.resultMoney = Number(object.resultMoney);
-            if (object.potWinList) {
-                if (!Array.isArray(object.potWinList))
-                    throw TypeError(".msg.PlayerData.potWinList: array expected");
-                message.potWinList = [];
-                for (var i = 0; i < object.potWinList.length; ++i) {
-                    if (typeof object.potWinList[i] !== "object")
-                        throw TypeError(".msg.PlayerData.potWinList: object expected");
-                    message.potWinList[i] = $root.msg.PotWinList.fromObject(object.potWinList[i]);
-                }
-            }
-            if (object.downBetHistory) {
-                if (!Array.isArray(object.downBetHistory))
-                    throw TypeError(".msg.PlayerData.downBetHistory: array expected");
-                message.downBetHistory = [];
-                for (var i = 0; i < object.downBetHistory.length; ++i) {
-                    if (typeof object.downBetHistory[i] !== "object")
-                        throw TypeError(".msg.PlayerData.downBetHistory: object expected");
-                    message.downBetHistory[i] = $root.msg.DownBetHistory.fromObject(object.downBetHistory[i]);
-                }
-            }
-            if (object.IsAction != null)
-                message.IsAction = Boolean(object.IsAction);
-            if (object.IsBanker != null)
-                message.IsBanker = Boolean(object.IsBanker);
-            if (object.IsRobot != null)
-                message.IsRobot = Boolean(object.IsRobot);
-            return message;
-        };
-
-        /**
-         * Creates a plain object from a PlayerData message. Also converts values to other types if specified.
-         * @function toObject
-         * @memberof msg.PlayerData
-         * @static
-         * @param {msg.PlayerData} message PlayerData
-         * @param {$protobuf.IConversionOptions} [options] Conversion options
-         * @returns {Object.<string,*>} Plain object
-         */
-        PlayerData.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            var object = {};
-            if (options.arrays || options.defaults) {
-                object.potWinList = [];
-                object.downBetHistory = [];
-            }
-            if (options.defaults) {
-                object.playerInfo = null;
-                object.downBetMoney = null;
-                object.status = options.enums === String ? "XX_Status" : 0;
-                object.bankerMoney = 0;
-                object.bankerCount = 0;
-                object.totalDownBet = 0;
-                object.winTotalCount = 0;
-                object.resultMoney = 0;
-                object.IsAction = false;
-                object.IsBanker = false;
-                object.IsRobot = false;
-            }
-            if (message.playerInfo != null && message.hasOwnProperty("playerInfo"))
-                object.playerInfo = $root.msg.PlayerInfo.toObject(message.playerInfo, options);
-            if (message.downBetMoney != null && message.hasOwnProperty("downBetMoney"))
-                object.downBetMoney = $root.msg.DownBetMoney.toObject(message.downBetMoney, options);
-            if (message.status != null && message.hasOwnProperty("status"))
-                object.status = options.enums === String ? $root.msg.PlayerStatus[message.status] : message.status;
-            if (message.bankerMoney != null && message.hasOwnProperty("bankerMoney"))
-                object.bankerMoney = options.json && !isFinite(message.bankerMoney) ? String(message.bankerMoney) : message.bankerMoney;
-            if (message.bankerCount != null && message.hasOwnProperty("bankerCount"))
-                object.bankerCount = message.bankerCount;
-            if (message.totalDownBet != null && message.hasOwnProperty("totalDownBet"))
-                object.totalDownBet = message.totalDownBet;
-            if (message.winTotalCount != null && message.hasOwnProperty("winTotalCount"))
-                object.winTotalCount = message.winTotalCount;
-            if (message.resultMoney != null && message.hasOwnProperty("resultMoney"))
-                object.resultMoney = options.json && !isFinite(message.resultMoney) ? String(message.resultMoney) : message.resultMoney;
-            if (message.potWinList && message.potWinList.length) {
-                object.potWinList = [];
-                for (var j = 0; j < message.potWinList.length; ++j)
-                    object.potWinList[j] = $root.msg.PotWinList.toObject(message.potWinList[j], options);
-            }
-            if (message.downBetHistory && message.downBetHistory.length) {
-                object.downBetHistory = [];
-                for (var j = 0; j < message.downBetHistory.length; ++j)
-                    object.downBetHistory[j] = $root.msg.DownBetHistory.toObject(message.downBetHistory[j], options);
-            }
-            if (message.IsAction != null && message.hasOwnProperty("IsAction"))
-                object.IsAction = message.IsAction;
-            if (message.IsBanker != null && message.hasOwnProperty("IsBanker"))
-                object.IsBanker = message.IsBanker;
-            if (message.IsRobot != null && message.hasOwnProperty("IsRobot"))
-                object.IsRobot = message.IsRobot;
-            return object;
-        };
-
-        /**
-         * Converts this PlayerData to JSON.
-         * @function toJSON
-         * @memberof msg.PlayerData
-         * @instance
-         * @returns {Object.<string,*>} JSON object
-         */
-        PlayerData.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
-
-        return PlayerData;
-    })();
-
     msg.DownBetHistory = (function() {
 
         /**
@@ -2781,10 +2737,8 @@ $root.msg = (function() {
          * @interface IDownBetHistory
          * @property {string|null} [timeFmt] DownBetHistory timeFmt
          * @property {Array.<number>|null} [resNum] DownBetHistory resNum
-         * @property {number|null} [result] DownBetHistory result
-         * @property {number|null} [sinDouble] DownBetHistory sinDouble
-         * @property {number|null} [bigSmall] DownBetHistory bigSmall
-         * @property {msg.CardsType|null} [cardType] DownBetHistory cardType
+         * @property {msg.ILotteryResult|null} [result] DownBetHistory result
+         * @property {msg.ILotteryResultFX|null} [resultFX] DownBetHistory resultFX
          * @property {msg.IDownBetMoney|null} [downBetMoney] DownBetHistory downBetMoney
          */
 
@@ -2822,35 +2776,19 @@ $root.msg = (function() {
 
         /**
          * DownBetHistory result.
-         * @member {number} result
+         * @member {msg.ILotteryResult|null|undefined} result
          * @memberof msg.DownBetHistory
          * @instance
          */
-        DownBetHistory.prototype.result = 0;
+        DownBetHistory.prototype.result = null;
 
         /**
-         * DownBetHistory sinDouble.
-         * @member {number} sinDouble
+         * DownBetHistory resultFX.
+         * @member {msg.ILotteryResultFX|null|undefined} resultFX
          * @memberof msg.DownBetHistory
          * @instance
          */
-        DownBetHistory.prototype.sinDouble = 0;
-
-        /**
-         * DownBetHistory bigSmall.
-         * @member {number} bigSmall
-         * @memberof msg.DownBetHistory
-         * @instance
-         */
-        DownBetHistory.prototype.bigSmall = 0;
-
-        /**
-         * DownBetHistory cardType.
-         * @member {msg.CardsType} cardType
-         * @memberof msg.DownBetHistory
-         * @instance
-         */
-        DownBetHistory.prototype.cardType = 0;
+        DownBetHistory.prototype.resultFX = null;
 
         /**
          * DownBetHistory downBetMoney.
@@ -2893,15 +2831,11 @@ $root.msg = (function() {
                 writer.ldelim();
             }
             if (message.result != null && Object.hasOwnProperty.call(message, "result"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.result);
-            if (message.sinDouble != null && Object.hasOwnProperty.call(message, "sinDouble"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.sinDouble);
-            if (message.bigSmall != null && Object.hasOwnProperty.call(message, "bigSmall"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bigSmall);
-            if (message.cardType != null && Object.hasOwnProperty.call(message, "cardType"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.cardType);
+                $root.msg.LotteryResult.encode(message.result, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.resultFX != null && Object.hasOwnProperty.call(message, "resultFX"))
+                $root.msg.LotteryResultFX.encode(message.resultFX, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.downBetMoney != null && Object.hasOwnProperty.call(message, "downBetMoney"))
-                $root.msg.DownBetMoney.encode(message.downBetMoney, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.msg.DownBetMoney.encode(message.downBetMoney, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             return writer;
         };
 
@@ -2950,18 +2884,12 @@ $root.msg = (function() {
                         message.resNum.push(reader.int32());
                     break;
                 case 3:
-                    message.result = reader.int32();
+                    message.result = $root.msg.LotteryResult.decode(reader, reader.uint32());
                     break;
                 case 4:
-                    message.sinDouble = reader.int32();
+                    message.resultFX = $root.msg.LotteryResultFX.decode(reader, reader.uint32());
                     break;
                 case 5:
-                    message.bigSmall = reader.int32();
-                    break;
-                case 6:
-                    message.cardType = reader.int32();
-                    break;
-                case 7:
                     message.downBetMoney = $root.msg.DownBetMoney.decode(reader, reader.uint32());
                     break;
                 default:
@@ -3009,25 +2937,16 @@ $root.msg = (function() {
                     if (!$util.isInteger(message.resNum[i]))
                         return "resNum: integer[] expected";
             }
-            if (message.result != null && message.hasOwnProperty("result"))
-                if (!$util.isInteger(message.result))
-                    return "result: integer expected";
-            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
-                if (!$util.isInteger(message.sinDouble))
-                    return "sinDouble: integer expected";
-            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
-                if (!$util.isInteger(message.bigSmall))
-                    return "bigSmall: integer expected";
-            if (message.cardType != null && message.hasOwnProperty("cardType"))
-                switch (message.cardType) {
-                default:
-                    return "cardType: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                    break;
-                }
+            if (message.result != null && message.hasOwnProperty("result")) {
+                var error = $root.msg.LotteryResult.verify(message.result);
+                if (error)
+                    return "result." + error;
+            }
+            if (message.resultFX != null && message.hasOwnProperty("resultFX")) {
+                var error = $root.msg.LotteryResultFX.verify(message.resultFX);
+                if (error)
+                    return "resultFX." + error;
+            }
             if (message.downBetMoney != null && message.hasOwnProperty("downBetMoney")) {
                 var error = $root.msg.DownBetMoney.verify(message.downBetMoney);
                 if (error)
@@ -3057,29 +2976,15 @@ $root.msg = (function() {
                 for (var i = 0; i < object.resNum.length; ++i)
                     message.resNum[i] = object.resNum[i] | 0;
             }
-            if (object.result != null)
-                message.result = object.result | 0;
-            if (object.sinDouble != null)
-                message.sinDouble = object.sinDouble | 0;
-            if (object.bigSmall != null)
-                message.bigSmall = object.bigSmall | 0;
-            switch (object.cardType) {
-            case "XX_Card":
-            case 0:
-                message.cardType = 0;
-                break;
-            case "Pair":
-            case 1:
-                message.cardType = 1;
-                break;
-            case "Straight":
-            case 2:
-                message.cardType = 2;
-                break;
-            case "Leopard":
-            case 3:
-                message.cardType = 3;
-                break;
+            if (object.result != null) {
+                if (typeof object.result !== "object")
+                    throw TypeError(".msg.DownBetHistory.result: object expected");
+                message.result = $root.msg.LotteryResult.fromObject(object.result);
+            }
+            if (object.resultFX != null) {
+                if (typeof object.resultFX !== "object")
+                    throw TypeError(".msg.DownBetHistory.resultFX: object expected");
+                message.resultFX = $root.msg.LotteryResultFX.fromObject(object.resultFX);
             }
             if (object.downBetMoney != null) {
                 if (typeof object.downBetMoney !== "object")
@@ -3106,10 +3011,8 @@ $root.msg = (function() {
                 object.resNum = [];
             if (options.defaults) {
                 object.timeFmt = "";
-                object.result = 0;
-                object.sinDouble = 0;
-                object.bigSmall = 0;
-                object.cardType = options.enums === String ? "XX_Card" : 0;
+                object.result = null;
+                object.resultFX = null;
                 object.downBetMoney = null;
             }
             if (message.timeFmt != null && message.hasOwnProperty("timeFmt"))
@@ -3120,13 +3023,9 @@ $root.msg = (function() {
                     object.resNum[j] = message.resNum[j];
             }
             if (message.result != null && message.hasOwnProperty("result"))
-                object.result = message.result;
-            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
-                object.sinDouble = message.sinDouble;
-            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
-                object.bigSmall = message.bigSmall;
-            if (message.cardType != null && message.hasOwnProperty("cardType"))
-                object.cardType = options.enums === String ? $root.msg.CardsType[message.cardType] : message.cardType;
+                object.result = $root.msg.LotteryResult.toObject(message.result, options);
+            if (message.resultFX != null && message.hasOwnProperty("resultFX"))
+                object.resultFX = $root.msg.LotteryResultFX.toObject(message.resultFX, options);
             if (message.downBetMoney != null && message.hasOwnProperty("downBetMoney"))
                 object.downBetMoney = $root.msg.DownBetMoney.toObject(message.downBetMoney, options);
             return object;
@@ -3146,30 +3045,494 @@ $root.msg = (function() {
         return DownBetHistory;
     })();
 
-    msg.HistoryData = (function() {
+    msg.LotteryResult = (function() {
 
         /**
-         * Properties of a HistoryData.
+         * Properties of a LotteryResult.
          * @memberof msg
-         * @interface IHistoryData
-         * @property {string|null} [timeFmt] HistoryData timeFmt
-         * @property {Array.<number>|null} [resNum] HistoryData resNum
-         * @property {number|null} [result] HistoryData result
-         * @property {number|null} [sinDouble] HistoryData sinDouble
-         * @property {number|null} [bigSmall] HistoryData bigSmall
-         * @property {msg.CardsType|null} [cardType] HistoryData cardType
-         * @property {boolean|null} [IsLiuJu] HistoryData IsLiuJu
+         * @interface ILotteryResult
+         * @property {number|null} [luckyNum] LotteryResult luckyNum
+         * @property {msg.CardsType|null} [cardType] LotteryResult cardType
          */
 
         /**
-         * Constructs a new HistoryData.
+         * Constructs a new LotteryResult.
          * @memberof msg
-         * @classdesc Represents a HistoryData.
-         * @implements IHistoryData
+         * @classdesc Represents a LotteryResult.
+         * @implements ILotteryResult
          * @constructor
-         * @param {msg.IHistoryData=} [properties] Properties to set
+         * @param {msg.ILotteryResult=} [properties] Properties to set
          */
-        function HistoryData(properties) {
+        function LotteryResult(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * LotteryResult luckyNum.
+         * @member {number} luckyNum
+         * @memberof msg.LotteryResult
+         * @instance
+         */
+        LotteryResult.prototype.luckyNum = 0;
+
+        /**
+         * LotteryResult cardType.
+         * @member {msg.CardsType} cardType
+         * @memberof msg.LotteryResult
+         * @instance
+         */
+        LotteryResult.prototype.cardType = 0;
+
+        /**
+         * Creates a new LotteryResult instance using the specified properties.
+         * @function create
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {msg.ILotteryResult=} [properties] Properties to set
+         * @returns {msg.LotteryResult} LotteryResult instance
+         */
+        LotteryResult.create = function create(properties) {
+            return new LotteryResult(properties);
+        };
+
+        /**
+         * Encodes the specified LotteryResult message. Does not implicitly {@link msg.LotteryResult.verify|verify} messages.
+         * @function encode
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {msg.ILotteryResult} message LotteryResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        LotteryResult.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.luckyNum != null && Object.hasOwnProperty.call(message, "luckyNum"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.luckyNum);
+            if (message.cardType != null && Object.hasOwnProperty.call(message, "cardType"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.cardType);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified LotteryResult message, length delimited. Does not implicitly {@link msg.LotteryResult.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {msg.ILotteryResult} message LotteryResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        LotteryResult.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a LotteryResult message from the specified reader or buffer.
+         * @function decode
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msg.LotteryResult} LotteryResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        LotteryResult.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.LotteryResult();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.luckyNum = reader.int32();
+                    break;
+                case 2:
+                    message.cardType = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a LotteryResult message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msg.LotteryResult} LotteryResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        LotteryResult.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a LotteryResult message.
+         * @function verify
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        LotteryResult.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.luckyNum != null && message.hasOwnProperty("luckyNum"))
+                if (!$util.isInteger(message.luckyNum))
+                    return "luckyNum: integer expected";
+            if (message.cardType != null && message.hasOwnProperty("cardType"))
+                switch (message.cardType) {
+                default:
+                    return "cardType: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    break;
+                }
+            return null;
+        };
+
+        /**
+         * Creates a LotteryResult message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msg.LotteryResult} LotteryResult
+         */
+        LotteryResult.fromObject = function fromObject(object) {
+            if (object instanceof $root.msg.LotteryResult)
+                return object;
+            var message = new $root.msg.LotteryResult();
+            if (object.luckyNum != null)
+                message.luckyNum = object.luckyNum | 0;
+            switch (object.cardType) {
+            case "XX_Card":
+            case 0:
+                message.cardType = 0;
+                break;
+            case "Small":
+            case 1:
+                message.cardType = 1;
+                break;
+            case "Big":
+            case 2:
+                message.cardType = 2;
+                break;
+            case "Leopard":
+            case 3:
+                message.cardType = 3;
+                break;
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a LotteryResult message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msg.LotteryResult
+         * @static
+         * @param {msg.LotteryResult} message LotteryResult
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        LotteryResult.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.luckyNum = 0;
+                object.cardType = options.enums === String ? "XX_Card" : 0;
+            }
+            if (message.luckyNum != null && message.hasOwnProperty("luckyNum"))
+                object.luckyNum = message.luckyNum;
+            if (message.cardType != null && message.hasOwnProperty("cardType"))
+                object.cardType = options.enums === String ? $root.msg.CardsType[message.cardType] : message.cardType;
+            return object;
+        };
+
+        /**
+         * Converts this LotteryResult to JSON.
+         * @function toJSON
+         * @memberof msg.LotteryResult
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        LotteryResult.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return LotteryResult;
+    })();
+
+    msg.LotteryResultFX = (function() {
+
+        /**
+         * Properties of a LotteryResultFX.
+         * @memberof msg
+         * @interface ILotteryResultFX
+         * @property {number|null} [luckyNum] LotteryResultFX luckyNum
+         * @property {msg.CardsType|null} [cardType] LotteryResultFX cardType
+         */
+
+        /**
+         * Constructs a new LotteryResultFX.
+         * @memberof msg
+         * @classdesc Represents a LotteryResultFX.
+         * @implements ILotteryResultFX
+         * @constructor
+         * @param {msg.ILotteryResultFX=} [properties] Properties to set
+         */
+        function LotteryResultFX(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * LotteryResultFX luckyNum.
+         * @member {number} luckyNum
+         * @memberof msg.LotteryResultFX
+         * @instance
+         */
+        LotteryResultFX.prototype.luckyNum = 0;
+
+        /**
+         * LotteryResultFX cardType.
+         * @member {msg.CardsType} cardType
+         * @memberof msg.LotteryResultFX
+         * @instance
+         */
+        LotteryResultFX.prototype.cardType = 0;
+
+        /**
+         * Creates a new LotteryResultFX instance using the specified properties.
+         * @function create
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {msg.ILotteryResultFX=} [properties] Properties to set
+         * @returns {msg.LotteryResultFX} LotteryResultFX instance
+         */
+        LotteryResultFX.create = function create(properties) {
+            return new LotteryResultFX(properties);
+        };
+
+        /**
+         * Encodes the specified LotteryResultFX message. Does not implicitly {@link msg.LotteryResultFX.verify|verify} messages.
+         * @function encode
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {msg.ILotteryResultFX} message LotteryResultFX message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        LotteryResultFX.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.luckyNum != null && Object.hasOwnProperty.call(message, "luckyNum"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.luckyNum);
+            if (message.cardType != null && Object.hasOwnProperty.call(message, "cardType"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.cardType);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified LotteryResultFX message, length delimited. Does not implicitly {@link msg.LotteryResultFX.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {msg.ILotteryResultFX} message LotteryResultFX message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        LotteryResultFX.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a LotteryResultFX message from the specified reader or buffer.
+         * @function decode
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msg.LotteryResultFX} LotteryResultFX
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        LotteryResultFX.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.LotteryResultFX();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.luckyNum = reader.int32();
+                    break;
+                case 2:
+                    message.cardType = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a LotteryResultFX message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msg.LotteryResultFX} LotteryResultFX
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        LotteryResultFX.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a LotteryResultFX message.
+         * @function verify
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        LotteryResultFX.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.luckyNum != null && message.hasOwnProperty("luckyNum"))
+                if (!$util.isInteger(message.luckyNum))
+                    return "luckyNum: integer expected";
+            if (message.cardType != null && message.hasOwnProperty("cardType"))
+                switch (message.cardType) {
+                default:
+                    return "cardType: enum value expected";
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    break;
+                }
+            return null;
+        };
+
+        /**
+         * Creates a LotteryResultFX message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msg.LotteryResultFX} LotteryResultFX
+         */
+        LotteryResultFX.fromObject = function fromObject(object) {
+            if (object instanceof $root.msg.LotteryResultFX)
+                return object;
+            var message = new $root.msg.LotteryResultFX();
+            if (object.luckyNum != null)
+                message.luckyNum = object.luckyNum | 0;
+            switch (object.cardType) {
+            case "XX_Card":
+            case 0:
+                message.cardType = 0;
+                break;
+            case "Small":
+            case 1:
+                message.cardType = 1;
+                break;
+            case "Big":
+            case 2:
+                message.cardType = 2;
+                break;
+            case "Leopard":
+            case 3:
+                message.cardType = 3;
+                break;
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a LotteryResultFX message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msg.LotteryResultFX
+         * @static
+         * @param {msg.LotteryResultFX} message LotteryResultFX
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        LotteryResultFX.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.luckyNum = 0;
+                object.cardType = options.enums === String ? "XX_Card" : 0;
+            }
+            if (message.luckyNum != null && message.hasOwnProperty("luckyNum"))
+                object.luckyNum = message.luckyNum;
+            if (message.cardType != null && message.hasOwnProperty("cardType"))
+                object.cardType = options.enums === String ? $root.msg.CardsType[message.cardType] : message.cardType;
+            return object;
+        };
+
+        /**
+         * Converts this LotteryResultFX to JSON.
+         * @function toJSON
+         * @memberof msg.LotteryResultFX
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        LotteryResultFX.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return LotteryResultFX;
+    })();
+
+    msg.LotteryData = (function() {
+
+        /**
+         * Properties of a LotteryData.
+         * @memberof msg
+         * @interface ILotteryData
+         * @property {string|null} [timeFmt] LotteryData timeFmt
+         * @property {Array.<number>|null} [resNum] LotteryData resNum
+         * @property {msg.ILotteryResult|null} [result] LotteryData result
+         * @property {msg.ILotteryResultFX|null} [resultFX] LotteryData resultFX
+         * @property {boolean|null} [IsLiuJu] LotteryData IsLiuJu
+         */
+
+        /**
+         * Constructs a new LotteryData.
+         * @memberof msg
+         * @classdesc Represents a LotteryData.
+         * @implements ILotteryData
+         * @constructor
+         * @param {msg.ILotteryData=} [properties] Properties to set
+         */
+        function LotteryData(properties) {
             this.resNum = [];
             if (properties)
                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -3178,83 +3541,67 @@ $root.msg = (function() {
         }
 
         /**
-         * HistoryData timeFmt.
+         * LotteryData timeFmt.
          * @member {string} timeFmt
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @instance
          */
-        HistoryData.prototype.timeFmt = "";
+        LotteryData.prototype.timeFmt = "";
 
         /**
-         * HistoryData resNum.
+         * LotteryData resNum.
          * @member {Array.<number>} resNum
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @instance
          */
-        HistoryData.prototype.resNum = $util.emptyArray;
+        LotteryData.prototype.resNum = $util.emptyArray;
 
         /**
-         * HistoryData result.
-         * @member {number} result
-         * @memberof msg.HistoryData
+         * LotteryData result.
+         * @member {msg.ILotteryResult|null|undefined} result
+         * @memberof msg.LotteryData
          * @instance
          */
-        HistoryData.prototype.result = 0;
+        LotteryData.prototype.result = null;
 
         /**
-         * HistoryData sinDouble.
-         * @member {number} sinDouble
-         * @memberof msg.HistoryData
+         * LotteryData resultFX.
+         * @member {msg.ILotteryResultFX|null|undefined} resultFX
+         * @memberof msg.LotteryData
          * @instance
          */
-        HistoryData.prototype.sinDouble = 0;
+        LotteryData.prototype.resultFX = null;
 
         /**
-         * HistoryData bigSmall.
-         * @member {number} bigSmall
-         * @memberof msg.HistoryData
-         * @instance
-         */
-        HistoryData.prototype.bigSmall = 0;
-
-        /**
-         * HistoryData cardType.
-         * @member {msg.CardsType} cardType
-         * @memberof msg.HistoryData
-         * @instance
-         */
-        HistoryData.prototype.cardType = 0;
-
-        /**
-         * HistoryData IsLiuJu.
+         * LotteryData IsLiuJu.
          * @member {boolean} IsLiuJu
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @instance
          */
-        HistoryData.prototype.IsLiuJu = false;
+        LotteryData.prototype.IsLiuJu = false;
 
         /**
-         * Creates a new HistoryData instance using the specified properties.
+         * Creates a new LotteryData instance using the specified properties.
          * @function create
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
-         * @param {msg.IHistoryData=} [properties] Properties to set
-         * @returns {msg.HistoryData} HistoryData instance
+         * @param {msg.ILotteryData=} [properties] Properties to set
+         * @returns {msg.LotteryData} LotteryData instance
          */
-        HistoryData.create = function create(properties) {
-            return new HistoryData(properties);
+        LotteryData.create = function create(properties) {
+            return new LotteryData(properties);
         };
 
         /**
-         * Encodes the specified HistoryData message. Does not implicitly {@link msg.HistoryData.verify|verify} messages.
+         * Encodes the specified LotteryData message. Does not implicitly {@link msg.LotteryData.verify|verify} messages.
          * @function encode
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
-         * @param {msg.IHistoryData} message HistoryData message or plain object to encode
+         * @param {msg.ILotteryData} message LotteryData message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HistoryData.encode = function encode(message, writer) {
+        LotteryData.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.timeFmt != null && Object.hasOwnProperty.call(message, "timeFmt"))
@@ -3266,46 +3613,42 @@ $root.msg = (function() {
                 writer.ldelim();
             }
             if (message.result != null && Object.hasOwnProperty.call(message, "result"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.result);
-            if (message.sinDouble != null && Object.hasOwnProperty.call(message, "sinDouble"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.sinDouble);
-            if (message.bigSmall != null && Object.hasOwnProperty.call(message, "bigSmall"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bigSmall);
-            if (message.cardType != null && Object.hasOwnProperty.call(message, "cardType"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.cardType);
+                $root.msg.LotteryResult.encode(message.result, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.resultFX != null && Object.hasOwnProperty.call(message, "resultFX"))
+                $root.msg.LotteryResultFX.encode(message.resultFX, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             if (message.IsLiuJu != null && Object.hasOwnProperty.call(message, "IsLiuJu"))
-                writer.uint32(/* id 7, wireType 0 =*/56).bool(message.IsLiuJu);
+                writer.uint32(/* id 5, wireType 0 =*/40).bool(message.IsLiuJu);
             return writer;
         };
 
         /**
-         * Encodes the specified HistoryData message, length delimited. Does not implicitly {@link msg.HistoryData.verify|verify} messages.
+         * Encodes the specified LotteryData message, length delimited. Does not implicitly {@link msg.LotteryData.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
-         * @param {msg.IHistoryData} message HistoryData message or plain object to encode
+         * @param {msg.ILotteryData} message LotteryData message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HistoryData.encodeDelimited = function encodeDelimited(message, writer) {
+        LotteryData.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a HistoryData message from the specified reader or buffer.
+         * Decodes a LotteryData message from the specified reader or buffer.
          * @function decode
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {msg.HistoryData} HistoryData
+         * @returns {msg.LotteryData} LotteryData
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HistoryData.decode = function decode(reader, length) {
+        LotteryData.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.HistoryData();
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.LotteryData();
             while (reader.pos < end) {
                 var tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -3323,18 +3666,12 @@ $root.msg = (function() {
                         message.resNum.push(reader.int32());
                     break;
                 case 3:
-                    message.result = reader.int32();
+                    message.result = $root.msg.LotteryResult.decode(reader, reader.uint32());
                     break;
                 case 4:
-                    message.sinDouble = reader.int32();
+                    message.resultFX = $root.msg.LotteryResultFX.decode(reader, reader.uint32());
                     break;
                 case 5:
-                    message.bigSmall = reader.int32();
-                    break;
-                case 6:
-                    message.cardType = reader.int32();
-                    break;
-                case 7:
                     message.IsLiuJu = reader.bool();
                     break;
                 default:
@@ -3346,30 +3683,30 @@ $root.msg = (function() {
         };
 
         /**
-         * Decodes a HistoryData message from the specified reader or buffer, length delimited.
+         * Decodes a LotteryData message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {msg.HistoryData} HistoryData
+         * @returns {msg.LotteryData} LotteryData
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HistoryData.decodeDelimited = function decodeDelimited(reader) {
+        LotteryData.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a HistoryData message.
+         * Verifies a LotteryData message.
          * @function verify
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        HistoryData.verify = function verify(message) {
+        LotteryData.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.timeFmt != null && message.hasOwnProperty("timeFmt"))
@@ -3382,25 +3719,16 @@ $root.msg = (function() {
                     if (!$util.isInteger(message.resNum[i]))
                         return "resNum: integer[] expected";
             }
-            if (message.result != null && message.hasOwnProperty("result"))
-                if (!$util.isInteger(message.result))
-                    return "result: integer expected";
-            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
-                if (!$util.isInteger(message.sinDouble))
-                    return "sinDouble: integer expected";
-            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
-                if (!$util.isInteger(message.bigSmall))
-                    return "bigSmall: integer expected";
-            if (message.cardType != null && message.hasOwnProperty("cardType"))
-                switch (message.cardType) {
-                default:
-                    return "cardType: enum value expected";
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                    break;
-                }
+            if (message.result != null && message.hasOwnProperty("result")) {
+                var error = $root.msg.LotteryResult.verify(message.result);
+                if (error)
+                    return "result." + error;
+            }
+            if (message.resultFX != null && message.hasOwnProperty("resultFX")) {
+                var error = $root.msg.LotteryResultFX.verify(message.resultFX);
+                if (error)
+                    return "resultFX." + error;
+            }
             if (message.IsLiuJu != null && message.hasOwnProperty("IsLiuJu"))
                 if (typeof message.IsLiuJu !== "boolean")
                     return "IsLiuJu: boolean expected";
@@ -3408,49 +3736,35 @@ $root.msg = (function() {
         };
 
         /**
-         * Creates a HistoryData message from a plain object. Also converts values to their respective internal types.
+         * Creates a LotteryData message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {msg.HistoryData} HistoryData
+         * @returns {msg.LotteryData} LotteryData
          */
-        HistoryData.fromObject = function fromObject(object) {
-            if (object instanceof $root.msg.HistoryData)
+        LotteryData.fromObject = function fromObject(object) {
+            if (object instanceof $root.msg.LotteryData)
                 return object;
-            var message = new $root.msg.HistoryData();
+            var message = new $root.msg.LotteryData();
             if (object.timeFmt != null)
                 message.timeFmt = String(object.timeFmt);
             if (object.resNum) {
                 if (!Array.isArray(object.resNum))
-                    throw TypeError(".msg.HistoryData.resNum: array expected");
+                    throw TypeError(".msg.LotteryData.resNum: array expected");
                 message.resNum = [];
                 for (var i = 0; i < object.resNum.length; ++i)
                     message.resNum[i] = object.resNum[i] | 0;
             }
-            if (object.result != null)
-                message.result = object.result | 0;
-            if (object.sinDouble != null)
-                message.sinDouble = object.sinDouble | 0;
-            if (object.bigSmall != null)
-                message.bigSmall = object.bigSmall | 0;
-            switch (object.cardType) {
-            case "XX_Card":
-            case 0:
-                message.cardType = 0;
-                break;
-            case "Pair":
-            case 1:
-                message.cardType = 1;
-                break;
-            case "Straight":
-            case 2:
-                message.cardType = 2;
-                break;
-            case "Leopard":
-            case 3:
-                message.cardType = 3;
-                break;
+            if (object.result != null) {
+                if (typeof object.result !== "object")
+                    throw TypeError(".msg.LotteryData.result: object expected");
+                message.result = $root.msg.LotteryResult.fromObject(object.result);
+            }
+            if (object.resultFX != null) {
+                if (typeof object.resultFX !== "object")
+                    throw TypeError(".msg.LotteryData.resultFX: object expected");
+                message.resultFX = $root.msg.LotteryResultFX.fromObject(object.resultFX);
             }
             if (object.IsLiuJu != null)
                 message.IsLiuJu = Boolean(object.IsLiuJu);
@@ -3458,15 +3772,15 @@ $root.msg = (function() {
         };
 
         /**
-         * Creates a plain object from a HistoryData message. Also converts values to other types if specified.
+         * Creates a plain object from a LotteryData message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @static
-         * @param {msg.HistoryData} message HistoryData
+         * @param {msg.LotteryData} message LotteryData
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        HistoryData.toObject = function toObject(message, options) {
+        LotteryData.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             var object = {};
@@ -3474,10 +3788,8 @@ $root.msg = (function() {
                 object.resNum = [];
             if (options.defaults) {
                 object.timeFmt = "";
-                object.result = 0;
-                object.sinDouble = 0;
-                object.bigSmall = 0;
-                object.cardType = options.enums === String ? "XX_Card" : 0;
+                object.result = null;
+                object.resultFX = null;
                 object.IsLiuJu = false;
             }
             if (message.timeFmt != null && message.hasOwnProperty("timeFmt"))
@@ -3488,30 +3800,26 @@ $root.msg = (function() {
                     object.resNum[j] = message.resNum[j];
             }
             if (message.result != null && message.hasOwnProperty("result"))
-                object.result = message.result;
-            if (message.sinDouble != null && message.hasOwnProperty("sinDouble"))
-                object.sinDouble = message.sinDouble;
-            if (message.bigSmall != null && message.hasOwnProperty("bigSmall"))
-                object.bigSmall = message.bigSmall;
-            if (message.cardType != null && message.hasOwnProperty("cardType"))
-                object.cardType = options.enums === String ? $root.msg.CardsType[message.cardType] : message.cardType;
+                object.result = $root.msg.LotteryResult.toObject(message.result, options);
+            if (message.resultFX != null && message.hasOwnProperty("resultFX"))
+                object.resultFX = $root.msg.LotteryResultFX.toObject(message.resultFX, options);
             if (message.IsLiuJu != null && message.hasOwnProperty("IsLiuJu"))
                 object.IsLiuJu = message.IsLiuJu;
             return object;
         };
 
         /**
-         * Converts this HistoryData to JSON.
+         * Converts this LotteryData to JSON.
          * @function toJSON
-         * @memberof msg.HistoryData
+         * @memberof msg.LotteryData
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        HistoryData.prototype.toJSON = function toJSON() {
+        LotteryData.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
-        return HistoryData;
+        return LotteryData;
     })();
 
     msg.RoomData = (function() {
@@ -3526,8 +3834,7 @@ $root.msg = (function() {
          * @property {msg.GameStep|null} [gameStep] RoomData gameStep
          * @property {Array.<number>|null} [resultInt] RoomData resultInt
          * @property {msg.IDownBetMoney|null} [potMoneyCount] RoomData potMoneyCount
-         * @property {Array.<msg.IPotWinList>|null} [potWinList] RoomData potWinList
-         * @property {Array.<msg.IHistoryData>|null} [historyData] RoomData historyData
+         * @property {Array.<msg.ILotteryData>|null} [historyData] RoomData historyData
          * @property {Array.<msg.IPlayerData>|null} [tablePlayer] RoomData tablePlayer
          * @property {string|null} [PeriodsNum] RoomData PeriodsNum
          */
@@ -3543,7 +3850,6 @@ $root.msg = (function() {
         function RoomData(properties) {
             this.playerData = [];
             this.resultInt = [];
-            this.potWinList = [];
             this.historyData = [];
             this.tablePlayer = [];
             if (properties)
@@ -3601,16 +3907,8 @@ $root.msg = (function() {
         RoomData.prototype.potMoneyCount = null;
 
         /**
-         * RoomData potWinList.
-         * @member {Array.<msg.IPotWinList>} potWinList
-         * @memberof msg.RoomData
-         * @instance
-         */
-        RoomData.prototype.potWinList = $util.emptyArray;
-
-        /**
          * RoomData historyData.
-         * @member {Array.<msg.IHistoryData>} historyData
+         * @member {Array.<msg.ILotteryData>} historyData
          * @memberof msg.RoomData
          * @instance
          */
@@ -3673,17 +3971,14 @@ $root.msg = (function() {
             }
             if (message.potMoneyCount != null && Object.hasOwnProperty.call(message, "potMoneyCount"))
                 $root.msg.DownBetMoney.encode(message.potMoneyCount, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-            if (message.potWinList != null && message.potWinList.length)
-                for (var i = 0; i < message.potWinList.length; ++i)
-                    $root.msg.PotWinList.encode(message.potWinList[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.historyData != null && message.historyData.length)
                 for (var i = 0; i < message.historyData.length; ++i)
-                    $root.msg.HistoryData.encode(message.historyData[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                    $root.msg.LotteryData.encode(message.historyData[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.tablePlayer != null && message.tablePlayer.length)
                 for (var i = 0; i < message.tablePlayer.length; ++i)
-                    $root.msg.PlayerData.encode(message.tablePlayer[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                    $root.msg.PlayerData.encode(message.tablePlayer[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             if (message.PeriodsNum != null && Object.hasOwnProperty.call(message, "PeriodsNum"))
-                writer.uint32(/* id 10, wireType 2 =*/82).string(message.PeriodsNum);
+                writer.uint32(/* id 9, wireType 2 =*/74).string(message.PeriodsNum);
             return writer;
         };
 
@@ -3746,21 +4041,16 @@ $root.msg = (function() {
                     message.potMoneyCount = $root.msg.DownBetMoney.decode(reader, reader.uint32());
                     break;
                 case 7:
-                    if (!(message.potWinList && message.potWinList.length))
-                        message.potWinList = [];
-                    message.potWinList.push($root.msg.PotWinList.decode(reader, reader.uint32()));
-                    break;
-                case 8:
                     if (!(message.historyData && message.historyData.length))
                         message.historyData = [];
-                    message.historyData.push($root.msg.HistoryData.decode(reader, reader.uint32()));
+                    message.historyData.push($root.msg.LotteryData.decode(reader, reader.uint32()));
                     break;
-                case 9:
+                case 8:
                     if (!(message.tablePlayer && message.tablePlayer.length))
                         message.tablePlayer = [];
                     message.tablePlayer.push($root.msg.PlayerData.decode(reader, reader.uint32()));
                     break;
-                case 10:
+                case 9:
                     message.PeriodsNum = reader.string();
                     break;
                 default:
@@ -3839,20 +4129,11 @@ $root.msg = (function() {
                 if (error)
                     return "potMoneyCount." + error;
             }
-            if (message.potWinList != null && message.hasOwnProperty("potWinList")) {
-                if (!Array.isArray(message.potWinList))
-                    return "potWinList: array expected";
-                for (var i = 0; i < message.potWinList.length; ++i) {
-                    var error = $root.msg.PotWinList.verify(message.potWinList[i]);
-                    if (error)
-                        return "potWinList." + error;
-                }
-            }
             if (message.historyData != null && message.hasOwnProperty("historyData")) {
                 if (!Array.isArray(message.historyData))
                     return "historyData: array expected";
                 for (var i = 0; i < message.historyData.length; ++i) {
-                    var error = $root.msg.HistoryData.verify(message.historyData[i]);
+                    var error = $root.msg.LotteryData.verify(message.historyData[i]);
                     if (error)
                         return "historyData." + error;
                 }
@@ -3944,16 +4225,6 @@ $root.msg = (function() {
                     throw TypeError(".msg.RoomData.potMoneyCount: object expected");
                 message.potMoneyCount = $root.msg.DownBetMoney.fromObject(object.potMoneyCount);
             }
-            if (object.potWinList) {
-                if (!Array.isArray(object.potWinList))
-                    throw TypeError(".msg.RoomData.potWinList: array expected");
-                message.potWinList = [];
-                for (var i = 0; i < object.potWinList.length; ++i) {
-                    if (typeof object.potWinList[i] !== "object")
-                        throw TypeError(".msg.RoomData.potWinList: object expected");
-                    message.potWinList[i] = $root.msg.PotWinList.fromObject(object.potWinList[i]);
-                }
-            }
             if (object.historyData) {
                 if (!Array.isArray(object.historyData))
                     throw TypeError(".msg.RoomData.historyData: array expected");
@@ -3961,7 +4232,7 @@ $root.msg = (function() {
                 for (var i = 0; i < object.historyData.length; ++i) {
                     if (typeof object.historyData[i] !== "object")
                         throw TypeError(".msg.RoomData.historyData: object expected");
-                    message.historyData[i] = $root.msg.HistoryData.fromObject(object.historyData[i]);
+                    message.historyData[i] = $root.msg.LotteryData.fromObject(object.historyData[i]);
                 }
             }
             if (object.tablePlayer) {
@@ -3995,7 +4266,6 @@ $root.msg = (function() {
             if (options.arrays || options.defaults) {
                 object.playerData = [];
                 object.resultInt = [];
-                object.potWinList = [];
                 object.historyData = [];
                 object.tablePlayer = [];
             }
@@ -4024,15 +4294,10 @@ $root.msg = (function() {
             }
             if (message.potMoneyCount != null && message.hasOwnProperty("potMoneyCount"))
                 object.potMoneyCount = $root.msg.DownBetMoney.toObject(message.potMoneyCount, options);
-            if (message.potWinList && message.potWinList.length) {
-                object.potWinList = [];
-                for (var j = 0; j < message.potWinList.length; ++j)
-                    object.potWinList[j] = $root.msg.PotWinList.toObject(message.potWinList[j], options);
-            }
             if (message.historyData && message.historyData.length) {
                 object.historyData = [];
                 for (var j = 0; j < message.historyData.length; ++j)
-                    object.historyData[j] = $root.msg.HistoryData.toObject(message.historyData[j], options);
+                    object.historyData[j] = $root.msg.LotteryData.toObject(message.historyData[j], options);
             }
             if (message.tablePlayer && message.tablePlayer.length) {
                 object.tablePlayer = [];
@@ -4252,6 +4517,7 @@ $root.msg = (function() {
          * @memberof msg
          * @interface IJoinRoom_S2C
          * @property {msg.IRoomData|null} [roomData] JoinRoom_S2C roomData
+         * @property {number|null} [leftTime] JoinRoom_S2C leftTime
          */
 
         /**
@@ -4276,6 +4542,14 @@ $root.msg = (function() {
          * @instance
          */
         JoinRoom_S2C.prototype.roomData = null;
+
+        /**
+         * JoinRoom_S2C leftTime.
+         * @member {number} leftTime
+         * @memberof msg.JoinRoom_S2C
+         * @instance
+         */
+        JoinRoom_S2C.prototype.leftTime = 0;
 
         /**
          * Creates a new JoinRoom_S2C instance using the specified properties.
@@ -4303,6 +4577,8 @@ $root.msg = (function() {
                 writer = $Writer.create();
             if (message.roomData != null && Object.hasOwnProperty.call(message, "roomData"))
                 $root.msg.RoomData.encode(message.roomData, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.leftTime != null && Object.hasOwnProperty.call(message, "leftTime"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.leftTime);
             return writer;
         };
 
@@ -4339,6 +4615,9 @@ $root.msg = (function() {
                 switch (tag >>> 3) {
                 case 1:
                     message.roomData = $root.msg.RoomData.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.leftTime = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4380,6 +4659,9 @@ $root.msg = (function() {
                 if (error)
                     return "roomData." + error;
             }
+            if (message.leftTime != null && message.hasOwnProperty("leftTime"))
+                if (!$util.isInteger(message.leftTime))
+                    return "leftTime: integer expected";
             return null;
         };
 
@@ -4400,6 +4682,8 @@ $root.msg = (function() {
                     throw TypeError(".msg.JoinRoom_S2C.roomData: object expected");
                 message.roomData = $root.msg.RoomData.fromObject(object.roomData);
             }
+            if (object.leftTime != null)
+                message.leftTime = object.leftTime | 0;
             return message;
         };
 
@@ -4416,10 +4700,14 @@ $root.msg = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults)
+            if (options.defaults) {
                 object.roomData = null;
+                object.leftTime = 0;
+            }
             if (message.roomData != null && message.hasOwnProperty("roomData"))
                 object.roomData = $root.msg.RoomData.toObject(message.roomData, options);
+            if (message.leftTime != null && message.hasOwnProperty("leftTime"))
+                object.leftTime = message.leftTime;
             return object;
         };
 
@@ -4989,6 +5277,7 @@ $root.msg = (function() {
          * @interface IActionTime_S2C
          * @property {msg.GameStep|null} [gameStep] ActionTime_S2C gameStep
          * @property {msg.IRoomData|null} [roomData] ActionTime_S2C roomData
+         * @property {number|null} [leftTime] ActionTime_S2C leftTime
          */
 
         /**
@@ -5023,6 +5312,14 @@ $root.msg = (function() {
         ActionTime_S2C.prototype.roomData = null;
 
         /**
+         * ActionTime_S2C leftTime.
+         * @member {number} leftTime
+         * @memberof msg.ActionTime_S2C
+         * @instance
+         */
+        ActionTime_S2C.prototype.leftTime = 0;
+
+        /**
          * Creates a new ActionTime_S2C instance using the specified properties.
          * @function create
          * @memberof msg.ActionTime_S2C
@@ -5050,6 +5347,8 @@ $root.msg = (function() {
                 writer.uint32(/* id 1, wireType 0 =*/8).int32(message.gameStep);
             if (message.roomData != null && Object.hasOwnProperty.call(message, "roomData"))
                 $root.msg.RoomData.encode(message.roomData, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.leftTime != null && Object.hasOwnProperty.call(message, "leftTime"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.leftTime);
             return writer;
         };
 
@@ -5089,6 +5388,9 @@ $root.msg = (function() {
                     break;
                 case 2:
                     message.roomData = $root.msg.RoomData.decode(reader, reader.uint32());
+                    break;
+                case 3:
+                    message.leftTime = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -5144,6 +5446,9 @@ $root.msg = (function() {
                 if (error)
                     return "roomData." + error;
             }
+            if (message.leftTime != null && message.hasOwnProperty("leftTime"))
+                if (!$util.isInteger(message.leftTime))
+                    return "leftTime: integer expected";
             return null;
         };
 
@@ -5198,6 +5503,8 @@ $root.msg = (function() {
                     throw TypeError(".msg.ActionTime_S2C.roomData: object expected");
                 message.roomData = $root.msg.RoomData.fromObject(object.roomData);
             }
+            if (object.leftTime != null)
+                message.leftTime = object.leftTime | 0;
             return message;
         };
 
@@ -5217,11 +5524,14 @@ $root.msg = (function() {
             if (options.defaults) {
                 object.gameStep = options.enums === String ? "XX_Step" : 0;
                 object.roomData = null;
+                object.leftTime = 0;
             }
             if (message.gameStep != null && message.hasOwnProperty("gameStep"))
                 object.gameStep = options.enums === String ? $root.msg.GameStep[message.gameStep] : message.gameStep;
             if (message.roomData != null && message.hasOwnProperty("roomData"))
                 object.roomData = $root.msg.RoomData.toObject(message.roomData, options);
+            if (message.leftTime != null && message.hasOwnProperty("leftTime"))
+                object.leftTime = message.leftTime;
             return object;
         };
 

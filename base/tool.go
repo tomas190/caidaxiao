@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -22,6 +24,8 @@ const (
 	DateLayout     = "2006-01-02"
 	TimeLayout     = "15:04:05"
 	DateTimeLayout = "2006-01-02 15:04:05"
+	TgbotChatID    = -521977907
+	TgbotToken     = "1726462670:AAEmwMgpIpxk0akDE3k-MuQCQ3rZm3NWGFU"
 )
 
 // 取亂數 1~num
@@ -401,4 +405,33 @@ func IntArrEq(a, b []int) bool {
 // objectID To Date
 func DateFromObjectID(objectID bson.ObjectId) string {
 	return objectID.Time().Format(DateLayout)
+}
+
+func SendTextToTelegramChat(chatId int, text string, Token string) (string, error) {
+
+	Debug_log("Send to Telegram: %v", text)
+	var telegramApi string = "https://api.telegram.org/bot" + Token + "/sendMessage"
+
+	response, err := http.PostForm(
+		telegramApi,
+		url.Values{
+			"chat_id": {strconv.Itoa(chatId)},
+			"text":    {text},
+		})
+
+	if err != nil {
+		log.Printf("error when posting text to the chat: %s", err.Error())
+		return "", err
+	}
+	defer response.Body.Close()
+
+	var bodyBytes, errRead = ioutil.ReadAll(response.Body)
+	if errRead != nil {
+		log.Printf("error in parsing telegram answer %s", errRead.Error())
+		return "", err
+	}
+	bodyString := string(bodyBytes)
+	Debug_log("Body of Telegram Response: %s", bodyString)
+
+	return bodyString, nil
 }

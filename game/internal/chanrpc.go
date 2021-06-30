@@ -2,13 +2,21 @@ package internal
 
 import (
 	common "caidaxiao/base"
+	"caidaxiao/conf"
 	"caidaxiao/msg"
+	"fmt"
 	"math"
 	"strconv"
+	"sync"
 
 	"github.com/name5566/leaf/gate"
 	"github.com/name5566/leaf/log"
 	"gopkg.in/mgo.v2/bson"
+)
+
+var (
+	agentWarning int32    = 5000
+	agentIP      sync.Map // key:IP(string) value:num(int)
 )
 
 func init() {
@@ -31,55 +39,44 @@ func init() {
 func rpcNewAgent(args []interface{}) {
 	// log.Debug("<-------------新链接请求连接--------------->")
 	a := args[0].(gate.Agent)
-	common.Debug_log("新的客户端连接:%+v", a)
+	// sameIPattack(a)
+	ServerSurPool.AgentNum++
+	if ServerSurPool.AgentNum > agentWarning {
+		TgMsg := fmt.Sprintf("彩源猜大小服务agent: %v", ServerSurPool.AgentNum)
+		common.SendTextToTelegramChat(common.TgbotChatID, TgMsg, common.TgbotToken)
+		agentWarning += 100
+	}
+	common.Debug_log("新的客户端连接:[%v]%v 目前agent數量為:%v", a.RemoteAddr().Network(), a.RemoteAddr().String(), ServerSurPool.AgentNum)
 	// p := &Player{}
 	// p.Init()
 	// p.ConnAgent = a
 	// p.ConnAgent.SetUserData(p)
 }
 
+// // 預防相同IP攻擊(TODO)
+// func sameIPattack(newAgent gate.Agent) {
+// 	newIP := newAgent.RemoteAddr().String()
+// 	connNum, ok := agentIP.Load(newIP)
+// 	if ok {
+// 		if connNum.(int) >= 5 {
+// 			CloseAgent(newAgent) // 關閉對方連線
+// 			//加入黑名單機制
+// 		}
+// 		connNum = connNum.(int) + 1
+// 	} else {
+// 		agentIP.Store(newIP, 0)
+// 	}
+
+// }
+
 func rpcCloseAgent(args []interface{}) {
 	a := args[0].(gate.Agent)
-
-	p, ok := a.UserData().(*Player)
-
-	if ok {
-		log.Debug("<-------------%v 主动断开链接--------------->", p.Id)
-		if p.IsAction == true { //有下注不能登出中心服等待結算後登出
-			var exist bool
-			rid, _ := hall.UserRoom.Load(p.Id)
-			v, _ := hall.RoomRecord.Load(rid)
-			if v != nil {
-				room := v.(*Room)
-				for _, v := range room.UserLeave {
-					if v == p.Id {
-						exist = true
-					}
-				}
-				if exist == false {
-					log.Debug("添加离线玩家UserLeave:%v", p.Id)
-					room.UserLeave = append(room.UserLeave, p.Id)
-				}
-				p.IsOnline = false
-				leaveHall := &msg.Logout_S2C{}
-				// a.WriteMsg(leaveHall)
-				p.SendMsg(leaveHall, "Logout_S2C")
-			}
-		} else {
-			hall.UserRecord.Delete(p.Id)
-			p.PlayerExitRoom()
-			leaveHall := &msg.Logout_S2C{}
-			p.SendMsg(leaveHall, "Logout_S2C")
-			unusualLogout(a, "连接断开")
-			a.Close()
-		}
-	}
-
+	unusualLogout(a, "连接断开")
 }
 
 // 玩家進入子遊戲服務
 func playerEnterGame(args []interface{}) {
-	common.Debug_log("gameModule playerEnterGame")
+	// common.Debug_log("gameModule playerEnterGame")
 	cInfo := args[0].(common.UserInfo)
 	client, ok := AgentFromuserID_.Load(cInfo.UserID)
 	common.Debug_log("用户登陆返回,userID=%v\n", cInfo.UserID)
@@ -114,7 +111,7 @@ func playerEnterGame(args []interface{}) {
 			}
 		}
 	}
-	log.Debug("Room01:%v,Room02:%v", login.Room01, login.Room02)
+	// log.Debug("Room01:%v,Room02:%v", login.Room01, login.Room02)
 
 	if u.Id != cInfo.UserID {
 		u.Id = cInfo.UserID
@@ -176,22 +173,50 @@ func playerEnterGame(args []interface{}) {
 func playerExitGame(args []interface{}) {
 	cInfo := args[0].(common.UserInfo)
 	common.Debug_log("用户登出中心服成功,userID=%d\n", cInfo.UserID)
+	rid, ok := hall.UserRoom.Load(cInfo.UserID)
+	if ok {
+		room, _ := hall.RoomRecord.Load(rid)
+		for k, v := range room.(*Room).PlayerList {
+			if v.Id == cInfo.UserID && v.IsRobot == false {
+				room.(*Room).PlayerList = append(room.(*Room).PlayerList[:k], room.(*Room).PlayerList[k+1:]...) //这里两个同样的用户名退出，会报错
+				log.Debug("%v 玩家登出从房间列表删除成功 ~", v.Id)
+			}
+		}
+	}
+
 	unbindAgentWithUser(cInfo.UserID)
 }
 
 // 登陸中心服後的處理
 func respondStart(args []interface{}) {
-	common.Debug_log("gameModule respondStart")
+	// common.Debug_log("gameModule respondStart")
 	go func() {
 		StartHttpServer() // 监听接口
 	}()
-	common.Debug_log("彩源猜大小游戏服务器启动成功 version:" + versionCode)
+
 	arrPackages := args[0].([]common.LoginResponse)
 	mapTaxPercent = make(map[int]float64)
 	for _, v := range arrPackages {
 		mapTaxPercent[v.PackageID] = float64(v.TaxPercent) * math.Pow10(-2)
 	}
-	common.Debug_log("respondStart=%+v", mapTaxPercent)
+	serverStart := fmt.Sprintf("彩源猜大小游戏服务器启动成功\n启动时间:" + common.TimeNowStr() + "\n版本号:" + versionCode)
+	canterport := common.IntToStr(conf.Server.CenterServerPort)
+	canterurl := fmt.Sprintf("ws://" + conf.Server.CenterServer + ":" + canterport)
+	switch canterurl {
+	case "ws://161.117.178.174:12345":
+		serverStart = fmt.Sprintf(serverStart + "\n环境:DEV")
+		common.Debug_log(serverStart)
+	case "ws://172.16.100.2:9502", "ws://172.16.1.41:9502":
+		serverStart = fmt.Sprintf(serverStart + "\n环境:PRE")
+		common.Debug_log(serverStart)
+		common.SendTextToTelegramChat(common.TgbotChatID, serverStart, common.TgbotToken)
+	default:
+		serverStart = fmt.Sprintf(serverStart + "\n环境:OL")
+		common.Debug_log(serverStart)
+		common.SendTextToTelegramChat(common.TgbotChatID, serverStart, common.TgbotToken)
+	}
+	// common.Debug_log(canterurl)
+
 }
 
 func respondWinMoney(args []interface{}) {

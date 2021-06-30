@@ -139,7 +139,7 @@ func (c4c *Conn4Center) S2CS_connect() {
 				}
 				syncWrite.Unlock()
 			case sig := <-interrupt:
-				socket.Close()
+				// socket.Close()
 				common.Debug_log("close server,signal:%s", sig.String())
 				err := syscall.Kill(os.Getpid(), syscall.SIGINT) //殺掉子進程的只有在MACOS以及LINUX可以跑
 				if err != nil {
@@ -233,7 +233,7 @@ func (c4c *Conn4Center) sendMessage(name string, data interface{}) {
 	// Debug_log("发送到中心服：Event=%s ; data=%+v", name, data)
 	c4c.socket.SendText(message)
 	// 下面是新增紀錄
-	common.GetInstance().Game.Go("SendToCenter", name, data) //counter receiveToCenterMessage
+	// common.GetInstance().Game.Go("SendToCenter", name, data) //counter receiveToCenterMessage
 
 }
 
@@ -250,7 +250,7 @@ func receiveMessage(msg string) {
 			return
 		}
 		// common.Debug_log("从中心服返回：Event=%s ；Data=%+v", rsp.Event, rsp.Data)
-		common.GetInstance().Game.Go("RecordFromCenter", rsp.Event, rsp.Data) //記錄每筆中心服回傳的訊息    之後要做
+		// common.GetInstance().Game.Go("RecordFromCenter", rsp.Event, rsp.Data) //記錄每筆中心服回傳的訊息    之後要做
 		switch rsp.Event {
 		case MSG_ERROR:
 			handlerError(rsp.Data)
@@ -305,5 +305,8 @@ func handlerLogin(data ResponseData) {
 		return
 	}
 	common.Debug_log("中心服务器登陆成功")
-	common.GetInstance().Game.Go("StartServer", info)
+	skeleton.AfterFunc(3*time.Second, func() {
+		common.GetInstance().Game.Go("StartServer", info)
+	})
+
 }

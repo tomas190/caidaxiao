@@ -15,16 +15,20 @@ var (
 
 // 開始計時器檢查用戶心跳
 func HeartBeatLoop() {
-	Debug_log("HeartBeatLoop Start!")
-	HBcheck = time.NewTicker(time.Second)
-	go func() {
-		for {
-			select {
-			case <-HBcheck.C:
-				intervalHeartBeat() //心跳  用戶
-			}
-		}
-	}()
+	// Debug_log("HeartBeatLoop Start!")
+	// HBcheck = time.NewTicker(time.Second)
+	skeleton.AfterFunc(1*time.Second, func() {
+		intervalHeartBeat() //心跳  用戶
+		HeartBeatLoop()
+	})
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case <-HBcheck.C:
+	// 			intervalHeartBeat() //心跳  用戶
+	// 		}
+	// 	}
+	// }()
 }
 
 // Client<心跳包>傳送的結構體的對應方法
@@ -36,6 +40,7 @@ func HeartBeatHandler(args []interface{}) {
 	userID, ok := userIDFromAgent_.Load(a)
 
 	if !ok {
+		CloseAgent(a) //沒有此玩家還戳心跳讓他斷線
 		return
 	}
 

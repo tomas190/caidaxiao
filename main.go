@@ -18,8 +18,8 @@ func main() {
 	lconf.ProfilePath = conf.Server.ProfilePath
 
 	leaf.Run(
+		login.Module,
 		game.Module,
 		gate.Module,
-		login.Module,
 	)
 }

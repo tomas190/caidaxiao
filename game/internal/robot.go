@@ -5,6 +5,7 @@ import (
 	"caidaxiao/msg"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/name5566/leaf/log"
@@ -29,11 +30,11 @@ func (rc *RobotsCenter) CreateRobot() *Player {
 
 	r.IsRobot = true
 	//生成随机ID
-	r.Id, _ = common.Str2int32(RandomID())
+	r.Id = generateRandUID()
 	//生成随机头像IMG
 	r.HeadImg = RandomIMG()
 	//生成随机机器人NickName
-	r.NickName = common.Int32ToStr(r.Id)
+	r.NickName = RandomName()
 	//r.NickName = RandomName()
 	//生成机器人金币随机数
 	r.Account = RandomAccount()
@@ -72,7 +73,7 @@ func (r *Room) RobotsDownBet() {
 							v.DownBetMoney.SingleDownBet + v.DownBetMoney.DoubleDownBet +
 							v.DownBetMoney.PairDownBet + v.DownBetMoney.StraightDownBet +
 							v.DownBetMoney.LeopardDownBet) > 1000 {
-							log.Debug("机器的下注金额大于1000~")
+							// log.Debug("机器的下注金额大于1000~")
 							continue
 						}
 						v.IsAction = true
@@ -86,7 +87,7 @@ func (r *Room) RobotsDownBet() {
 								time.Sleep(time.Millisecond * 20)
 								// 判断机器人的下注筹码是否足够
 								if v.Account < float64(bet) {
-									log.Debug("机器的下注金额不足~")
+									// log.Debug("机器的下注金额不足~")
 									continue
 								}
 
@@ -362,11 +363,30 @@ func (rc *RobotsCenter) Start() {
 //生成随机机器人ID
 func RandomID() string {
 	for {
-		RobotId := fmt.Sprintf("%09v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(800000000))
+		RobotId := fmt.Sprintf("%08v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(800000000))
 		if RobotId[0:1] != "0" {
 			return RobotId
 		}
 	}
+}
+
+// 产生随意机器人ID
+func generateRandUID() int32 {
+	l := 8 //rand.Intn(5)+3
+	// arrFrn := []string{"VIP", "贵宾"}
+	str := "123456789" //abcdefghijklmnopqrstuvwxyz
+	bytes := []byte(str)
+
+	result := []byte{}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < l; i++ {
+		result = append(result, bytes[r.Intn(len(bytes))])
+		time.Sleep(1 * time.Nanosecond)
+	}
+
+	i, _ := strconv.Atoi(string(result))
+
+	return int32(i) //arrFrn[rand.Intn(len(arrFrn))]
 }
 
 //生成随机机器人头像IMG
