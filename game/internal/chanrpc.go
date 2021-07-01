@@ -2,7 +2,6 @@ package internal
 
 import (
 	common "caidaxiao/base"
-	"caidaxiao/conf"
 	"caidaxiao/msg"
 	"fmt"
 	"math"
@@ -42,9 +41,9 @@ func rpcNewAgent(args []interface{}) {
 	// sameIPattack(a)
 	ServerSurPool.AgentNum++
 	if ServerSurPool.AgentNum > agentWarning {
-		TgMsg := fmt.Sprintf("彩源猜大小服务agent: %v", ServerSurPool.AgentNum)
-		common.SendTextToTelegramChat(common.TgbotChatID, TgMsg, common.TgbotToken)
-		agentWarning += 100
+		TgMsg := fmt.Sprintf("agent: %v", ServerSurPool.AgentNum)
+		common.SendToTG(TgMsg)
+		agentWarning += 100 //过5000每增加100警告一次
 	}
 	common.Debug_log("新的客户端连接:[%v]%v 目前agent數量為:%v", a.RemoteAddr().Network(), a.RemoteAddr().String(), ServerSurPool.AgentNum)
 	// p := &Player{}
@@ -199,22 +198,7 @@ func respondStart(args []interface{}) {
 	for _, v := range arrPackages {
 		mapTaxPercent[v.PackageID] = float64(v.TaxPercent) * math.Pow10(-2)
 	}
-	serverStart := fmt.Sprintf("彩源猜大小游戏服务器启动成功\n启动时间:" + common.TimeNowStr() + "\n版本号:" + versionCode)
-	canterport := common.IntToStr(conf.Server.CenterServerPort)
-	canterurl := fmt.Sprintf("ws://" + conf.Server.CenterServer + ":" + canterport)
-	switch canterurl {
-	case "ws://161.117.178.174:12345":
-		serverStart = fmt.Sprintf(serverStart + "\n环境:DEV")
-		common.Debug_log(serverStart)
-	case "ws://172.16.100.2:9502", "ws://172.16.1.41:9502":
-		serverStart = fmt.Sprintf(serverStart + "\n环境:PRE")
-		common.Debug_log(serverStart)
-		common.SendTextToTelegramChat(common.TgbotChatID, serverStart, common.TgbotToken)
-	default:
-		serverStart = fmt.Sprintf(serverStart + "\n环境:OL")
-		common.Debug_log(serverStart)
-		common.SendTextToTelegramChat(common.TgbotChatID, serverStart, common.TgbotToken)
-	}
+	common.SendToTG("服务启动")
 	// common.Debug_log(canterurl)
 
 }

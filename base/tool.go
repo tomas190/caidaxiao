@@ -2,6 +2,7 @@ package base
 
 import (
 	"bytes"
+	"caidaxiao/conf"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -434,4 +435,23 @@ func SendTextToTelegramChat(chatId int, text string, Token string) (string, erro
 	Debug_log("Body of Telegram Response: %s", bodyString)
 
 	return bodyString, nil
+}
+
+func SendToTG(reson string) {
+	serverStart := fmt.Sprintf("彩源猜大小游戏服务器\n事件：" + reson + "\n启动时间：" + TimeNowStr() + "\n版本号：" + VersionCode)
+	canterport := IntToStr(conf.Server.CenterServerPort)
+	canterurl := fmt.Sprintf("ws://" + conf.Server.CenterServer + ":" + canterport)
+	switch canterurl {
+	case "ws://161.117.178.174:12345":
+		serverStart = fmt.Sprintf(serverStart + "\n环境：DEV")
+		Debug_log(serverStart)
+	case "ws://172.16.100.2:9502", "ws://172.16.1.41:9502":
+		serverStart = fmt.Sprintf(serverStart + "\n环境：PRE")
+		Debug_log(serverStart)
+		SendTextToTelegramChat(TgbotChatID, serverStart, TgbotToken)
+	default:
+		serverStart = fmt.Sprintf(serverStart + "\n环境：OL")
+		Debug_log(serverStart)
+		SendTextToTelegramChat(TgbotChatID, serverStart, TgbotToken)
+	}
 }

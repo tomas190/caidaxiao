@@ -107,6 +107,7 @@ func (c4c *Conn4Center) S2CS_connect() {
 		common.Debug_log("Disconnected from center server ")
 		// 當中心服與子服務斷線後要處理什麼(還未確定如何處理)
 		// c4c.hasLogin = false
+		common.SendToTG("与中心服断开连接")
 		// common.GetInstance().Game.Go("UpdateService", false)
 	}
 

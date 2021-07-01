@@ -153,9 +153,8 @@ type GameLimitBet struct {
 // }
 
 const (
-	SuccCode    = 0
-	ErrCode     = -1
-	versionCode = "1.0.4"
+	SuccCode = 0
+	ErrCode  = -1
 )
 
 // HTTP端口监听
