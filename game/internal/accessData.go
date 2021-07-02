@@ -157,9 +157,9 @@ type PlayerGameInfoReq struct {
 
 type PlayerProfitInfo struct {
 	PlayerID  string  `json:"player_id"`  // 玩家id
-	TotalWin  float64 `json:"total_win"`  // 剩余金额
-	TotalLose float64 `json:"total_lose"` // 下注时间
-	Profit    float64 `json:"profit"`     // 获奖期数
+	TotalWin  float64 `json:"total_win"`  // 总赢
+	TotalLose float64 `json:"total_lose"` // 总输
+	Profit    float64 `json:"profit"`     // 输赢差
 }
 
 // type UserRoundDataRes struct {
@@ -517,11 +517,31 @@ func StartHttpServer() {
 // 	}
 // }
 
+type playergamepageData struct {
+	Total         int         `json:"total"`
+	List          interface{} `json:"list"`
+	SercerWinLoss interface{} `json:"server_winloss"`
+}
+
+type sercerWinLoss struct {
+	TotalWin  float64 `json:"total_win"`  // 剩余金额
+	TotalLose float64 `json:"total_lose"` // 下注时间
+	Profit    float64 `json:"profit"`     // 获奖期数
+}
+
+///api/PlayerProfit
+// id 可选  (指定玩家或所有玩家)
+// game_id 必填
+// package_id 可选 (指定渠道或所有渠道)
+// start_time 必填
+// end_time 必填
+// page 可选 (预设1)
+// limit 可选 (预设50)
 // 玩家 总输  总赢  输赢差额
 func getPlayerGameInfo(w http.ResponseWriter, r *http.Request) {
 	var req PlayerGameInfoReq
 	var msg = ""
-	var result pageData
+	var result playergamepageData
 	req.Id = r.FormValue("id")
 	req.GameId = r.FormValue("game_id")
 	req.PackageID = r.FormValue("package_id")
@@ -600,7 +620,7 @@ func getPlayerGameInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var gameDataMap = map[string]*PlayerProfitInfo{}
-	common.Debug_log("资料总长:%v", len(recodes))
+	// common.Debug_log("资料总长:%v", len(recodes))
 	for _, v := range recodes { //加总
 		// common.Debug_log("v.TotalWin:%v, v.TotalLose%v", v.TotalWin, v.TotalLose)
 		pd, ok := gameDataMap[v.UserId]
@@ -618,7 +638,7 @@ func getPlayerGameInfo(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	common.Debug_log("map长度:%v", len(gameDataMap))
+	// common.Debug_log("map长度:%v", len(gameDataMap))
 	var playerProfitData []*PlayerProfitInfo
 	for _, v := range gameDataMap { //放进阵列
 		playerProfitData = append(playerProfitData, v)
@@ -632,8 +652,18 @@ func getPlayerGameInfo(w http.ResponseWriter, r *http.Request) {
 
 	playerProfitArr := splitArray(playerProfitData, limits)
 	playerProfitRsp := playerProfitArr[page-1]
+
+	serverWinLoss := &sercerWinLoss{}
+	for _, ppd := range playerProfitData {
+		serverWinLoss.TotalLose = serverWinLoss.TotalLose + ppd.TotalLose
+		serverWinLoss.TotalWin = serverWinLoss.TotalWin + ppd.TotalWin
+	}
+	serverWinLoss.Profit = serverWinLoss.TotalLose + serverWinLoss.TotalWin
+
 	result.Total = len(playerProfitData)
+	result.SercerWinLoss = serverWinLoss
 	result.List = playerProfitRsp
+
 }
 
 //slice切分
