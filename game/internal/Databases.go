@@ -214,6 +214,7 @@ type PlayerDownBetRecode struct {
 	GameId          string            `json:"game_id" bson:"game_id"`                   // gameId
 	RoundId         string            `json:"round_id" bson:"round_id"`                 // 随机Id
 	RoomId          string            `json:"room_id" bson:"room_id"`                   // 所在房间
+	PackageId       int               `json:"package_id" bson:"package_id"`             // 玩家品牌
 	DownBetInfo     *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"`       // 玩家各注池下注的金额
 	DownBetTime     int64             `json:"down_bet_time" bson:"down_bet_time"`       // 下注时间
 	StartTime       int64             `json:"start_time" bson:"start_time"`             // 开始时间
@@ -256,6 +257,22 @@ func GetDownRecodeList(page, limit int, selector bson.M, sortBy string) ([]Playe
 		return nil, 0, err
 	}
 	return wts, n, nil
+}
+
+//GetPlayerGameInfo 获取玩家总输总赢输赢差
+func PlayerGameInfo(selector bson.M) ([]PlayerGameData, error) {
+	s, c := connect(dbName, PlayerGameDataDB)
+	defer s.Close()
+
+	var wts []PlayerGameData
+
+	// log.Debug("获取玩家数据条件:%v %T", selector)
+	err := c.Find(selector).All(&wts)
+	if err != nil {
+		log.Debug("获取玩家游戏数据:%v", err)
+		return nil, err
+	}
+	return wts, nil
 }
 
 // 玩家游戏数据

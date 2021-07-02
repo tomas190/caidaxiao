@@ -6,7 +6,9 @@ import (
 	"caidaxiao/msg"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
@@ -44,6 +46,7 @@ type GameData struct {
 	PlayerId        string      `json:"player_id"`
 	RoundId         string      `json:"round_id"`
 	RoomId          string      `json:"room_id"`
+	PackageId       int         `json:"package_id"` // 玩家品牌
 	TaxRate         float64     `json:"tax_rate"`
 	Lottery         interface{} `json:"lottery"`          // 开奖号码
 	Card            interface{} `json:"card"`             // 开牌信息
@@ -142,6 +145,23 @@ type GameLimitBet struct {
 	TimeFmt string `form:"time_fmt" bson:"time_fmt" json:"time_fmt"`
 }
 
+type PlayerGameInfoReq struct {
+	Id        string `form:"id" json:"id"`
+	GameId    string `form:"game_id" json:"game_id"`
+	PackageID string `form:"package_id" json:"package_id"`
+	StartTime string `form:"start_time" json:"start_time"`
+	EndTime   string `form:"end_time" json:"end_time"`
+	Page      string `form:"page" json:"page"`
+	Limit     string `form:"limit" json:"limit"`
+}
+
+type PlayerProfitInfo struct {
+	PlayerID  string  `json:"player_id"`  // 玩家id
+	TotalWin  float64 `json:"total_win"`  // 剩余金额
+	TotalLose float64 `json:"total_lose"` // 下注时间
+	Profit    float64 `json:"profit"`     // 获奖期数
+}
+
 // type UserRoundDataRes struct {
 // 	Code int            `json:"code"`
 // 	Msg  string         `json:"msg"`
@@ -193,6 +213,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/logoutUser", logoutUser)
 	// 解鎖资金
 	http.HandleFunc("/api/unLockUserMoney", unLockUserMoney)
+	// 查看玩家获利状况
+	http.HandleFunc("/api/PlayerProfit", getPlayerGameInfo)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -495,6 +517,145 @@ func StartHttpServer() {
 // 	}
 // }
 
+// 玩家 总输  总赢  输赢差额
+func getPlayerGameInfo(w http.ResponseWriter, r *http.Request) {
+	var req PlayerGameInfoReq
+	var msg = ""
+	var result pageData
+	req.Id = r.FormValue("id")
+	req.GameId = r.FormValue("game_id")
+	req.PackageID = r.FormValue("package_id")
+	req.StartTime = r.FormValue("start_time")
+	req.EndTime = r.FormValue("end_time")
+	req.Page = r.FormValue("page")
+	req.Limit = r.FormValue("limit")
+	// log.Debug("获取分页数据:%v", req.Page)
+
+	defer func() {
+		js, err := json.Marshal(NewResp(SuccCode, msg, result))
+		if err != nil && msg != "" {
+			fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: msg, Data: nil})
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}()
+
+	selector := bson.M{}
+
+	if req.Id != "" {
+		selector["user_id"] = req.Id
+	}
+
+	if req.GameId != conf.Server.GameID {
+		msg = "game_id错误"
+		return
+	}
+
+	if req.PackageID != "" {
+		packageid, err := strconv.Atoi(req.PackageID)
+		if err != nil {
+			msg = "packageid错误"
+			return
+		}
+		selector["package_id"] = packageid
+	}
+
+	sTime, _ := strconv.Atoi(req.StartTime)
+	eTime, _ := strconv.Atoi(req.EndTime)
+	if sTime == 0 || eTime == 0 || sTime > eTime {
+		msg = "请填入正确时间参数"
+		return
+	}
+	selector["down_bet_time"] = bson.M{"$gte": sTime, "$lte": eTime}
+
+	if req.Page == "" {
+		req.Page = "1"
+	}
+
+	page, err := strconv.Atoi(req.Page)
+	if err != nil {
+		msg = "page参数不合法"
+		log.Debug("req.Page轉int :%v Error:%v", req.Page, err.Error())
+		return
+	}
+	if page < 1 {
+		msg = "page参数不合法"
+		log.Debug("page参数不合法 :%v Error:%v", page, err.Error())
+		return
+	}
+
+	var limits int
+	if len(req.Limit) == 0 {
+		limits = 50
+	} else {
+		limits, _ = strconv.Atoi(req.Limit)
+	}
+
+	recodes, err := PlayerGameInfo(selector)
+	if err != nil {
+		msg = "獲取數據錯誤"
+		log.Debug("獲取數據錯誤:%v", err)
+		return
+	}
+
+	var gameDataMap = map[string]*PlayerProfitInfo{}
+	common.Debug_log("资料总长:%v", len(recodes))
+	for _, v := range recodes { //加总
+		// common.Debug_log("v.TotalWin:%v, v.TotalLose%v", v.TotalWin, v.TotalLose)
+		pd, ok := gameDataMap[v.UserId]
+		if ok {
+
+			pd.TotalWin = pd.TotalWin + v.TotalWin
+			pd.TotalLose = pd.TotalLose + v.TotalLose // 负数
+			pd.Profit = pd.TotalWin + pd.TotalLose
+		} else {
+			gameDataMap[v.UserId] = &PlayerProfitInfo{
+				PlayerID:  v.UserId,
+				TotalWin:  v.TotalWin,
+				TotalLose: v.TotalLose,
+				Profit:    v.TotalWin + v.TotalLose,
+			}
+		}
+	}
+	common.Debug_log("map长度:%v", len(gameDataMap))
+	var playerProfitData []*PlayerProfitInfo
+	for _, v := range gameDataMap { //放进阵列
+		playerProfitData = append(playerProfitData, v)
+	}
+	sort.Slice(playerProfitData, func(i, j int) bool {
+		if playerProfitData[i].Profit > playerProfitData[j].Profit {
+			return true
+		}
+		return false
+	})
+
+	playerProfitArr := splitArray(playerProfitData, limits)
+	playerProfitRsp := playerProfitArr[page-1]
+	result.Total = len(playerProfitData)
+	result.List = playerProfitRsp
+}
+
+//slice切分
+func splitArray(arr []*PlayerProfitInfo, limits int) [][]*PlayerProfitInfo {
+	var data = make([][]*PlayerProfitInfo, 0)
+	for i := 1; i <= int(math.Floor(float64(len(arr)/limits)))+1; i++ {
+		low := limits * (i - 1)
+		if low > len(arr) {
+			return [][]*PlayerProfitInfo{}
+		}
+		high := limits * i
+		if high > len(arr) {
+			high = len(arr)
+		}
+		// fmt.Println(arr[low:high])
+		data = append(data, arr[low:high])
+		//intss[i-1] = append(intss[i-1],ints[low:high])
+
+	}
+	return data
+}
+
 func getAccessData(w http.ResponseWriter, r *http.Request) {
 	var req GameDataReq
 	var msg = ""
@@ -588,6 +749,7 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 		gd.StartTime = pr.StartTime
 		gd.EndTime = pr.EndTime
 		gd.PlayerId = pr.Id
+		gd.PackageId = pr.PackageId
 		gd.RoomId = pr.RoomId
 		gd.RoundId = pr.RoundId
 		gd.Lottery = pr.Lottery
@@ -604,14 +766,6 @@ func getAccessData(w http.ResponseWriter, r *http.Request) {
 	result.Total = count
 	result.List = gameData
 
-	// //fmt.Fprintf(w, "%+v", ApiResp{Code: SuccCode, Msg: "", Data: result})
-	// js, err := json.Marshal(NewResp(SuccCode, msg, result))
-	// if err != nil {
-	// 	fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
-	// 	return
-	// }
-	// w.Header().Set("Content-Type", "application/json")
-	// w.Write(js)
 }
 
 // 查询子游戏盈余池数据

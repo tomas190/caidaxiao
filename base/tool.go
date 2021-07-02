@@ -410,7 +410,7 @@ func DateFromObjectID(objectID bson.ObjectId) string {
 
 func SendTextToTelegramChat(chatId int, text string, Token string) (string, error) {
 
-	Debug_log("Send to Telegram: %v", text)
+	// Debug_log("Send to Telegram: %v", text)
 	var telegramApi string = "https://api.telegram.org/bot" + Token + "/sendMessage"
 
 	response, err := http.PostForm(

@@ -728,6 +728,7 @@ func (r *Room) ResultMoney() {
 					data.GameId = conf.Server.GameID
 					data.RoundId = r.RoundID
 					data.RoomId = r.RoomId
+					data.PackageId = v.PackageId
 					data.DownBetInfo = v.DownBetMoney
 					// data.DownBetInfo = new(msg.DownBetMoney)
 					// data.DownBetInfo.BigDownBet = v.DownBetMoney.BigDownBet
