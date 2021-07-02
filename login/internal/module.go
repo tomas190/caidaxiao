@@ -26,5 +26,5 @@ func (m *Module) OnInit() {
 
 func (m *Module) OnDestroy() {
 	common.Debug_log("loginModule OnDestroy")
-	common.GetInstance().Game.Go("LogoutAllUser")
+	// common.GetInstance().Game.Go("LogoutAllUser")
 }
