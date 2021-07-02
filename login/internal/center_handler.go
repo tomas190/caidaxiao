@@ -141,11 +141,22 @@ func (c4c *Conn4Center) S2CS_connect() {
 				syncWrite.Unlock()
 			case sig := <-interrupt:
 				// socket.Close()
-				common.Debug_log("close server,signal:%s", sig.String())
-				err := syscall.Kill(os.Getpid(), syscall.SIGINT) //殺掉子進程的只有在MACOS以及LINUX可以跑
-				if err != nil {
-					common.Debug_log("kill process err", err.Error())
-				}
+				// common.Debug_log("close server,signal:%s", sig.String())
+				// err := syscall.Kill(os.Getpid(), syscall.SIGINT) //殺掉子進程的只有在MACOS以及LINUX可以跑
+				// if err != nil {
+				// 	common.Debug_log("kill process err", err.Error())
+				// }
+				skeleton.Go(func() {
+					common.Debug_log("close server,signal:%s", sig.String())
+					err := syscall.Kill(os.Getpid(), syscall.SIGINT) //殺掉子進程的只有在MACOS以及LINUX可以跑
+					if err != nil {
+						common.Debug_log("kill process err", err.Error())
+					}
+				}, func() {
+					skeleton.AfterFunc(3*time.Second, func() {
+						socket.Close()
+					})
+				})
 				return
 			}
 		}

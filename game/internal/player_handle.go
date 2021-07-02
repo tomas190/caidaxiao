@@ -18,6 +18,10 @@ type ClientInfo struct {
 	lastLogin int64      // 上次連接時間(毫秒)
 }
 
+const (
+	LimitBet = 5000 //下注限红 (大小差距不能超过此数)
+)
+
 var (
 	// 下面兩個參數是已登錄子遊戲玩家為了後面方便mapping用的
 
@@ -100,25 +104,26 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
-		case msg.PotType_BigPot: // 设定全区的最大限红为10000
-			if (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet > 10000 {
+
+		case msg.PotType_BigPot: // 设定全区的最大限红为LimitBet
+			if (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet > LimitBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
-			} else if (p.DownBetMoney.BigDownBet+m.DownBet)-p.DownBetMoney.SmallDownBet > 10000 {
+			} else if (p.DownBetMoney.BigDownBet+m.DownBet)-p.DownBetMoney.SmallDownBet > LimitBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
 			}
 		case msg.PotType_SmallPot:
-			if (room.PotMoneyCount.SmallDownBet+m.DownBet)-room.PotMoneyCount.BigDownBet > 10000 {
+			if (room.PotMoneyCount.SmallDownBet+m.DownBet)-room.PotMoneyCount.BigDownBet > LimitBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
 				return
-			} else if (p.DownBetMoney.SmallDownBet+m.DownBet)-p.DownBetMoney.BigDownBet > 10000 {
+			} else if (p.DownBetMoney.SmallDownBet+m.DownBet)-p.DownBetMoney.BigDownBet > LimitBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")

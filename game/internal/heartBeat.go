@@ -17,7 +17,7 @@ var (
 func HeartBeatLoop() {
 	// Debug_log("HeartBeatLoop Start!")
 	// HBcheck = time.NewTicker(time.Second)
-	skeleton.AfterFunc(1*time.Second, func() {
+	skeleton.AfterFunc(10*time.Second, func() {
 		intervalHeartBeat() //心跳  用戶
 		HeartBeatLoop()
 	})
@@ -55,12 +55,12 @@ func HeartBeatHandler(args []interface{}) {
 // 检测客户端连接是否超时
 func intervalHeartBeat() {
 
-	if heartIndex < heartWait { //每隔十秒檢查一次
-		heartIndex++
-		return
-	}
+	// if heartIndex < heartWait { //每隔十秒檢查一次
+	// 	heartIndex++
+	// 	return
+	// }
 
-	heartIndex = 0
+	// heartIndex = 0
 	timestamp := time.Now().Unix()
 
 	AgentFromuserID_.Range(func(k, client interface{}) bool {

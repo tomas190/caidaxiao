@@ -91,14 +91,14 @@ func (r *Room) RobotsDownBet() {
 									continue
 								}
 
-								// 设定全区的最大限红为10000
+								// 设定全区的最大限红为LimitBet
 								switch pot {
 								case int32(msg.PotType_BigPot):
-									if (r.PotMoneyCount.BigDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+									if (r.PotMoneyCount.BigDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.SmallDownBet > LimitBet {
 										continue
 									}
 								case int32(msg.PotType_SmallPot):
-									if (r.PotMoneyCount.SmallDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+									if (r.PotMoneyCount.SmallDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.BigDownBet > LimitBet {
 										continue
 									}
 								case int32(msg.PotType_LeopardPot):
@@ -106,10 +106,10 @@ func (r *Room) RobotsDownBet() {
 									if (r.PotMoneyCount.LeopardDownBet + bet) > 5 {
 										continue
 									}
-									if r.PotMoneyCount.BigDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+									if r.PotMoneyCount.BigDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.SmallDownBet > LimitBet {
 										continue
 									}
-									if r.PotMoneyCount.SmallDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+									if r.PotMoneyCount.SmallDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.BigDownBet > LimitBet {
 										continue
 									}
 								}
@@ -201,14 +201,14 @@ func (r *Room) RobotsDownBet() {
 							if v.Account < float64(bet) {
 								continue
 							}
-							// 设定全区的最大限红为10000
+							// 设定全区的最大限红为LimitBet
 							if pot == int32(msg.PotType_BigPot) {
-								if (r.PotMoneyCount.BigDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+								if (r.PotMoneyCount.BigDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.SmallDownBet > LimitBet {
 									continue
 								}
 							}
 							if pot == int32(msg.PotType_SmallPot) {
-								if (r.PotMoneyCount.SmallDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+								if (r.PotMoneyCount.SmallDownBet+bet)+(r.PotMoneyCount.LeopardDownBet*WinLeopard)-r.PotMoneyCount.BigDownBet > LimitBet {
 									continue
 								}
 							}
@@ -217,10 +217,10 @@ func (r *Room) RobotsDownBet() {
 								if (r.PotMoneyCount.LeopardDownBet + bet) > 5 {
 									continue
 								}
-								if r.PotMoneyCount.BigDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.SmallDownBet > 10000 {
+								if r.PotMoneyCount.BigDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.SmallDownBet > LimitBet {
 									continue
 								}
-								if r.PotMoneyCount.SmallDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.BigDownBet > 10000 {
+								if r.PotMoneyCount.SmallDownBet+((r.PotMoneyCount.LeopardDownBet+bet)*WinLeopard)-r.PotMoneyCount.BigDownBet > LimitBet {
 									continue
 								}
 							}
