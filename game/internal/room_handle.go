@@ -806,7 +806,8 @@ func (r *Room) GetResultType() {
 
 	// 富鑫II結算方式
 	// 一般開獎方式:千位+百位+個位  ，絕對值取個位
-	resfx := num2 + num5 + num3
+	// resfx := num2 + num5 + num3
+	resfx := (num1+num4)*(num2-num5) - num3
 	datafx := strconv.Itoa(resfx)
 	datafx = datafx[len(datafx)-1:]
 	LuckyNumfx, _ := strconv.Atoi(datafx)
