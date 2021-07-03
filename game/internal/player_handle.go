@@ -98,7 +98,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		}
 		switch m.DownPot {
 		case msg.PotType_LeopardPot: // 设定单个区域限红为1000
-			if (room.PotMoneyCount.LeopardDownBet+m.DownBet)*WinLeopard > 1000 {
+			if (room.PlayerTotalMoney.LeopardDownBet+m.DownBet)*WinLeopard > 1000 {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
@@ -106,7 +106,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			}
 
 		case msg.PotType_BigPot: // 设定全区的最大限红为LimitBet
-			if (room.PotMoneyCount.BigDownBet+m.DownBet)-room.PotMoneyCount.SmallDownBet > LimitBet {
+			if (room.PlayerTotalMoney.BigDownBet+m.DownBet)-room.PlayerTotalMoney.SmallDownBet > LimitBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
@@ -118,7 +118,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				return
 			}
 		case msg.PotType_SmallPot:
-			if (room.PotMoneyCount.SmallDownBet+m.DownBet)-room.PotMoneyCount.BigDownBet > LimitBet {
+			if (room.PlayerTotalMoney.SmallDownBet+m.DownBet)-room.PlayerTotalMoney.BigDownBet > LimitBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETMONEYFULL
 				p.SendMsg(data, "ErrorMsg_S2C")
