@@ -83,7 +83,10 @@ func (hall *GameHall) CreateGameRoom() {
 }
 
 func (hall *GameHall) PlayerJoinRoom(rid string, p *Player) {
-
+	roomid, ok := hall.UserRoom.Load(p.Id)
+	if ok {
+		rid = roomid.(string)
+	}
 	r, _ := hall.RoomRecord.Load(rid)
 	if r != nil {
 		room := r.(*Room)
