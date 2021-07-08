@@ -692,8 +692,7 @@ func (r *Room) ResultMoney() {
 				// if v.IsRobot == false {
 				// 	log.Debug("玩家:%v,贏分下注:%v 輸分下注:%v 玩家獲利:%v", v.Id, us.uBetWin, us.uBetLoss, us.uWinSum)
 				// }
-				v.ResultMoney = us.uBetWin + us.uWinSum - tax - us.uBetLoss
-
+				v.ResultMoney = (us.uWinSum - tax) - us.uBetLoss // 玩家总赢(扣税)+玩家输分下住
 				// 玩家獲利一定金額廣播
 				if v.ResultMoney >= moneyWinToNotice && v.IsRobot == false {
 					sendNotice(v.Id, v.NickName, v.ResultMoney)
