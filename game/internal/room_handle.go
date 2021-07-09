@@ -137,8 +137,8 @@ func (r *Room) GetRoomType() {
 					if r.PeriodsNum == r.ResultNum { // 判断当前奖期是否与上局奖期相同
 						r.Lottery = nil
 					}
-					// if time.Now().Minute() == 0 || time.Now().Minute() == 30 || r.Lottery == nil { // 流局处理
-					if r.Lottery == nil { // 流局处理
+					if time.Now().Minute() == 0 || time.Now().Minute() == 30 || r.Lottery == nil { // 流局处理
+						// if r.Lottery == nil { // 流局处理
 
 						log.Debug("房間%v 当前分钟:%v,当前奖源:%v", r.RoomId, time.Now().Minute(), r.Lottery)
 						r.HandleLiuJu() // 当局游戏流局处理
