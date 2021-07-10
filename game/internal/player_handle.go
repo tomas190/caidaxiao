@@ -70,6 +70,8 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 	if v != nil && m.IsAction == true {
 		room := v.(*Room)
+		room.userBetMutex.Lock()
+		defer room.userBetMutex.Unlock()
 		// 不是下注阶段，不能进行下注
 		if room.GameStat != msg.GameStep_DownBet {
 			return
@@ -87,7 +89,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 		// 当下玩家下注限红设定
 		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
-		log.Debug("玩家:%v 下注金額:%v 下注類型:%v 餘額:%v", p.Id, m.DownBet, m.DownPot, p.Account)
+		log.Debug("玩家:%v 下注金額:%v 下注類型:%v 餘額:%v", p.Id, m.DownBet, m.DownPot, p.Account-float64(m.DownBet))
 		if p.MinBet > 0 || p.MaxBet > 0 {
 			if m.DownBet < p.MinBet || totalBet+m.DownBet > p.MaxBet {
 				data := &msg.ErrorMsg_S2C{}
@@ -130,9 +132,6 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				return
 			}
 		}
-
-		room.userBetMutex.Lock()
-		defer room.userBetMutex.Unlock()
 
 		p.IsAction = m.IsAction
 		if p.IsAction == true {

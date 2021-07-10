@@ -132,7 +132,16 @@ func FmtLog(args ...interface{}) {
 }
 
 // 檢查silce中有沒有此元素(int32)
-func SearchSliInt(slice []int32, elem int32) bool {
+func SearchSliInt32(slice []int32, elem int32) bool {
+	for _, v := range slice {
+		if v == elem {
+			return true
+		}
+	}
+	return false
+}
+
+func SearchSliInt(slice []int, elem int) bool {
 	for _, v := range slice {
 		if v == elem {
 			return true
