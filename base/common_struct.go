@@ -1,6 +1,6 @@
 package base
 
-const VersionCode = "1.0.12" //服务版本
+const VersionCode = "1.0.13" //服务版本
 
 type UserInfo struct {
 	UserID      int32
@@ -20,6 +20,7 @@ type AmountFlowReq struct {
 	LockMoney  float64
 	Order      string
 	RoundID    string
+	PackageID  int    // 不同平台id(税收)
 	Reason     string //资金变动原因
 	UserName   string //用户名
 	RoomNumber string //房间号码

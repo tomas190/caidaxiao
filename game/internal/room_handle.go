@@ -628,6 +628,7 @@ func (r *Room) ResultMoney() {
 						Money:     v.LockMoney,
 						RoundID:   r.RoundID,
 						Order:     bson.NewObjectId().Hex(),
+						PackageID: v.PackageId,
 						Reason:    "撤回投注解锁资金",
 						TimeStamp: time.Now().Unix(),
 					})
@@ -646,6 +647,7 @@ func (r *Room) ResultMoney() {
 							UserName:   v.NickName,
 							Money:      v.WinResultMoney, //本局盈虧(未扣稅)
 							RoomNumber: r.RoomId,
+							PackageID:  v.PackageId,
 							BetMoney:   us.uBetWin,
 							RoundID:    r.RoundID,
 							Order:      bson.NewObjectId().Hex(),
@@ -669,6 +671,7 @@ func (r *Room) ResultMoney() {
 								UserID:     v.Id,
 								UserName:   v.NickName,
 								RoomNumber: r.RoomId,
+								PackageID:  v.PackageId,
 								Money:      v.LoseResultMoney,
 								BetMoney:   us.uBetLoss,
 								RoundID:    r.RoundID,

@@ -374,6 +374,7 @@ func lockMoney(user *Player, moneyLock float64, round_id string) {
 		Money:     moneyLock,
 		RoundID:   round_id,
 		Order:     bson.NewObjectId().Hex(),
+		PackageID: user.PackageId,
 		Reason:    "锁定用户投注的钱",
 		TimeStamp: time.Now().Unix(),
 	})
@@ -389,6 +390,7 @@ func unlockMoney(user *Player) float64 {
 type TurnoverRecord struct {
 	ID           bson.ObjectId `bson:"_id"`          //与中心服务器通信中的order字段
 	UserID       int32         `bson:"userID"`       //用户ID
+	PackageID    int           `bson:"package_id"`   //品牌ID
 	MoneyChanged float64       `bson:"moneyChanged"` //资金变化
 	Balance      float64       `bson:"balance"`      //用户余额
 	BetMoney     float64       `bson:"betMoney"`     //用户余额
@@ -414,6 +416,7 @@ func AddTurnoverRecord(event string, data common.AmountFlowReq) {
 		MoneyChanged: data.Money,
 		BetMoney:     data.BetMoney,
 		Reason:       data.Reason,
+		PackageID:    data.PackageID,
 		TimeStamp:    data.TimeStamp,
 		PackID:       data.RoundID,
 	}
