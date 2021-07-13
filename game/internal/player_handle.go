@@ -99,7 +99,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			}
 		}
 
-		if m.DownBet < room.RoomMinBet { // 小于房间限红
+		if totalBet+m.DownBet < room.RoomMinBet { // 小于房间限红
 			data := &msg.ErrorMsg_S2C{}
 			data.MsgData = RECODE_DOWNBETMONEYLACK
 			data.LimitNum = float64(room.RoomMinBet)
