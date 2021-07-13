@@ -89,8 +89,8 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 		// 当下玩家下注限红设定
 		totalBet := p.DownBetMoney.BigDownBet + p.DownBetMoney.SmallDownBet + p.DownBetMoney.LeopardDownBet
-		log.Debug("玩家:%v 下注金額:%v 下注類型:%v 餘額:%v", p.Id, m.DownBet, m.DownPot, p.Account-float64(m.DownBet))
-		if p.MinBet > 0 || p.MaxBet > 0 {
+
+		if p.MinBet > 0 || p.MaxBet > 0 { //玩家个别限红
 			if m.DownBet < p.MinBet || totalBet+m.DownBet > p.MaxBet {
 				data := &msg.ErrorMsg_S2C{}
 				data.MsgData = RECODE_DOWNBETLIMITBET
@@ -98,6 +98,22 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				return
 			}
 		}
+
+		if m.DownBet < room.RoomMinBet { // 小于房间限红
+			data := &msg.ErrorMsg_S2C{}
+			data.MsgData = RECODE_DOWNBETMONEYLACK
+			data.LimitNum = float64(room.RoomMinBet)
+			p.SendMsg(data, "ErrorMsg_S2C")
+			return
+		}
+		if totalBet+m.DownBet > room.RoomMaxBet { // 大于房间限红
+			data := &msg.ErrorMsg_S2C{}
+			data.MsgData = RECODE_DOWNBETMONEYLACK
+			data.LimitNum = float64(room.RoomMaxBet)
+			p.SendMsg(data, "ErrorMsg_S2C")
+			return
+		}
+
 		switch m.DownPot {
 		case msg.PotType_LeopardPot: // 设定单个区域限红为1000
 			if (room.PlayerTotalMoney.LeopardDownBet+m.DownBet)*WinLeopard > 1000 {
@@ -177,6 +193,8 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			potChange.PotMoneyCount.StraightDownBet = room.PotMoneyCount.StraightDownBet
 			potChange.PotMoneyCount.LeopardDownBet = room.PotMoneyCount.LeopardDownBet
 			room.BroadCastMsg(potChange, "PotChangeMoney_S2C")
+
+			log.Debug("玩家:%v 下注金額:%v 下注類型:%v 餘額:%v", p.Id, m.DownBet, m.DownPot, p.Account)
 		}
 	}
 }

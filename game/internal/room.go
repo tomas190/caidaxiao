@@ -112,12 +112,11 @@ type Room struct {
 	HistoryData []msg.LotteryData // 历史开奖数据
 	counter     int32             // 已经过去多少秒
 	clock       *time.Ticker      // 计时器
+	UserLeave   []int32           // 用户是否在房间
+	IsOpenRoom  bool              // 是否开启房间
 
-	// Lock sync.Mutex // 锁
-
-	UserLeave []int32 // 用户是否在房间
-
-	IsOpenRoom bool // 是否开启房间
+	RoomMinBet int32 // 房间限定下注最小金额
+	RoomMaxBet int32 // 房间限定下注最大金额
 
 	userRoomMutex   sync.RWMutex // 玩家進出鎖
 	userBetMutex    sync.RWMutex // 玩家下注鎖
@@ -155,6 +154,9 @@ func (r *Room) Init() {
 	r.UserLeave = make([]int32, 0)
 
 	r.IsOpenRoom = true
+
+	r.RoomMinBet = 1
+	r.RoomMaxBet = 5000
 
 }
 

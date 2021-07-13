@@ -280,6 +280,7 @@ message ChangeRoomType_S2C {
 
 message ErrorMsg_S2C {
     string msgData = 1; // 错误消息
+    double limitNum = 2; // 最小限注最大限注金额
 }
 
 message ShowTableInfo_C2S {

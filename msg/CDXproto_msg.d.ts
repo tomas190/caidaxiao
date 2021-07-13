@@ -3353,6 +3353,9 @@ export namespace msg {
 
         /** ErrorMsg_S2C msgData */
         msgData?: (string|null);
+
+        /** ErrorMsg_S2C limitNum */
+        limitNum?: (number|null);
     }
 
     /** Represents an ErrorMsg_S2C. */
@@ -3366,6 +3369,9 @@ export namespace msg {
 
         /** ErrorMsg_S2C msgData. */
         public msgData: string;
+
+        /** ErrorMsg_S2C limitNum. */
+        public limitNum: number;
 
         /**
          * Creates a new ErrorMsg_S2C instance using the specified properties.

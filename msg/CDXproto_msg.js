@@ -8208,6 +8208,7 @@ $root.msg = (function() {
          * @memberof msg
          * @interface IErrorMsg_S2C
          * @property {string|null} [msgData] ErrorMsg_S2C msgData
+         * @property {number|null} [limitNum] ErrorMsg_S2C limitNum
          */
 
         /**
@@ -8232,6 +8233,14 @@ $root.msg = (function() {
          * @instance
          */
         ErrorMsg_S2C.prototype.msgData = "";
+
+        /**
+         * ErrorMsg_S2C limitNum.
+         * @member {number} limitNum
+         * @memberof msg.ErrorMsg_S2C
+         * @instance
+         */
+        ErrorMsg_S2C.prototype.limitNum = 0;
 
         /**
          * Creates a new ErrorMsg_S2C instance using the specified properties.
@@ -8259,6 +8268,8 @@ $root.msg = (function() {
                 writer = $Writer.create();
             if (message.msgData != null && Object.hasOwnProperty.call(message, "msgData"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.msgData);
+            if (message.limitNum != null && Object.hasOwnProperty.call(message, "limitNum"))
+                writer.uint32(/* id 2, wireType 1 =*/17).double(message.limitNum);
             return writer;
         };
 
@@ -8295,6 +8306,9 @@ $root.msg = (function() {
                 switch (tag >>> 3) {
                 case 1:
                     message.msgData = reader.string();
+                    break;
+                case 2:
+                    message.limitNum = reader.double();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -8334,6 +8348,9 @@ $root.msg = (function() {
             if (message.msgData != null && message.hasOwnProperty("msgData"))
                 if (!$util.isString(message.msgData))
                     return "msgData: string expected";
+            if (message.limitNum != null && message.hasOwnProperty("limitNum"))
+                if (typeof message.limitNum !== "number")
+                    return "limitNum: number expected";
             return null;
         };
 
@@ -8351,6 +8368,8 @@ $root.msg = (function() {
             var message = new $root.msg.ErrorMsg_S2C();
             if (object.msgData != null)
                 message.msgData = String(object.msgData);
+            if (object.limitNum != null)
+                message.limitNum = Number(object.limitNum);
             return message;
         };
 
@@ -8367,10 +8386,14 @@ $root.msg = (function() {
             if (!options)
                 options = {};
             var object = {};
-            if (options.defaults)
+            if (options.defaults) {
                 object.msgData = "";
+                object.limitNum = 0;
+            }
             if (message.msgData != null && message.hasOwnProperty("msgData"))
                 object.msgData = message.msgData;
+            if (message.limitNum != null && message.hasOwnProperty("limitNum"))
+                object.limitNum = options.json && !isFinite(message.limitNum) ? String(message.limitNum) : message.limitNum;
             return object;
         };
 

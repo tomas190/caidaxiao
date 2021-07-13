@@ -145,6 +145,13 @@ type GameLimitBet struct {
 	TimeFmt string `form:"time_fmt" bson:"time_fmt" json:"time_fmt"`
 }
 
+type GameRoomLimitBet struct {
+	Room   string `form:"room_id" bson:"room_id" json:"room_id"`
+	GameId string `form:"game_id" bson:"game_id" json:"game_id"`
+	MinBet string `form:"min_bet" bson:"min_bet" json:"min_bet"`
+	MaxBet string `form:"max_bet" bson:"max_bet" json:"max_bet"`
+}
+
 type PlayerGameInfoReq struct {
 	Id        string `form:"id" json:"id"`
 	GameId    string `form:"game_id" json:"game_id"`
@@ -198,7 +205,7 @@ func StartHttpServer() {
 	// 接口操作关闭或开启房源
 	http.HandleFunc("/api/changeRoomStatus", HandleRoomType)
 	// 分分彩包赔活动
-	http.HandleFunc("/api/HandleBaoPay", HandleHeBaoPay)
+	http.HandleFunc("/api/HandleBaoPay", HandleBaoPay)
 	// 分分彩连赢活动（河内分分彩）
 	http.HandleFunc("/api/HandleHeNeiWin", HandleHeNeiWin)
 	// 分分彩连赢活动（奇趣分分彩）
@@ -217,6 +224,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/PlayerProfit", getPlayerGameInfo)
 	// 查看获利状况(单一玩家or品牌)
 	http.HandleFunc("/api/getStatementTotal", getStatementTotal)
+	// 设定房间下注限紅
+	http.HandleFunc("/api/setRoomLimitBet", setRoomLimitBet)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -968,7 +977,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func HandleHeBaoPay(w http.ResponseWriter, r *http.Request) {
+func HandleBaoPay(w http.ResponseWriter, r *http.Request) {
 	var req GamePayReq
 
 	req.UserId = r.FormValue("user_id")
@@ -1292,6 +1301,59 @@ func getUserLimitBet(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+}
+
+// /api/setRoomLimitBet
+// room_id (string) ex:"1","2"
+// game_id (string) 游戏ID
+// min_bet (int)    投注最小限制
+// max_bet (int)    投注最大限制
+func setRoomLimitBet(w http.ResponseWriter, r *http.Request) {
+	var req GameRoomLimitBet
+	var msg string = "修改成功"
+	req.Room = r.PostFormValue("room_id")
+	req.GameId = r.PostFormValue("game_id")
+	req.MinBet = r.PostFormValue("min_bet")
+	req.MaxBet = r.PostFormValue("max_bet")
+
+	minBet, errmin := strconv.Atoi(req.MinBet)
+	maxBet, errmax := strconv.Atoi(req.MaxBet)
+
+	defer func() {
+		js, err := json.Marshal(NewResp(SuccCode, msg, req))
+		if err != nil {
+			fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}()
+
+	if errmin != nil || errmax != nil || minBet > maxBet {
+		msg = "限制投注min_bet,max_bet 输入错误"
+		return
+	}
+
+	if req.GameId != conf.Server.GameID {
+		msg = "GameId输入错误"
+		return
+	}
+
+	exist := false
+	for _, v := range hall.roomList {
+		common.Debug_log(v.RoomId, req.Room, v.RoomId == req.Room)
+		if v != nil && v.RoomId == req.Room {
+			v.RoomMaxBet = int32(maxBet)
+			v.RoomMinBet = int32(minBet)
+			common.Debug_log("房间%v 修改限制下注:%v", v.RoomId, req)
+			exist = true
+		}
+	}
+	if !exist {
+		msg = "无此房间"
+		return
+	}
+
 }
 
 func FormatTime(timeUnix int64, layout string) string {
