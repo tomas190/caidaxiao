@@ -108,7 +108,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		}
 		if totalBet+m.DownBet > room.RoomMaxBet { // 大于房间限红
 			data := &msg.ErrorMsg_S2C{}
-			data.MsgData = RECODE_DOWNBETMONEYLACK
+			data.MsgData = RECODE_DOWNBETMONEYFULL
 			data.LimitNum = float64(room.RoomMaxBet)
 			p.SendMsg(data, "ErrorMsg_S2C")
 			return
