@@ -226,6 +226,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/getStatementTotal", getStatementTotal)
 	// 设定房间下注限紅
 	http.HandleFunc("/api/setRoomLimitBet", setRoomLimitBet)
+	// 查詢房间下注限紅
+	http.HandleFunc("/api/getRoomLimitBet", getRoomLimitBet)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -1346,6 +1348,47 @@ func setRoomLimitBet(w http.ResponseWriter, r *http.Request) {
 			v.RoomMaxBet = int32(maxBet)
 			v.RoomMinBet = int32(minBet)
 			common.Debug_log("房间%v 修改限制下注:%v", v.RoomId, req)
+			exist = true
+		}
+	}
+	if !exist {
+		msg = "无此房间"
+		return
+	}
+
+}
+
+// /api/setRoomLimitBet
+// room_id (string) ex:"1","2"
+// game_id (string) 游戏ID
+func getRoomLimitBet(w http.ResponseWriter, r *http.Request) {
+	var req GameRoomLimitBet
+	var msg string = "查詢成功"
+	req.Room = r.PostFormValue("room_id")
+	req.GameId = r.PostFormValue("game_id")
+
+	defer func() {
+		js, err := json.Marshal(NewResp(SuccCode, msg, req))
+		if err != nil {
+			fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}()
+
+	if req.GameId != conf.Server.GameID {
+		msg = "GameId输入错误"
+		return
+	}
+
+	exist := false
+	for _, v := range hall.roomList {
+		common.Debug_log(v.RoomId, req.Room, v.RoomId == req.Room)
+		if v != nil && v.RoomId == req.Room {
+			req.MaxBet = common.Int32ToStr(v.RoomMaxBet)
+			req.MinBet = common.Int32ToStr(v.RoomMinBet)
+			common.Debug_log("房间%v 查詢限制下注:%v", v.RoomId, req)
 			exist = true
 		}
 	}

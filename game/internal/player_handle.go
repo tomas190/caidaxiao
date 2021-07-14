@@ -99,19 +99,21 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			}
 		}
 
-		if totalBet+m.DownBet < room.RoomMinBet { // 小于房间限红
-			data := &msg.ErrorMsg_S2C{}
-			data.MsgData = RECODE_DOWNBETMONEYLACK
-			data.LimitNum = float64(room.RoomMinBet)
-			p.SendMsg(data, "ErrorMsg_S2C")
-			return
-		}
-		if totalBet+m.DownBet > room.RoomMaxBet { // 大于房间限红
-			data := &msg.ErrorMsg_S2C{}
-			data.MsgData = RECODE_DOWNBETMONEYFULL
-			data.LimitNum = float64(room.RoomMaxBet)
-			p.SendMsg(data, "ErrorMsg_S2C")
-			return
+		if room.RoomMinBet > 0 || room.RoomMaxBet > 0 { //房間限紅限制都為0不限制
+			if totalBet+m.DownBet < room.RoomMinBet { // 小于房间限红
+				data := &msg.ErrorMsg_S2C{}
+				data.MsgData = RECODE_DOWNBETMONEYLACK
+				data.LimitNum = float64(room.RoomMinBet)
+				p.SendMsg(data, "ErrorMsg_S2C")
+				return
+			}
+			if totalBet+m.DownBet > room.RoomMaxBet { // 大于房间限红
+				data := &msg.ErrorMsg_S2C{}
+				data.MsgData = RECODE_DOWNBETMONEYFULL
+				data.LimitNum = float64(room.RoomMaxBet)
+				p.SendMsg(data, "ErrorMsg_S2C")
+				return
+			}
 		}
 
 		switch m.DownPot {
