@@ -970,6 +970,37 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 		return true
 	})
 
+	roomidCount := SearchCMD{
+		DBName: dbName,
+		CName:  RoomStatusDB,
+		Query:  bson.M{"room_id": changeroom.RoomId},
+	}
+	if FindCountByQuery(roomidCount) > 0 {
+		Update := SearchCMD{
+			DBName: dbName,
+			CName:  RoomStatusDB,
+			Query:  roomidCount.Query,
+			Update: bson.M{"$set": bson.M{
+				"Is_Open":  changeroom.IsOpenRoom,
+				"time_fmt": time.Now().Format("2006-01-02_15:04:05"),
+			}},
+		}
+		roomUpdate := &RoomStatus{}
+		if FindAndUpdateByQuery(Update, roomUpdate) {
+			common.Debug_log("房間%v數據庫更新成功 Is_Open:%v ", changeroom.RoomId, changeroom.IsOpenRoom)
+		}
+	} else {
+		roomInsert := &RoomStatus{
+			RoomId:  changeroom.RoomId,
+			GameId:  req.GameId,
+			MinBet:  changeroom.RoomMinBet,
+			MaxBet:  changeroom.RoomMaxBet,
+			IsOpen:  changeroom.IsOpenRoom,
+			TimeFmt: time.Now().Format("2006-01-02_15:04:05"),
+		}
+		InsertRoomStatus(roomInsert)
+	}
+
 	js, err := json.Marshal(NewResp(SuccCode, "", ""))
 	if err != nil {
 		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
@@ -1242,6 +1273,9 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 	req.MaxBet = r.PostFormValue("max_bet")
 	req.TimeFmt = time.Now().Format("2006-01-02_15:04:05")
 
+	if req.UserId == "" {
+		return
+	}
 	log.Debug("限制玩家下注:%v", req)
 	minBet, _ := strconv.Atoi(req.MinBet)
 	maxBet, _ := strconv.Atoi(req.MaxBet)
@@ -1261,7 +1295,27 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 		return true
 	})
 
-	if req.UserId != "" {
+	useridCount := SearchCMD{
+		DBName: dbName,
+		CName:  UserLimitBetDB,
+		Query:  bson.M{"user_id": req.UserId},
+	}
+	if FindCountByQuery(useridCount) > 0 {
+		Update := SearchCMD{
+			DBName: dbName,
+			CName:  UserLimitBetDB,
+			Query:  useridCount.Query,
+			Update: bson.M{"$set": bson.M{
+				"min_bet":  minBet,
+				"max_bet":  maxBet,
+				"time_fmt": time.Now().Format("2006-01-02_15:04:05"),
+			}},
+		}
+		roomUpdate := &RoomStatus{}
+		if FindAndUpdateByQuery(Update, roomUpdate) {
+			common.Debug_log("玩家%v限紅更新成功 min_bet:%v max_bet:%v", req.UserId, minBet, maxBet)
+		}
+	} else {
 		// 插入玩家限定下注数据
 		InsertUserLimitBet(&req)
 	}
@@ -1342,18 +1396,52 @@ func setRoomLimitBet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	exist := false
+	var changeroom *Room
 	for _, v := range hall.roomList {
 		common.Debug_log(v.RoomId, req.Room, v.RoomId == req.Room)
 		if v != nil && v.RoomId == req.Room {
 			v.RoomMaxBet = int32(maxBet)
 			v.RoomMinBet = int32(minBet)
 			common.Debug_log("房间%v 修改限制下注:%v", v.RoomId, req)
+			changeroom = v
 			exist = true
 		}
 	}
 	if !exist {
 		msg = "无此房间"
 		return
+	}
+
+	roomidCount := SearchCMD{
+		DBName: dbName,
+		CName:  RoomStatusDB,
+		Query:  bson.M{"room_id": changeroom.RoomId},
+	}
+	if FindCountByQuery(roomidCount) > 0 {
+		Update := SearchCMD{
+			DBName: dbName,
+			CName:  RoomStatusDB,
+			Query:  roomidCount.Query,
+			Update: bson.M{"$set": bson.M{
+				"min_bet":  changeroom.RoomMinBet,
+				"max_bet":  changeroom.RoomMaxBet,
+				"time_fmt": time.Now().Format("2006-01-02_15:04:05"),
+			}},
+		}
+		roomUpdate := &RoomStatus{}
+		if FindAndUpdateByQuery(Update, roomUpdate) {
+			common.Debug_log("房間%v數據庫更新成功 min_bet:%v max_bet:%v", changeroom.RoomId, changeroom.RoomMinBet, changeroom.RoomMaxBet)
+		}
+	} else {
+		roomInsert := &RoomStatus{
+			RoomId:  changeroom.RoomId,
+			GameId:  req.GameId,
+			MinBet:  changeroom.RoomMinBet,
+			MaxBet:  changeroom.RoomMaxBet,
+			IsOpen:  changeroom.IsOpenRoom,
+			TimeFmt: time.Now().Format("2006-01-02_15:04:05"),
+		}
+		InsertRoomStatus(roomInsert)
 	}
 
 }

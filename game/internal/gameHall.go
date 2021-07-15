@@ -70,9 +70,9 @@ func (hall *GameHall) CreateGameRoom() {
 	for i := 0; i < 2; i++ {
 		time.Sleep(time.Second)
 		r := &Room{}
-		r.Init()
 		ri := i + 1
 		r.RoomId = strconv.Itoa(ri)
+		r.Init()
 		hall.roomList = append(hall.roomList, r)
 		hall.RoomRecord.Store(r.RoomId, r)
 		log.Debug("CreateRoom 创建新的房间:%v,当前房间数量:%v", r.RoomId, len(hall.roomList))

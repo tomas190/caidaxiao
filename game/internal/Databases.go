@@ -31,6 +31,7 @@ const (
 	PlayerGameDataDB = "PlayerGameDataDB"
 	RoomTotalBetDB   = "RoomTotalBetDB"
 	UserLimitBetDB   = "UserLimitBetDB"
+	RoomStatusDB     = "RoomStatusDB"
 )
 
 // 连接数据库集合的函数 传入集合 默认连接IM数据库
@@ -568,7 +569,7 @@ func LoadUserLimitBet(player *Player) GameLimitBet {
 	defer s.Close()
 
 	game := &GameLimitBet{}
-	err := c.Find(bson.M{"user_id": player.Id}).Sort("-time_fmt").One(game)
+	err := c.Find(bson.M{"user_id": common.Int32ToStr(player.Id)}).Sort("-time_fmt").One(game)
 	if err != nil {
 		log.Error("<----- 数据库读取LoadUserLimitBet数据失败 ~ ----->:%v", err)
 	}
@@ -653,7 +654,7 @@ func FindAndUpdateItemByID(cmd SearchCMD, result interface{}) bool {
 	}
 	_, err := c.FindId(cmd.ItemID).Apply(change, result)
 	if err != nil {
-		log.Debug("%查找并更新 %v", cmd, err.Error())
+		log.Debug("%v查找并更新 %v", cmd, err.Error())
 		return false
 	}
 	return true
@@ -666,4 +667,123 @@ func Printcmd(cmd SearchCMD) {
 	fmt.Printf("%v=>%v\n", "SortField", cmd.SortField)
 	fmt.Printf("%v=>%v\n", "Skip", cmd.Skip)
 	fmt.Printf("%v=>%v\n", "LenLimit", cmd.LenLimit)
+}
+
+type RoomStatus struct {
+	RoomId  string `form:"room_id" bson:"room_id" json:"room_id"`
+	GameId  string `form:"game_id" bson:"game_id" json:"game_id"`
+	MinBet  int32  `form:"min_bet" bson:"min_bet" json:"min_bet"`
+	MaxBet  int32  `form:"max_bet" bson:"max_bet" json:"max_bet"`
+	IsOpen  bool   `form:"Is_Open" bson:"Is_Open" json:"Is_Open"` // 是否开启房间
+	TimeFmt string `form:"time_fmt" bson:"time_fmt" json:"time_fmt"`
+}
+
+//InsertRoomStatus新增房間狀態
+func InsertRoomStatus(sur *RoomStatus) error {
+	s, c := connect(dbName, RoomStatusDB)
+	defer s.Close()
+
+	err := c.Insert(sur)
+	if err != nil {
+		log.Error("<----- 数据库插入UserLimitBet数据失败 ~ ----->:%v", err)
+		return err
+	}
+	return nil
+}
+
+func FindAndUpdateByQuery(cmd SearchCMD, result interface{}) bool {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	change := mgo.Change{
+		Update:    cmd.Update,
+		ReturnNew: true,
+	}
+	_, err := c.Find(cmd.Query).Apply(change, result)
+	if err != nil {
+		log.Debug("%v查找并更新 %v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
+func FindCountByQuery(cmd SearchCMD) int {
+
+	// Printcmd(cmd)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	count, err := c.Find(cmd.Query).Count()
+	if err != nil {
+		common.Debug_log("%v查找v", cmd, err.Error())
+		return 0
+	}
+	return count
+}
+
+// 移除 mongo
+func RemoveItemsByQuery(cmd SearchCMD) bool {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	_, err := c.RemoveAll(cmd.Query)
+	if err != nil {
+		log.Debug("%v删除%v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
+//寫入mongo
+func AddOneItemRecord(cmd SearchCMD, doc interface{}) bool {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.Insert(doc)
+	if err != nil {
+		log.Debug("%v插入单条数据 %v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
+// Update 寫入mongo
+func UpdateItemByID(cmd SearchCMD) bool {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.UpdateId(cmd.ItemID, cmd.Update)
+	if err != nil {
+		log.Debug("%v更新 %v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
+func FindAllItems(cmd SearchCMD, result interface{}) bool {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.Find(nil).All(result)
+	if err != nil {
+		log.Debug("%v读取所有数据 %v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
+//LoadUserLimitBet 获取玩家限制下注数据
+func FindOneItem(cmd SearchCMD, result interface{}) bool {
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	err := c.Find(cmd.Query).One(result)
+	if err != nil {
+		log.Error("<----- 数据库读取LoadUserLimitBet数据失败 ~ ----->:%v", err)
+		return false
+	}
+	return true
 }

@@ -16,9 +16,8 @@ import (
 	"time"
 
 	"github.com/name5566/leaf/log"
+	"gopkg.in/mgo.v2/bson"
 )
-
-type RoomStatus int32
 
 type PrizeRecord struct {
 	Issue    string `json:"issue"`    // 奖期号
@@ -152,11 +151,29 @@ func (r *Room) Init() {
 	r.clock = time.NewTicker(time.Second)
 
 	r.UserLeave = make([]int32, 0)
-
 	r.IsOpenRoom = true
-
 	r.RoomMinBet = 1
 	r.RoomMaxBet = 5000
+
+	roomidCount := SearchCMD{
+		DBName: dbName,
+		CName:  RoomStatusDB,
+		Query:  bson.M{"room_id": r.RoomId},
+	}
+
+	if FindCountByQuery(roomidCount) > 0 {
+		roomidLoad := SearchCMD{
+			DBName: dbName,
+			CName:  RoomStatusDB,
+			Query:  bson.M{"room_id": r.RoomId},
+		}
+		RoomStatus := &RoomStatus{}
+		if FindOneItem(roomidLoad, RoomStatus) {
+			r.IsOpenRoom = RoomStatus.IsOpen
+			r.RoomMinBet = RoomStatus.MinBet
+			r.RoomMaxBet = RoomStatus.MaxBet
+		}
+	}
 
 }
 

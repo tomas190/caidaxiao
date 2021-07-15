@@ -135,19 +135,6 @@ func makeServerConfig() *SurPool {
 
 }
 
-func FindCountByQuery(cmd SearchCMD) int {
-
-	Printcmd(cmd)
-	s, c := connect(cmd.DBName, cmd.CName)
-	defer s.Close()
-	count, err := c.Find(cmd.Query).Count()
-	if err != nil {
-		common.Debug_log("%v查找v", cmd, err.Error())
-		return 0
-	}
-	return count
-}
-
 func SaveServerConfig() { //更新盈餘池表
 	// common.Debug_log("gameModule SaveServerConfig")
 	ServerSurPool.UpdateTime = common.TimeFormatDate(time.Now().Unix())
@@ -161,61 +148,6 @@ func SaveServerConfig() { //更新盈餘池表
 	if !ok {
 		common.Debug_log("Error : 更新服务器配置数据出错 ID:%v", cmd.ItemID)
 	}
-}
-
-// 移除 mongo
-func RemoveItemsByQuery(cmd SearchCMD) bool {
-	// session := dbContext.Ref()
-	// defer dbContext.UnRef(session)
-	s, c := connect(cmd.DBName, cmd.CName)
-	defer s.Close()
-	_, err := c.RemoveAll(cmd.Query)
-	if err != nil {
-		log.Debug("%v删除%v", cmd, err.Error())
-		return false
-	}
-	return true
-}
-
-//寫入mongo
-func AddOneItemRecord(cmd SearchCMD, doc interface{}) bool {
-	// session := dbContext.Ref()
-	// defer dbContext.UnRef(session)
-	s, c := connect(cmd.DBName, cmd.CName)
-	defer s.Close()
-	err := c.Insert(doc)
-	if err != nil {
-		log.Debug("%v插入单条数据 %v", cmd, err.Error())
-		return false
-	}
-	return true
-}
-
-// Update 寫入mongo
-func UpdateItemByID(cmd SearchCMD) bool {
-	// session := dbContext.Ref()
-	// defer dbContext.UnRef(session)
-	s, c := connect(cmd.DBName, cmd.CName)
-	defer s.Close()
-	err := c.UpdateId(cmd.ItemID, cmd.Update)
-	if err != nil {
-		log.Debug("%v更新 %v", cmd, err.Error())
-		return false
-	}
-	return true
-}
-
-func FindAllItems(cmd SearchCMD, result interface{}) bool {
-	// session := dbContext.Ref()
-	// defer dbContext.UnRef(session)
-	s, c := connect(cmd.DBName, cmd.CName)
-	defer s.Close()
-	err := c.Find(nil).All(result)
-	if err != nil {
-		log.Debug("%v读取所有数据 %v", cmd, err.Error())
-		return false
-	}
-	return true
 }
 
 // moneyOffset 可正可负
