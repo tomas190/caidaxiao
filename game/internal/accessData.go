@@ -1306,13 +1306,13 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 			CName:  UserLimitBetDB,
 			Query:  useridCount.Query,
 			Update: bson.M{"$set": bson.M{
-				"min_bet":  minBet,
-				"max_bet":  maxBet,
+				"min_bet":  req.MinBet,
+				"max_bet":  req.MaxBet,
 				"time_fmt": time.Now().Format("2006-01-02_15:04:05"),
 			}},
 		}
-		roomUpdate := &RoomStatus{}
-		if FindAndUpdatelastByQuery(Update, roomUpdate) {
+		userlimitUpdate := &GameLimitBet{}
+		if FindAndUpdatelastByQuery(Update, userlimitUpdate) {
 			common.Debug_log("玩家%v限紅更新成功 min_bet:%v max_bet:%v", req.UserId, minBet, maxBet)
 		}
 	} else {
