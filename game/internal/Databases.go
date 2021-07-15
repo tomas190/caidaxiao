@@ -708,6 +708,24 @@ func FindAndUpdateByQuery(cmd SearchCMD, result interface{}) bool {
 	return true
 }
 
+// 只抓最新
+func FindAndUpdatelastByQuery(cmd SearchCMD, result interface{}) bool {
+	// session := dbContext.Ref()
+	// defer dbContext.UnRef(session)
+	s, c := connect(cmd.DBName, cmd.CName)
+	defer s.Close()
+	change := mgo.Change{
+		Update:    cmd.Update,
+		ReturnNew: true,
+	}
+	_, err := c.Find(cmd.Query).Sort("-time_fmt").Apply(change, result)
+	if err != nil {
+		log.Debug("%v查找并更新 %v", cmd, err.Error())
+		return false
+	}
+	return true
+}
+
 func FindCountByQuery(cmd SearchCMD) int {
 
 	// Printcmd(cmd)

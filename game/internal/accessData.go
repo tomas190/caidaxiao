@@ -1312,7 +1312,7 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 			}},
 		}
 		roomUpdate := &RoomStatus{}
-		if FindAndUpdateByQuery(Update, roomUpdate) {
+		if FindAndUpdatelastByQuery(Update, roomUpdate) {
 			common.Debug_log("玩家%v限紅更新成功 min_bet:%v max_bet:%v", req.UserId, minBet, maxBet)
 		}
 	} else {
