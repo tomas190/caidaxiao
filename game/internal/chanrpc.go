@@ -103,9 +103,14 @@ func playerEnterGame(args []interface{}) {
 				login.PlayerNumR2 = v.PlayerLength()
 				login.Room02 = v.IsOpenRoom
 			}
-			for _, v := range v.PlayerList {
-				if v.Id == cInfo.UserID {
-					u = v
+			for _, player := range v.PlayerList {
+				if player.Id == cInfo.UserID {
+					u = player // (下注狀態是否在房間等等)
+					//登入的返回資料更新
+					u.HeadImg = cInfo.UserHead
+					u.NickName = cInfo.UserName
+					u.PackageId = cInfo.PackageID
+					u.Account = cInfo.Balance - cInfo.LockBalance
 				}
 			}
 		}
