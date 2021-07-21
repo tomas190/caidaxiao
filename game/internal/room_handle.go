@@ -633,29 +633,6 @@ func (r *Room) ResultMoney() {
 						TimeStamp: time.Now().Unix(),
 					})
 				}
-				if us.uWinSum > 0 {
-					v.WinResultMoney = us.uWinSum
-
-					if v.IsRobot == false {
-						ServerSurPool.TotalWin += us.uWinSum
-						reason := "彩源猜大小赢钱" //todo
-						//同时同步赢分和输分
-						// c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, us.uBetWin)
-
-						AddTurnoverRecord("UserWinMoney", common.AmountFlowReq{
-							UserID:     v.Id,
-							UserName:   v.NickName,
-							Money:      v.WinResultMoney, //本局盈虧(未扣稅)
-							RoomNumber: r.RoomId,
-							PackageID:  v.PackageId,
-							BetMoney:   us.uBetWin,
-							RoundID:    r.RoundID,
-							Order:      bson.NewObjectId().Hex(),
-							Reason:     reason,
-							TimeStamp:  nowTime,
-						})
-					}
-				}
 
 				if us.uBetLoss > 0 {
 					v.LoseResultMoney = -us.uBetLoss
@@ -680,6 +657,30 @@ func (r *Room) ResultMoney() {
 								TimeStamp:  nowTime,
 							})
 						}
+					}
+				}
+
+				if us.uWinSum > 0 {
+					v.WinResultMoney = us.uWinSum
+
+					if v.IsRobot == false {
+						ServerSurPool.TotalWin += us.uWinSum
+						reason := "彩源猜大小赢钱" //todo
+						//同时同步赢分和输分
+						// c4c.UserSyncWinScore(v, nowTime, v.RoundId, reason, us.uBetWin)
+
+						AddTurnoverRecord("UserWinMoney", common.AmountFlowReq{
+							UserID:     v.Id,
+							UserName:   v.NickName,
+							Money:      v.WinResultMoney, //本局盈虧(未扣稅)
+							RoomNumber: r.RoomId,
+							PackageID:  v.PackageId,
+							BetMoney:   us.uBetWin,
+							RoundID:    r.RoundID,
+							Order:      bson.NewObjectId().Hex(),
+							Reason:     reason,
+							TimeStamp:  nowTime,
+						})
 					}
 				}
 
