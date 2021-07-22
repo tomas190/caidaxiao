@@ -76,7 +76,7 @@ const (
 )
 
 const (
-	QIQFFC = "https://manycai.com/K2601968389c853/QIQFFC-1.json"
+	PTXFFC = "https://manycai.com/K2601968389c853/PTXFFC-1.json"
 	HNFFC  = "https://manycai.com/K2601968389c853/hn60-1.json"
 )
 
@@ -471,7 +471,7 @@ func (r *Room) CaiYunApi() bool {
 	if r.RoomId == "1" {
 		caiYuan = HNFFC
 	} else if r.RoomId == "2" {
-		caiYuan = QIQFFC
+		caiYuan = PTXFFC
 
 	}
 	keyReqPrize.Lock()
