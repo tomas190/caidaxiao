@@ -19,7 +19,8 @@ type ClientInfo struct {
 }
 
 const (
-	LimitBet = 5000 //下注限红 (大小差距不能超过此数)
+	LimitBet = 5000 // 下注限红 (大小差距不能超过此数)
+	MinBet   = 10   // 遊戲最低所需金額(身上餘額)
 )
 
 var (
@@ -72,12 +73,18 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		room := v.(*Room)
 		room.userBetMutex.Lock()
 		defer room.userBetMutex.Unlock()
+
 		// 不是下注阶段，不能进行下注
 		if room.GameStat != msg.GameStep_DownBet {
 			return
 		}
 		// 判断玩家金额是否足够下注的金额
 		if p.Account < float64(m.DownBet) {
+			log.Debug("玩家金额不足,不能进行下注~")
+			return
+		}
+		// 判断玩家金额是否足够最低遊戲金额
+		if p.Account < MinBet {
 			log.Debug("玩家金额不足,不能进行下注~")
 			return
 		}
