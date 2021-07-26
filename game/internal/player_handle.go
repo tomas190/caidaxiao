@@ -84,7 +84,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			return
 		}
 		// 判断玩家金额是否足够最低遊戲金额
-		if p.Account < MinBet {
+		if p.Account+p.LockMoney < MinBet {
 			log.Debug("玩家金额不足,不能进行下注~")
 			return
 		}
