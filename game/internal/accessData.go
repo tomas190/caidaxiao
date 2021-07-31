@@ -156,6 +156,7 @@ type PlayerGameInfoReq struct {
 	Id        string `form:"id" json:"id"`
 	GameId    string `form:"game_id" json:"game_id"`
 	PackageID string `form:"package_id" json:"package_id"`
+	RoomID    string `form:"room_id" json:"room_id"`
 	StartTime string `form:"start_time" json:"start_time"`
 	EndTime   string `form:"end_time" json:"end_time"`
 	Page      string `form:"page" json:"page"`
@@ -420,6 +421,7 @@ type StatementTotalData struct {
 // game_id 必填
 // start_time 必填
 // end_time 必填
+// room_id 可选
 // 玩家 总输  总赢  输赢差额
 func getStatementTotal(w http.ResponseWriter, r *http.Request) {
 	var req PlayerGameInfoReq
@@ -429,6 +431,7 @@ func getStatementTotal(w http.ResponseWriter, r *http.Request) {
 	req.PackageID = r.FormValue("package_id")
 	req.StartTime = r.FormValue("start_time")
 	req.EndTime = r.FormValue("end_time")
+	req.RoomID = r.FormValue("room_id")
 	// log.Debug("获取分页数据:%v", req.Page)
 
 	defer func() {
@@ -457,7 +460,15 @@ func getStatementTotal(w http.ResponseWriter, r *http.Request) {
 			msg = "packageid错误"
 			return
 		}
-		selector["package_id"] = packageid
+		if packageid != 777 { // 777為所有渠道
+			selector["package_id"] = packageid
+		}
+
+	}
+
+	if req.RoomID != "" { // 依據彩種計算總流水
+		common.Debug_log(req.RoomID)
+		selector["room_id"] = req.RoomID
 	}
 
 	sTime, _ := strconv.Atoi(req.StartTime)
@@ -476,7 +487,7 @@ func getStatementTotal(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, v := range recodes { //加总
 		// common.Debug_log("v.TotalWin:%v, v.TotalLose%v", v.TotalWin, v.TotalLose)
-		result.BetMoney = float64(v.DownBetInfo.BigDownBet + v.DownBetInfo.SmallDownBet + v.DownBetInfo.LeopardDownBet)
+		result.BetMoney = result.BetMoney + float64(v.DownBetInfo.BigDownBet+v.DownBetInfo.SmallDownBet+v.DownBetInfo.LeopardDownBet)
 		result.LoseStatementTotal = result.LoseStatementTotal + v.TotalLose
 		result.WinStatementTotal = result.WinStatementTotal + v.TotalWin
 		uid := common.Str2Int(v.UserId)
