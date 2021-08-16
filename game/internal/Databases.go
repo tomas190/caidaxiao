@@ -502,7 +502,7 @@ func GetPlayerDownBet(page, limit int, selector bson.M, sortBy string) ([]Player
 	if err != nil {
 		return nil, 0, err
 	}
-	log.Debug("获取 %v 条数据,limit:%v", n, limit)
+	log.Debug("获取 %v 条数据,limit:%v selector:%v", n, limit, selector)
 	skip := (page - 1) * limit
 	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
 	if err != nil {

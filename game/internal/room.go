@@ -998,9 +998,9 @@ func (r *Room) SetPlayerDownBet() {
 			data.PeriodsNum = r.PeriodsNum
 			data.PeriodsTime = r.PeriodsTime
 			if r.RoomId == "1" {
-				data.LotteryType = "河内分分彩"
+				data.LotteryType = "hn60"
 			} else if r.RoomId == "2" {
-				data.LotteryType = "奇趣分分彩"
+				data.LotteryType = "qiqffc"
 			}
 			data.DownBetInfo = v.DownBetMoney
 			data.DownBetTime = time.Now().Format("2006-01-02 15:04:05")
@@ -1017,9 +1017,9 @@ func (r *Room) SeRoomTotalBet() {
 	data.PeriodsNum = r.PeriodsNum
 	data.PeriodsTime = r.PeriodsTime
 	if r.RoomId == "1" {
-		data.LotteryType = "河内分分彩"
+		data.LotteryType = "hn60"
 	} else if r.RoomId == "2" {
-		data.LotteryType = "奇趣分分彩"
+		data.LotteryType = "qiqffc"
 	}
 	data.PotTotalMoney = r.PlayerTotalMoney
 	InsertRoomTotalBet(data) //todo

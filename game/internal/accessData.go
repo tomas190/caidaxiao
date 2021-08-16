@@ -102,7 +102,7 @@ type GRobotData struct {
 
 type CaiYuanReq struct {
 	GameId     string `form:"game_id" json:"game_id"`
-	RoomId     string `form:"room_id" json:"room_id"`
+	PrizeType  string `form:"prize_type" json:"prize_type"`
 	PeriodsNum string `form:"periods_num" json:"periods_num"`
 	Page       string `form:"page" json:"page"`
 	Limit      string `form:"limit" json:"limit"`
@@ -199,10 +199,10 @@ func StartHttpServer() {
 	http.HandleFunc("/api/reqPlayerLeave", reqPlayerLeave)
 	// 获取机器人数据
 	http.HandleFunc("/api/getRobotData", getRobotData)
-	// 获取彩源玩家投注数据
-	http.HandleFunc("/api/getPlayerDownBet", getPlayerDownBet)
-	// 获取彩源房间投注统计
-	http.HandleFunc("/api/getRoomTotalBet", getRoomTotalBet)
+	// 获取彩源玩家投注数据(系統部)
+	http.HandleFunc("/api/getUsersPlayInfo", getPlayerDownBet)
+	// 获取彩源房间投注统计(系統部)
+	http.HandleFunc("/api/getPrizeTotalBet", getRoomTotalBet)
 	// 接口操作关闭或开启房源
 	http.HandleFunc("/api/changeRoomStatus", HandleRoomType)
 	// 分分彩包赔活动
@@ -798,7 +798,8 @@ func getPlayerDownBet(w http.ResponseWriter, r *http.Request) {
 	var req CaiYuanReq
 
 	req.GameId = r.FormValue("game_id")
-	req.RoomId = r.FormValue("room_id")
+	// req.RoomId = r.FormValue("room_id")
+	req.PrizeType = r.FormValue("prize_type")
 	req.PeriodsNum = r.FormValue("periods_num")
 	req.Page = r.FormValue("page")
 	req.Limit = r.FormValue("limit")
@@ -810,8 +811,8 @@ func getPlayerDownBet(w http.ResponseWriter, r *http.Request) {
 		selector["game_id"] = req.GameId
 	}
 
-	if req.RoomId != "" {
-		selector["room_id"] = req.RoomId
+	if req.PrizeType != "" {
+		selector["lottery_type"] = req.PrizeType
 	}
 
 	if req.PeriodsNum != "" {
@@ -847,7 +848,8 @@ func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
 	var req CaiYuanReq
 
 	req.GameId = r.FormValue("game_id")
-	req.RoomId = r.FormValue("room_id")
+	// req.RoomId = r.FormValue("room_id")
+	req.PrizeType = r.FormValue("prize_type")
 	req.PeriodsNum = r.FormValue("periods_num")
 	req.Page = r.FormValue("page")
 	req.Limit = r.FormValue("limit")
@@ -859,8 +861,8 @@ func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
 		selector["game_id"] = req.GameId
 	}
 
-	if req.RoomId != "" {
-		selector["room_id"] = req.RoomId
+	if req.PrizeType != "" {
+		selector["lottery_type"] = req.PrizeType
 	}
 
 	if req.PeriodsNum != "" {
