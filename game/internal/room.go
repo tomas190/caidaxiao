@@ -995,7 +995,8 @@ func (r *Room) SetPlayerDownBet() {
 			data.Id = v.Id
 			data.RoomId = r.RoomId
 			data.GameId = conf.Server.GameID
-			data.PeriodsNum = r.PeriodsNum
+			PeriodsNum, _ := FFCPeriodsAdd(r.PeriodsNum, r.PeriodsTime)
+			data.PeriodsNum = PeriodsNum // 當期開始時間
 			data.PeriodsTime = r.PeriodsTime
 			if r.RoomId == "1" {
 				data.LotteryType = "hn60"
@@ -1007,6 +1008,19 @@ func (r *Room) SetPlayerDownBet() {
 			InsertPlayerDownBet(data) //todo
 		}
 	}
+}
+
+// 相對應棋號下一期分分彩(1440期) 返回:下一期 ,當期結束時間
+func FFCPeriodsAdd(oldPeriod string, oldPeriodTime string) (string, string) {
+	PeriodsArr := strings.Split(oldPeriod, "-")
+	NewPeriodsNum := common.Str2Int(PeriodsArr[1]) + 1
+	NewTimeStamp := common.TimestrToTimestamp(oldPeriodTime, 5) + 60
+	NewTimeStr := common.TimeFormatDate(NewTimeStamp)
+	if NewPeriodsNum > 1440 { //隔日切換日期
+		NewPeriodsNum = 1
+		return fmt.Sprintf("%s-%04d", common.DateFromTimeStamp(NewTimeStamp), NewPeriodsNum), NewTimeStr
+	}
+	return fmt.Sprintf("%s-%04d", PeriodsArr[0], NewPeriodsNum), NewTimeStr
 }
 
 // 获取投注统计

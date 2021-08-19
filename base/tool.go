@@ -43,6 +43,29 @@ func RanInt(num int) int {
 	return rndInt
 }
 
+// 日期格式轉時間戳
+func TimestrToTimestamp(time_str string, flag int) int64 {
+	var t int64
+	loc, _ := time.LoadLocation("Local")
+	if flag == 1 {
+		t1, _ := time.ParseInLocation("2006.01.02 15:04:05", time_str, loc)
+		t = t1.Unix()
+	} else if flag == 2 {
+		t1, _ := time.ParseInLocation("2006-01-02 15:04", time_str, loc)
+		t = t1.Unix()
+	} else if flag == 3 {
+		t1, _ := time.ParseInLocation("2006-01-02", time_str, loc)
+		t = t1.Unix()
+	} else if flag == 4 {
+		t1, _ := time.ParseInLocation("2006.01.02", time_str, loc)
+		t = t1.Unix()
+	} else {
+		t1, _ := time.ParseInLocation("2006-01-02 15:04:05", time_str, loc)
+		t = t1.Unix()
+	}
+	return t
+}
+
 // TimeNowStr 輸出格式為 2019/11/4 20:15:26
 func TimeNowStr() string {
 	n := time.Now()
