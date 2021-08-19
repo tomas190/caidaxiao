@@ -9009,6 +9009,318 @@ $root.msg = (function() {
         return KickedOutPush;
     })();
 
+    msg.ZhiBoUpdateBalancePush = (function() {
+
+        /**
+         * Properties of a ZhiBoUpdateBalancePush.
+         * @memberof msg
+         * @interface IZhiBoUpdateBalancePush
+         * @property {number|Long|null} [serverTime] ZhiBoUpdateBalancePush serverTime
+         * @property {number|null} [code] ZhiBoUpdateBalancePush code
+         * @property {number|null} [balance] ZhiBoUpdateBalancePush balance
+         * @property {number|null} [lockMoney] ZhiBoUpdateBalancePush lockMoney
+         * @property {number|null} [giftMoney] ZhiBoUpdateBalancePush giftMoney
+         * @property {number|null} [userID] ZhiBoUpdateBalancePush userID
+         */
+
+        /**
+         * Constructs a new ZhiBoUpdateBalancePush.
+         * @memberof msg
+         * @classdesc Represents a ZhiBoUpdateBalancePush.
+         * @implements IZhiBoUpdateBalancePush
+         * @constructor
+         * @param {msg.IZhiBoUpdateBalancePush=} [properties] Properties to set
+         */
+        function ZhiBoUpdateBalancePush(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ZhiBoUpdateBalancePush serverTime.
+         * @member {number|Long} serverTime
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @instance
+         */
+        ZhiBoUpdateBalancePush.prototype.serverTime = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ZhiBoUpdateBalancePush code.
+         * @member {number} code
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @instance
+         */
+        ZhiBoUpdateBalancePush.prototype.code = 0;
+
+        /**
+         * ZhiBoUpdateBalancePush balance.
+         * @member {number} balance
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @instance
+         */
+        ZhiBoUpdateBalancePush.prototype.balance = 0;
+
+        /**
+         * ZhiBoUpdateBalancePush lockMoney.
+         * @member {number} lockMoney
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @instance
+         */
+        ZhiBoUpdateBalancePush.prototype.lockMoney = 0;
+
+        /**
+         * ZhiBoUpdateBalancePush giftMoney.
+         * @member {number} giftMoney
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @instance
+         */
+        ZhiBoUpdateBalancePush.prototype.giftMoney = 0;
+
+        /**
+         * ZhiBoUpdateBalancePush userID.
+         * @member {number} userID
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @instance
+         */
+        ZhiBoUpdateBalancePush.prototype.userID = 0;
+
+        /**
+         * Creates a new ZhiBoUpdateBalancePush instance using the specified properties.
+         * @function create
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {msg.IZhiBoUpdateBalancePush=} [properties] Properties to set
+         * @returns {msg.ZhiBoUpdateBalancePush} ZhiBoUpdateBalancePush instance
+         */
+        ZhiBoUpdateBalancePush.create = function create(properties) {
+            return new ZhiBoUpdateBalancePush(properties);
+        };
+
+        /**
+         * Encodes the specified ZhiBoUpdateBalancePush message. Does not implicitly {@link msg.ZhiBoUpdateBalancePush.verify|verify} messages.
+         * @function encode
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {msg.IZhiBoUpdateBalancePush} message ZhiBoUpdateBalancePush message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ZhiBoUpdateBalancePush.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.serverTime != null && Object.hasOwnProperty.call(message, "serverTime"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.serverTime);
+            if (message.code != null && Object.hasOwnProperty.call(message, "code"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.code);
+            if (message.balance != null && Object.hasOwnProperty.call(message, "balance"))
+                writer.uint32(/* id 3, wireType 1 =*/25).double(message.balance);
+            if (message.lockMoney != null && Object.hasOwnProperty.call(message, "lockMoney"))
+                writer.uint32(/* id 4, wireType 1 =*/33).double(message.lockMoney);
+            if (message.giftMoney != null && Object.hasOwnProperty.call(message, "giftMoney"))
+                writer.uint32(/* id 5, wireType 1 =*/41).double(message.giftMoney);
+            if (message.userID != null && Object.hasOwnProperty.call(message, "userID"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.userID);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified ZhiBoUpdateBalancePush message, length delimited. Does not implicitly {@link msg.ZhiBoUpdateBalancePush.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {msg.IZhiBoUpdateBalancePush} message ZhiBoUpdateBalancePush message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ZhiBoUpdateBalancePush.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a ZhiBoUpdateBalancePush message from the specified reader or buffer.
+         * @function decode
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {msg.ZhiBoUpdateBalancePush} ZhiBoUpdateBalancePush
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ZhiBoUpdateBalancePush.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.msg.ZhiBoUpdateBalancePush();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.serverTime = reader.int64();
+                    break;
+                case 2:
+                    message.code = reader.int32();
+                    break;
+                case 3:
+                    message.balance = reader.double();
+                    break;
+                case 4:
+                    message.lockMoney = reader.double();
+                    break;
+                case 5:
+                    message.giftMoney = reader.double();
+                    break;
+                case 6:
+                    message.userID = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a ZhiBoUpdateBalancePush message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {msg.ZhiBoUpdateBalancePush} ZhiBoUpdateBalancePush
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ZhiBoUpdateBalancePush.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a ZhiBoUpdateBalancePush message.
+         * @function verify
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        ZhiBoUpdateBalancePush.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.serverTime != null && message.hasOwnProperty("serverTime"))
+                if (!$util.isInteger(message.serverTime) && !(message.serverTime && $util.isInteger(message.serverTime.low) && $util.isInteger(message.serverTime.high)))
+                    return "serverTime: integer|Long expected";
+            if (message.code != null && message.hasOwnProperty("code"))
+                if (!$util.isInteger(message.code))
+                    return "code: integer expected";
+            if (message.balance != null && message.hasOwnProperty("balance"))
+                if (typeof message.balance !== "number")
+                    return "balance: number expected";
+            if (message.lockMoney != null && message.hasOwnProperty("lockMoney"))
+                if (typeof message.lockMoney !== "number")
+                    return "lockMoney: number expected";
+            if (message.giftMoney != null && message.hasOwnProperty("giftMoney"))
+                if (typeof message.giftMoney !== "number")
+                    return "giftMoney: number expected";
+            if (message.userID != null && message.hasOwnProperty("userID"))
+                if (!$util.isInteger(message.userID))
+                    return "userID: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a ZhiBoUpdateBalancePush message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {msg.ZhiBoUpdateBalancePush} ZhiBoUpdateBalancePush
+         */
+        ZhiBoUpdateBalancePush.fromObject = function fromObject(object) {
+            if (object instanceof $root.msg.ZhiBoUpdateBalancePush)
+                return object;
+            var message = new $root.msg.ZhiBoUpdateBalancePush();
+            if (object.serverTime != null)
+                if ($util.Long)
+                    (message.serverTime = $util.Long.fromValue(object.serverTime)).unsigned = false;
+                else if (typeof object.serverTime === "string")
+                    message.serverTime = parseInt(object.serverTime, 10);
+                else if (typeof object.serverTime === "number")
+                    message.serverTime = object.serverTime;
+                else if (typeof object.serverTime === "object")
+                    message.serverTime = new $util.LongBits(object.serverTime.low >>> 0, object.serverTime.high >>> 0).toNumber();
+            if (object.code != null)
+                message.code = object.code | 0;
+            if (object.balance != null)
+                message.balance = Number(object.balance);
+            if (object.lockMoney != null)
+                message.lockMoney = Number(object.lockMoney);
+            if (object.giftMoney != null)
+                message.giftMoney = Number(object.giftMoney);
+            if (object.userID != null)
+                message.userID = object.userID | 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a ZhiBoUpdateBalancePush message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @static
+         * @param {msg.ZhiBoUpdateBalancePush} message ZhiBoUpdateBalancePush
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        ZhiBoUpdateBalancePush.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                if ($util.Long) {
+                    var long = new $util.Long(0, 0, false);
+                    object.serverTime = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.serverTime = options.longs === String ? "0" : 0;
+                object.code = 0;
+                object.balance = 0;
+                object.lockMoney = 0;
+                object.giftMoney = 0;
+                object.userID = 0;
+            }
+            if (message.serverTime != null && message.hasOwnProperty("serverTime"))
+                if (typeof message.serverTime === "number")
+                    object.serverTime = options.longs === String ? String(message.serverTime) : message.serverTime;
+                else
+                    object.serverTime = options.longs === String ? $util.Long.prototype.toString.call(message.serverTime) : options.longs === Number ? new $util.LongBits(message.serverTime.low >>> 0, message.serverTime.high >>> 0).toNumber() : message.serverTime;
+            if (message.code != null && message.hasOwnProperty("code"))
+                object.code = message.code;
+            if (message.balance != null && message.hasOwnProperty("balance"))
+                object.balance = options.json && !isFinite(message.balance) ? String(message.balance) : message.balance;
+            if (message.lockMoney != null && message.hasOwnProperty("lockMoney"))
+                object.lockMoney = options.json && !isFinite(message.lockMoney) ? String(message.lockMoney) : message.lockMoney;
+            if (message.giftMoney != null && message.hasOwnProperty("giftMoney"))
+                object.giftMoney = options.json && !isFinite(message.giftMoney) ? String(message.giftMoney) : message.giftMoney;
+            if (message.userID != null && message.hasOwnProperty("userID"))
+                object.userID = message.userID;
+            return object;
+        };
+
+        /**
+         * Converts this ZhiBoUpdateBalancePush to JSON.
+         * @function toJSON
+         * @memberof msg.ZhiBoUpdateBalancePush
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        ZhiBoUpdateBalancePush.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        return ZhiBoUpdateBalancePush;
+    })();
+
     return msg;
 })();
 

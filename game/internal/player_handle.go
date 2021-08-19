@@ -448,7 +448,7 @@ func AddTurnoverRecord(event string, data common.AmountFlowReq) {
 		PackID:       data.RoundID,
 	}
 	ok := AddOneItemRecord(cmd, record)
-	if ok {
+	if ok && event != "ZhiBoGift" {
 		common.GetInstance().Login.Go(event, data)
 	}
 }

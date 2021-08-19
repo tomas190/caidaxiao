@@ -6,10 +6,12 @@ import (
 	"caidaxiao/msg"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"net/http"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/name5566/leaf/log"
@@ -229,6 +231,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/setRoomLimitBet", setRoomLimitBet)
 	// 查詢房间下注限紅
 	http.HandleFunc("/api/getRoomLimitBet", getRoomLimitBet)
+	// 視訊直播消費扣款
+	http.HandleFunc("/api/userZhiBoReward", userZhiBoReward)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -1573,7 +1577,7 @@ func logoutUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		common.Debug_log("%v\n", err)
 	}
-	//bridge.LogC("S->C = %v", dt.Data)
+	//common.Debug_log("S->C = %v", dt.Data)
 	_, errW := fmt.Fprintf(w, "%+v", string(b4))
 	if errW != nil {
 		common.Debug_log("unlockUserMoneyUnexpected 返回错误 %v", errW)
@@ -1619,10 +1623,222 @@ func unLockUserMoney(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		common.Debug_log("%v\n", err)
 	}
-	//bridge.LogC("S->C = %v", dt.Data)
+	//common.Debug_log("S->C = %v", dt.Data)
 	_, errW := fmt.Fprintf(w, "%+v", string(b4))
 	if errW != nil {
 		common.Debug_log("unlockUserMoneyUnexpected 返回错误 %v", errW)
 	}
 
+}
+
+const (
+	Reason_ZhiBo_Reward = "直播消费扣钱"
+)
+
+type ClientResponse struct {
+	Status string `json:"status"`
+	Code   int    `json:"code" `
+	Msg    struct {
+		CreateTime       int64   `json:"create_time"`
+		FinalBalance     float64 `json:"final_balance"`
+		FinalLockBalance float64 `json:"final_lock_balance"`
+		Order            string  `json:"order" `
+	} `json:"msg"`
+}
+
+//用户直播赠礼扣款
+func userZhiBoReward(w http.ResponseWriter, r *http.Request) {
+	resp := &ApiResp{}
+	defer func() {
+		sendResponse(w, resp)
+		common.Debug_log("<- FROM 直播赠礼扣款: %v", resp)
+	}()
+	uidStr := r.FormValue("user_id")
+	amountStr := r.FormValue("amount")
+	order := r.FormValue("order_id")
+	//参数检查
+	uid, errUid := strconv.Atoi(uidStr)
+	amount, errAmount := strconv.ParseFloat(amountStr, 64)
+	if errUid != nil || errAmount != nil || order == "" {
+		resp.Code = -1
+		resp.Msg = fmt.Sprintf("参数错误, uid: %s, amount: %s, order: %s", uidStr, amountStr, order)
+		return
+	}
+
+	//查询用户信息
+	player, ok := allUser_.Load(int32(uid))
+	if !ok {
+		resp.Code = -1
+		resp.Msg = fmt.Sprintf("用户%d不存在", int32(uid))
+		return
+	}
+	ClientAgent, ok2 := AgentFromuserID_.Load(int32(uid))
+	if !ok2 {
+		common.Debug_log("用户不在线,userID=%v\n", int32(uid))
+		resp.Code = -1
+		resp.Msg = fmt.Sprintf("用户%d不在线上", int32(uid))
+		return
+	}
+
+	//请求中心服扣款信息
+	payReq := PayRequest{
+		Auth: AuthData{
+			DevKey:  conf.Server.DevKey,
+			DevName: conf.Server.DevName,
+		},
+		Info: PayData{
+			GameID:     conf.Server.GameID,
+			CreateTime: time.Now().Unix(),
+			UserID:     int32(uid),
+			RoundID:    order,
+			OrderID:    bson.NewObjectId().Hex(),
+			PayReason:  fmt.Sprintf("%s(单号:%s)", Reason_ZhiBo_Reward, order),
+			Money:      amount,
+		},
+	}
+	s, _ := json.Marshal(payReq)
+	//向中心服发送扣款请求
+	url := "http://" + conf.Server.CenterServer + ":" + common.IntToStr(conf.Server.CenterServerPort) + "/GameServer/GameUser/loseSettlement"
+	payload := strings.NewReader(string(s))
+	common.Debug_log("-> TO 直播赠礼扣款: %v %s", url, string(s))
+	client := &http.Client{}
+	req, err := http.NewRequest("POST", url, payload)
+	if err != nil {
+		resp.Code = -1
+		resp.Msg = "Error1: " + err.Error()
+		return
+	}
+	req.Header.Add("Content-Type", "application/json")
+	res, err2 := client.Do(req)
+	if err2 != nil {
+		resp.Code = -1
+		resp.Msg = "Error2 " + err2.Error()
+		return
+	}
+	defer res.Body.Close()
+	body, err3 := ioutil.ReadAll(res.Body)
+	if err3 != nil {
+		resp.Code = -1
+		resp.Msg = "Error3: " + err3.Error()
+		return
+	}
+	var clientResp ClientResponse
+	err4 := json.Unmarshal(body, &clientResp)
+	if err4 != nil {
+		resp.Code = -1
+		resp.Msg = "解析ClientResponse失败: " + err4.Error()
+		return
+	}
+	resp.Data = string(body)
+	if clientResp.Code != 200 {
+		resp.Code = -1
+		resp.Msg = "扣款失败"
+	} else {
+		resp.Code = 0
+		resp.Msg = "扣款成功"
+
+		// 更新玩家余额
+
+		a := ClientAgent.(*ClientInfo).agent
+		player.(*msg.PlayerInfo).Account -= amount
+		p, ok := a.UserData().(*Player)
+		if ok {
+			p.Account -= amount
+		}
+		// 记录流水
+		AddTurnoverRecord("ZhiBoGift", common.AmountFlowReq{
+			UserID:    int32(uid),
+			Money:     amount,
+			RoundID:   order,
+			Order:     bson.NewObjectId().Hex(),
+			Reason:    "直播送礼扣款",
+			TimeStamp: time.Now().Unix(),
+		})
+
+		// 玩家通知前端更新余额
+		GiftPush := &msg.ZhiBoUpdateBalancePush{
+			ServerTime: time.Now().Unix(),
+			Code:       0,
+			Balance:    p.Account,
+			LockMoney:  p.LockMoney,
+			GiftMoney:  amount,
+			UserID:     int32(uid),
+		}
+		a.WriteMsg(GiftPush)
+	}
+}
+
+func sendResponse(w http.ResponseWriter, msg interface{}) {
+	data, err := json.Marshal(msg)
+	if err != nil {
+		common.Debug_log("Resp err: %v", err)
+		return
+	}
+	_, errW := fmt.Fprintf(w, "%+v", string(data))
+	if errW != nil {
+		common.Debug_log("Resp err: %v", errW)
+	}
+}
+
+//流水相关数据
+type PayData struct {
+	UserID     int32   `json:"id,int"`
+	CreateTime int64   `json:"create_time"`
+	Money      float64 `json:"money"`
+	BetMoney   float64 `json:"bet_money"`
+	LockMoney  float64 `json:"lock_money"`
+	PreMoney   float64 `json:"pre_money"`
+	PayReason  string  `json:"pay_reason"`
+	OrderID    string  `json:"order"` //自己创建一个唯一ID,方便之后查询
+	GameID     string  `json:"game_id"`
+	RoundID    string  `json:"round_id"` //唯一ID,用于识别多人是否在同一局游戏
+}
+
+//资金变动请求
+type PayRequest struct {
+	Auth AuthData `json:"auth"`
+	Info PayData  `json:"info"`
+}
+
+type PayResponse struct {
+	Balance            float64 `json:"balance"`
+	BankerBalance      float64 `json:"banker_balance"`
+	CreateTime         int64   `json:"create_time"`
+	DevBrandName       string  `json:"dev_brand_name"`
+	DevID              int     `json:"dev_id"`
+	FinalBalance       float64 `json:"final_balance"`
+	FinalBankerBalance float64 `json:"final_banker_balance"`
+	FinalLockBalance   float64 `json:"final_lock_balance"`
+	FinalPay           float64 `json:"final_pay"`
+	FinalPrepayments   float64 `json:"final_prepayments"`
+	GameAccountStatus  int     `json:"game_account_status"`
+	GameID             string  `json:"game_id"`
+	GameName           string  `json:"game_name"`
+	GameNick           string  `json:"game_nick"`
+	GameServerIP       string  `json:"game_server_ip"`
+	GameUserStatus     int     `json:"game_user_status"`
+	GameUserType       int     `json:"game_user_type"`
+	ID                 int32   `json:"id"`
+	Income             float64 `json:"income"`
+	IsBanker           int     `json:"is_banker"`
+	LockBalance        float64 `json:"lock_balance"`
+	LockMoney          float64 `json:"lock_money"`
+	LoginIP            string  `json:"login_ip"`
+	Money              float64 `json:"money"`
+	Order              string  `json:"order"`
+	PackageID          int     `json:"package_id"`
+	PlatformTaxPercent float64 `json:"platform_tax_percent"`
+	Prepayments        float64 `json:"prepayments"`
+	ProxyUserID        int     `json:"proxy_user_id"`
+	RoundID            string  `json:"round_id"`
+	Status             int     `json:"status"`
+	Tax                float64 `json:"tax"`
+	UUID               string  `json:"uuid"`
+}
+
+//用于验证的数据
+type AuthData struct {
+	//Token  string `json:"token"`
+	DevKey  string `json:"dev_key"`
+	DevName string `json:"dev_name"`
 }

@@ -296,3 +296,13 @@ message KickedOutPush {
 	int32 code = 2;
 	int32 reason = 3;
 }
+
+//直播玩家更新餘額
+message ZhiBoUpdateBalancePush{
+    int64 serverTime = 1;
+    int32 code =2;
+    double balance = 3;
+    double lockMoney = 4;
+    double giftMoney = 5;
+    int32 userID = 6;
+}

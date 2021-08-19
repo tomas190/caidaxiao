@@ -3719,4 +3719,124 @@ export namespace msg {
          */
         public toJSON(): { [k: string]: any };
     }
+
+    /** Properties of a ZhiBoUpdateBalancePush. */
+    interface IZhiBoUpdateBalancePush {
+
+        /** ZhiBoUpdateBalancePush serverTime */
+        serverTime?: (number|Long|null);
+
+        /** ZhiBoUpdateBalancePush code */
+        code?: (number|null);
+
+        /** ZhiBoUpdateBalancePush balance */
+        balance?: (number|null);
+
+        /** ZhiBoUpdateBalancePush lockMoney */
+        lockMoney?: (number|null);
+
+        /** ZhiBoUpdateBalancePush giftMoney */
+        giftMoney?: (number|null);
+
+        /** ZhiBoUpdateBalancePush userID */
+        userID?: (number|null);
+    }
+
+    /** Represents a ZhiBoUpdateBalancePush. */
+    class ZhiBoUpdateBalancePush implements IZhiBoUpdateBalancePush {
+
+        /**
+         * Constructs a new ZhiBoUpdateBalancePush.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: msg.IZhiBoUpdateBalancePush);
+
+        /** ZhiBoUpdateBalancePush serverTime. */
+        public serverTime: (number|Long);
+
+        /** ZhiBoUpdateBalancePush code. */
+        public code: number;
+
+        /** ZhiBoUpdateBalancePush balance. */
+        public balance: number;
+
+        /** ZhiBoUpdateBalancePush lockMoney. */
+        public lockMoney: number;
+
+        /** ZhiBoUpdateBalancePush giftMoney. */
+        public giftMoney: number;
+
+        /** ZhiBoUpdateBalancePush userID. */
+        public userID: number;
+
+        /**
+         * Creates a new ZhiBoUpdateBalancePush instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns ZhiBoUpdateBalancePush instance
+         */
+        public static create(properties?: msg.IZhiBoUpdateBalancePush): msg.ZhiBoUpdateBalancePush;
+
+        /**
+         * Encodes the specified ZhiBoUpdateBalancePush message. Does not implicitly {@link msg.ZhiBoUpdateBalancePush.verify|verify} messages.
+         * @param message ZhiBoUpdateBalancePush message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: msg.IZhiBoUpdateBalancePush, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified ZhiBoUpdateBalancePush message, length delimited. Does not implicitly {@link msg.ZhiBoUpdateBalancePush.verify|verify} messages.
+         * @param message ZhiBoUpdateBalancePush message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: msg.IZhiBoUpdateBalancePush, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ZhiBoUpdateBalancePush message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ZhiBoUpdateBalancePush
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): msg.ZhiBoUpdateBalancePush;
+
+        /**
+         * Decodes a ZhiBoUpdateBalancePush message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns ZhiBoUpdateBalancePush
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): msg.ZhiBoUpdateBalancePush;
+
+        /**
+         * Verifies a ZhiBoUpdateBalancePush message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a ZhiBoUpdateBalancePush message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns ZhiBoUpdateBalancePush
+         */
+        public static fromObject(object: { [k: string]: any }): msg.ZhiBoUpdateBalancePush;
+
+        /**
+         * Creates a plain object from a ZhiBoUpdateBalancePush message. Also converts values to other types if specified.
+         * @param message ZhiBoUpdateBalancePush
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: msg.ZhiBoUpdateBalancePush, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this ZhiBoUpdateBalancePush to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+    }
 }
