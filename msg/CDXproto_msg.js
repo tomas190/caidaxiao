@@ -48,6 +48,7 @@ $root.msg = (function() {
      * @property {number} MSG_ShowTableInfo_C2S=23 MSG_ShowTableInfo_C2S value
      * @property {number} MSG_ShowTableInfo_S2C=24 MSG_ShowTableInfo_S2C value
      * @property {number} MSG_KickedOutPush=25 MSG_KickedOutPush value
+     * @property {number} MSG_ZhiBoUpdateBalancePush=26 MSG_ZhiBoUpdateBalancePush value
      */
     msg.MessageID = (function() {
         var valuesById = {}, values = Object.create(valuesById);
@@ -77,6 +78,7 @@ $root.msg = (function() {
         values[valuesById[23] = "MSG_ShowTableInfo_C2S"] = 23;
         values[valuesById[24] = "MSG_ShowTableInfo_S2C"] = 24;
         values[valuesById[25] = "MSG_KickedOutPush"] = 25;
+        values[valuesById[26] = "MSG_ZhiBoUpdateBalancePush"] = 26;
         return values;
     })();
 

@@ -29,32 +29,33 @@ const _ = proto.ProtoPackageIsVersion4
 type MessageID int32
 
 const (
-	MessageID_MSG_Ping               MessageID = 0
-	MessageID_MSG_Pong               MessageID = 1
-	MessageID_MSG_Login_C2S          MessageID = 2
-	MessageID_MSG_Login_S2C          MessageID = 3
-	MessageID_MSG_Logout_C2S         MessageID = 4
-	MessageID_MSG_Logout_S2C         MessageID = 5
-	MessageID_MSG_JoinRoom_C2S       MessageID = 6
-	MessageID_MSG_JoinRoom_S2C       MessageID = 7
-	MessageID_MSG_EnterRoom_S2C      MessageID = 8
-	MessageID_MSG_LeaveRoom_C2S      MessageID = 9
-	MessageID_MSG_LeaveRoom_S2C      MessageID = 10
-	MessageID_MSG_ActionTime_S2C     MessageID = 11
-	MessageID_MSG_PlayerAction_C2S   MessageID = 12
-	MessageID_MSG_PlayerAction_S2C   MessageID = 13
-	MessageID_MSG_PotChangeMoney_S2C MessageID = 14
-	MessageID_MSG_ResultData_S2C     MessageID = 15
-	MessageID_MSG_BankerData_C2S     MessageID = 16
-	MessageID_MSG_BankerData_S2C     MessageID = 17
-	MessageID_MSG_EmojiChat_C2S      MessageID = 18
-	MessageID_MSG_EmojiChat_S2C      MessageID = 19
-	MessageID_MSG_SendActTime_S2C    MessageID = 20
-	MessageID_MSG_ChangeRoomType_S2C MessageID = 21
-	MessageID_MSG_ErrorMsg_S2C       MessageID = 22
-	MessageID_MSG_ShowTableInfo_C2S  MessageID = 23
-	MessageID_MSG_ShowTableInfo_S2C  MessageID = 24
-	MessageID_MSG_KickedOutPush      MessageID = 25
+	MessageID_MSG_Ping                   MessageID = 0
+	MessageID_MSG_Pong                   MessageID = 1
+	MessageID_MSG_Login_C2S              MessageID = 2
+	MessageID_MSG_Login_S2C              MessageID = 3
+	MessageID_MSG_Logout_C2S             MessageID = 4
+	MessageID_MSG_Logout_S2C             MessageID = 5
+	MessageID_MSG_JoinRoom_C2S           MessageID = 6
+	MessageID_MSG_JoinRoom_S2C           MessageID = 7
+	MessageID_MSG_EnterRoom_S2C          MessageID = 8
+	MessageID_MSG_LeaveRoom_C2S          MessageID = 9
+	MessageID_MSG_LeaveRoom_S2C          MessageID = 10
+	MessageID_MSG_ActionTime_S2C         MessageID = 11
+	MessageID_MSG_PlayerAction_C2S       MessageID = 12
+	MessageID_MSG_PlayerAction_S2C       MessageID = 13
+	MessageID_MSG_PotChangeMoney_S2C     MessageID = 14
+	MessageID_MSG_ResultData_S2C         MessageID = 15
+	MessageID_MSG_BankerData_C2S         MessageID = 16
+	MessageID_MSG_BankerData_S2C         MessageID = 17
+	MessageID_MSG_EmojiChat_C2S          MessageID = 18
+	MessageID_MSG_EmojiChat_S2C          MessageID = 19
+	MessageID_MSG_SendActTime_S2C        MessageID = 20
+	MessageID_MSG_ChangeRoomType_S2C     MessageID = 21
+	MessageID_MSG_ErrorMsg_S2C           MessageID = 22
+	MessageID_MSG_ShowTableInfo_C2S      MessageID = 23
+	MessageID_MSG_ShowTableInfo_S2C      MessageID = 24
+	MessageID_MSG_KickedOutPush          MessageID = 25
+	MessageID_MSG_ZhiBoUpdateBalancePush MessageID = 26
 )
 
 // Enum value maps for MessageID.
@@ -86,34 +87,36 @@ var (
 		23: "MSG_ShowTableInfo_C2S",
 		24: "MSG_ShowTableInfo_S2C",
 		25: "MSG_KickedOutPush",
+		26: "MSG_ZhiBoUpdateBalancePush",
 	}
 	MessageID_value = map[string]int32{
-		"MSG_Ping":               0,
-		"MSG_Pong":               1,
-		"MSG_Login_C2S":          2,
-		"MSG_Login_S2C":          3,
-		"MSG_Logout_C2S":         4,
-		"MSG_Logout_S2C":         5,
-		"MSG_JoinRoom_C2S":       6,
-		"MSG_JoinRoom_S2C":       7,
-		"MSG_EnterRoom_S2C":      8,
-		"MSG_LeaveRoom_C2S":      9,
-		"MSG_LeaveRoom_S2C":      10,
-		"MSG_ActionTime_S2C":     11,
-		"MSG_PlayerAction_C2S":   12,
-		"MSG_PlayerAction_S2C":   13,
-		"MSG_PotChangeMoney_S2C": 14,
-		"MSG_ResultData_S2C":     15,
-		"MSG_BankerData_C2S":     16,
-		"MSG_BankerData_S2C":     17,
-		"MSG_EmojiChat_C2S":      18,
-		"MSG_EmojiChat_S2C":      19,
-		"MSG_SendActTime_S2C":    20,
-		"MSG_ChangeRoomType_S2C": 21,
-		"MSG_ErrorMsg_S2C":       22,
-		"MSG_ShowTableInfo_C2S":  23,
-		"MSG_ShowTableInfo_S2C":  24,
-		"MSG_KickedOutPush":      25,
+		"MSG_Ping":                   0,
+		"MSG_Pong":                   1,
+		"MSG_Login_C2S":              2,
+		"MSG_Login_S2C":              3,
+		"MSG_Logout_C2S":             4,
+		"MSG_Logout_S2C":             5,
+		"MSG_JoinRoom_C2S":           6,
+		"MSG_JoinRoom_S2C":           7,
+		"MSG_EnterRoom_S2C":          8,
+		"MSG_LeaveRoom_C2S":          9,
+		"MSG_LeaveRoom_S2C":          10,
+		"MSG_ActionTime_S2C":         11,
+		"MSG_PlayerAction_C2S":       12,
+		"MSG_PlayerAction_S2C":       13,
+		"MSG_PotChangeMoney_S2C":     14,
+		"MSG_ResultData_S2C":         15,
+		"MSG_BankerData_C2S":         16,
+		"MSG_BankerData_S2C":         17,
+		"MSG_EmojiChat_C2S":          18,
+		"MSG_EmojiChat_S2C":          19,
+		"MSG_SendActTime_S2C":        20,
+		"MSG_ChangeRoomType_S2C":     21,
+		"MSG_ErrorMsg_S2C":           22,
+		"MSG_ShowTableInfo_C2S":      23,
+		"MSG_ShowTableInfo_S2C":      24,
+		"MSG_KickedOutPush":          25,
+		"MSG_ZhiBoUpdateBalancePush": 26,
 	}
 )
 
@@ -3016,7 +3019,7 @@ var file_msg_proto_rawDesc = []byte{
 	0x69, 0x66, 0x74, 0x4d, 0x6f, 0x6e, 0x65, 0x79, 0x18, 0x05, 0x20, 0x01, 0x28, 0x01, 0x52, 0x09,
 	0x67, 0x69, 0x66, 0x74, 0x4d, 0x6f, 0x6e, 0x65, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x75, 0x73, 0x65,
 	0x72, 0x49, 0x44, 0x18, 0x06, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49,
-	0x44, 0x2a, 0xdc, 0x04, 0x0a, 0x09, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x49, 0x44, 0x12,
+	0x44, 0x2a, 0xfc, 0x04, 0x0a, 0x09, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x49, 0x44, 0x12,
 	0x0c, 0x0a, 0x08, 0x4d, 0x53, 0x47, 0x5f, 0x50, 0x69, 0x6e, 0x67, 0x10, 0x00, 0x12, 0x0c, 0x0a,
 	0x08, 0x4d, 0x53, 0x47, 0x5f, 0x50, 0x6f, 0x6e, 0x67, 0x10, 0x01, 0x12, 0x11, 0x0a, 0x0d, 0x4d,
 	0x53, 0x47, 0x5f, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x5f, 0x43, 0x32, 0x53, 0x10, 0x02, 0x12, 0x11,
@@ -3054,6 +3057,8 @@ var file_msg_proto_rawDesc = []byte{
 	0x0a, 0x15, 0x4d, 0x53, 0x47, 0x5f, 0x53, 0x68, 0x6f, 0x77, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x49,
 	0x6e, 0x66, 0x6f, 0x5f, 0x53, 0x32, 0x43, 0x10, 0x18, 0x12, 0x15, 0x0a, 0x11, 0x4d, 0x53, 0x47,
 	0x5f, 0x4b, 0x69, 0x63, 0x6b, 0x65, 0x64, 0x4f, 0x75, 0x74, 0x50, 0x75, 0x73, 0x68, 0x10, 0x19,
+	0x12, 0x1e, 0x0a, 0x1a, 0x4d, 0x53, 0x47, 0x5f, 0x5a, 0x68, 0x69, 0x42, 0x6f, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x75, 0x73, 0x68, 0x10, 0x1a,
 	0x2a, 0x6b, 0x0a, 0x08, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x65, 0x70, 0x12, 0x0b, 0x0a, 0x07,
 	0x58, 0x58, 0x5f, 0x53, 0x74, 0x65, 0x70, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x42, 0x61, 0x6e,
 	0x6b, 0x65, 0x72, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x42, 0x61, 0x6e, 0x6b, 0x65, 0x72, 0x32,

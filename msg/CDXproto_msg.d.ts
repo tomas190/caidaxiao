@@ -29,7 +29,8 @@ export namespace msg {
         MSG_ErrorMsg_S2C = 22,
         MSG_ShowTableInfo_C2S = 23,
         MSG_ShowTableInfo_S2C = 24,
-        MSG_KickedOutPush = 25
+        MSG_KickedOutPush = 25,
+        MSG_ZhiBoUpdateBalancePush = 26
     }
 
     /** GameStep enum. */
