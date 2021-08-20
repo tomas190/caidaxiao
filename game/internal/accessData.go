@@ -1759,7 +1759,7 @@ func userZhiBoReward(w http.ResponseWriter, r *http.Request) {
 		GiftPush := &msg.ZhiBoUpdateBalancePush{
 			ServerTime: time.Now().Unix(),
 			Code:       0,
-			Balance:    p.Account,
+			Balance:    p.Account - p.LockMoney,
 			LockMoney:  p.LockMoney,
 			GiftMoney:  amount,
 			UserID:     int32(uid),
