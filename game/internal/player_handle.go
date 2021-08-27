@@ -3,6 +3,7 @@ package internal
 import (
 	common "caidaxiao/base"
 	"caidaxiao/msg"
+	"fmt"
 	"sync"
 	"time"
 
@@ -181,6 +182,30 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 			if p.IsRobot == false {
 				lockMoney(p, float64(m.DownBet), room.RoundID)
 			}
+
+			lockScuess := false
+			go func() {
+				ProcessDatachTimeOut := time.NewTimer(time.Second * 2)
+				for {
+					select {
+					case <-ProcessDatachTimeOut.C:
+						if lockScuess == true {
+							return
+						}
+						p.CenterChannel <- false //超時處理
+						return
+					}
+				}
+			}()
+
+			lockScuess = <-p.CenterChannel
+			if !lockScuess { // 沒有鎖定成功
+				log.Debug("玩家金额不足,不能进行下注~")
+				sendLogout(p.Id) // 玩家登出
+				common.SendToTG(fmt.Sprintln("玩家" + common.Int32ToStr(p.Id) + "扣款失敗，已登出"))
+				return
+			}
+
 			// 返回玩家行动数据
 			action := &msg.PlayerAction_S2C{}
 			action.Id = common.Int32ToStr(p.Id)

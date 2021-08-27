@@ -37,6 +37,8 @@ type Player struct {
 	IsRobot         bool                  // 是否机器人
 	IsOnline        bool                  // 玩家是否在线
 
+	CenterChannel chan bool `bson:"-"` // 確保中心服可以扣款
+
 	MinBet int32 // 限定下注最小金额
 	MaxBet int32 // 限定下注最大金额
 }

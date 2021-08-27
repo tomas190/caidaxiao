@@ -33,6 +33,11 @@ func init() {
 	// 用戶輸贏錢
 	skeleton.RegisterChanRPC("WinMoney", respondWinMoney)
 	skeleton.RegisterChanRPC("LoseMoney", respondLoseMoney)
+
+	// 鎖定解鎖資金
+	skeleton.RegisterChanRPC("LockMoney", respondLockMoney)
+	skeleton.RegisterChanRPC("UnLockMoney", respondUnLockMoney)
+
 }
 
 func rpcNewAgent(args []interface{}) {
@@ -94,6 +99,7 @@ func playerEnterGame(args []interface{}) {
 	login.PlayerInfo.Account = cInfo.Balance - cInfo.LockBalance
 
 	u := &Player{}
+	u.CenterChannel = make(chan bool)
 	for _, v := range hall.roomList {
 		if v != nil {
 			if v.RoomId == "1" {
@@ -272,4 +278,32 @@ func (user *Player) updateBalance(data common.AmountFlowRes) {
 	common.Debug_log("玩家:%v 餘額更新為:%v 鎖定金額更新為:%v", user.Id, data.Balance-data.LockBalance, data.LockBalance)
 	user.Account = data.Balance - data.LockBalance
 	user.LockMoney = data.LockBalance
+}
+
+func respondLockMoney(args []interface{}) {
+	data := args[0].(common.AmountFlowRes)
+	a, ok := AgentFromuserID_.Load(data.UserID)
+	p, ok := a.(*ClientInfo).agent.UserData().(*Player)
+	if !ok {
+		common.Debug_log("锁定资金处理失败,用户%d不存在\n", data.UserID)
+		p.CenterChannel <- false
+		return
+	}
+	p.CenterChannel <- true
+	p.updateBalance(data)
+	//记录资金流水
+	// UpdateFundsFlowRecord(data)
+}
+
+func respondUnLockMoney(args []interface{}) {
+	data := args[0].(common.AmountFlowRes)
+	a, ok := AgentFromuserID_.Load(data.UserID)
+	p, ok := a.(*ClientInfo).agent.UserData().(*Player)
+	if !ok {
+		common.Debug_log("解锁资金处理失败,用户%d不存在", data.UserID)
+		return
+	}
+	p.updateBalance(data)
+	//记录资金流水
+	// UpdateFundsFlowRecord(data)
 }
