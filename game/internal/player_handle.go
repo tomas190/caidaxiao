@@ -179,6 +179,8 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 			p.Account -= float64(m.DownBet)
 			p.TotalDownBet += m.DownBet
+
+			p.CenterChIsopen = true // true要接收锁定
 			if p.IsRobot == false {
 				lockMoney(p, float64(m.DownBet), room.RoundID)
 			}
@@ -192,14 +194,17 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 						if lockScuess == true {
 							return
 						}
-						p.CenterChannel <- false //超時處理
+						if p.CenterChIsopen {
+							p.CenterChannel <- false //超時處理
+						}
 						return
 					}
 				}
 			}()
 
 			lockScuess = <-p.CenterChannel
-			if !lockScuess { // 沒有鎖定成功
+			p.CenterChIsopen = false // false不接收锁定
+			if !lockScuess {         // 沒有鎖定成功
 				log.Debug("玩家金额不足,不能进行下注~")
 				sendLogout(p.Id) // 玩家登出
 				common.SendToTG(fmt.Sprintln("玩家" + common.Int32ToStr(p.Id) + "扣款失敗，已登出"))

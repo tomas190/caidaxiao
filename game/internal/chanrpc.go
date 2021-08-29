@@ -286,10 +286,14 @@ func respondLockMoney(args []interface{}) {
 	p, ok := a.(*ClientInfo).agent.UserData().(*Player)
 	if !ok {
 		common.Debug_log("锁定资金处理失败,用户%d不存在\n", data.UserID)
-		p.CenterChannel <- false
+		if p.CenterChIsopen {
+			p.CenterChannel <- false
+		}
 		return
 	}
-	p.CenterChannel <- true
+	if p.CenterChIsopen {
+		p.CenterChannel <- true
+	}
 	p.updateBalance(data)
 	//记录资金流水
 	// UpdateFundsFlowRecord(data)
