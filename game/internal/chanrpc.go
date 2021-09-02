@@ -276,7 +276,7 @@ func UpdateTurnoverRecord(data common.AmountFlowRes) *TurnoverRecord {
 func (user *Player) updateBalance(data common.AmountFlowRes) {
 	// common.Debug_log("gameModule *BaseUser updateBalance")
 	common.Debug_log("玩家:%v 餘額更新為:%v 鎖定金額更新為:%v", user.Id, data.Balance-data.LockBalance, data.LockBalance)
-	user.Account = data.Balance - data.LockBalance
+	// user.Account = data.Balance - data.LockBalance // 中心服回传赢分.输分顺序回传导致余额错误(这边不更新)
 	user.LockMoney = data.LockBalance
 }
 
