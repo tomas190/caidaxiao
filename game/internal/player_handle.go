@@ -162,23 +162,6 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 		p.IsAction = m.IsAction
 		if p.IsAction == true {
 			// 记录玩家在该房间总下注 和 房间注池的总金额
-			switch m.DownPot {
-			case msg.PotType_LeopardPot:
-				p.DownBetMoney.LeopardDownBet += m.DownBet
-				room.PotMoneyCount.LeopardDownBet += m.DownBet
-				room.PlayerTotalMoney.LeopardDownBet += m.DownBet
-			case msg.PotType_BigPot:
-				p.DownBetMoney.BigDownBet += m.DownBet
-				room.PotMoneyCount.BigDownBet += m.DownBet
-				room.PlayerTotalMoney.BigDownBet += m.DownBet
-			case msg.PotType_SmallPot:
-				p.DownBetMoney.SmallDownBet += m.DownBet
-				room.PotMoneyCount.SmallDownBet += m.DownBet
-				room.PlayerTotalMoney.SmallDownBet += m.DownBet
-			}
-
-			p.Account -= float64(m.DownBet)
-			p.TotalDownBet += m.DownBet
 
 			p.CenterChIsopen = true // true要接收锁定
 			if p.IsRobot == false {
@@ -210,6 +193,24 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 				common.SendToTG(fmt.Sprintln("玩家" + common.Int32ToStr(p.Id) + "扣款失敗，已登出"))
 				return
 			}
+
+			switch m.DownPot {
+			case msg.PotType_LeopardPot:
+				p.DownBetMoney.LeopardDownBet += m.DownBet
+				room.PotMoneyCount.LeopardDownBet += m.DownBet
+				room.PlayerTotalMoney.LeopardDownBet += m.DownBet
+			case msg.PotType_BigPot:
+				p.DownBetMoney.BigDownBet += m.DownBet
+				room.PotMoneyCount.BigDownBet += m.DownBet
+				room.PlayerTotalMoney.BigDownBet += m.DownBet
+			case msg.PotType_SmallPot:
+				p.DownBetMoney.SmallDownBet += m.DownBet
+				room.PotMoneyCount.SmallDownBet += m.DownBet
+				room.PlayerTotalMoney.SmallDownBet += m.DownBet
+			}
+
+			p.Account -= float64(m.DownBet)
+			p.TotalDownBet += m.DownBet
 
 			// 返回玩家行动数据
 			action := &msg.PlayerAction_S2C{}

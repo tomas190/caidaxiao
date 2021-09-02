@@ -63,7 +63,7 @@ func intervalHeartBeat() {
 	// heartIndex = 0
 	timestamp := time.Now().Unix()
 
-	AgentFromuserID_.Range(func(k, client interface{}) bool {
+	AgentFromuserID_.Range(func(_, client interface{}) bool {
 		if client.(*ClientInfo).expire < timestamp {
 			unusualLogout(client.(*ClientInfo).agent, "心跳超时")
 		}

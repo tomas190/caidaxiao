@@ -759,6 +759,7 @@ func reqPlayerLeave(w http.ResponseWriter, r *http.Request) {
 }
 
 func getRobotData(w http.ResponseWriter, r *http.Request) {
+	_ = r
 	recodes, err := GetRobotData()
 	if err != nil {
 		return
@@ -973,7 +974,7 @@ func HandleRoomType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 发送给所有玩家房间变更
-	hall.UserRecord.Range(func(key, value interface{}) bool {
+	hall.UserRecord.Range(func(_, value interface{}) bool {
 		u := value.(*Player)
 		u.SendMsg(data, "ChangeRoomType_S2C")
 		room_id, ok := hall.UserRoom.Load(u.Id)
@@ -1302,7 +1303,7 @@ func setUserLimitBet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hall.UserRecord.Range(func(key, value interface{}) bool {
+	hall.UserRecord.Range(func(_, value interface{}) bool {
 		u := value.(*Player)
 		if u.Id == uidNum {
 			log.Debug("玩家id:%v,限制:%v,%v", u.Id, minBet, maxBet)
