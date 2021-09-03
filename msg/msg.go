@@ -36,4 +36,5 @@ func init() {
 	Processor.Register(&ShowTableInfo_C2S{})
 	Processor.Register(&ShowTableInfo_S2C{})
 	Processor.Register(&KickedOutPush{})
+	Processor.Register(&ZhiBoUpdateBalancePush{})
 }
