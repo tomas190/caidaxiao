@@ -1765,6 +1765,7 @@ func userZhiBoReward(w http.ResponseWriter, r *http.Request) {
 			GiftMoney:  amount,
 			UserID:     int32(uid),
 		}
+		common.Debug_log("%v [%v]发送礼物扣款 礼物金额:%v 玩家余额", uid, a, amount, GiftPush.Balance)
 		a.WriteMsg(GiftPush)
 	}
 }
