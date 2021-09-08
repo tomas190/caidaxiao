@@ -3831,6 +3831,7 @@ $root.msg = (function() {
          * @memberof msg
          * @interface IRoomData
          * @property {string|null} [roomId] RoomData roomId
+         * @property {string|null} [roundId] RoomData roundId
          * @property {Array.<msg.IPlayerData>|null} [playerData] RoomData playerData
          * @property {number|null} [gameTime] RoomData gameTime
          * @property {msg.GameStep|null} [gameStep] RoomData gameStep
@@ -3867,6 +3868,14 @@ $root.msg = (function() {
          * @instance
          */
         RoomData.prototype.roomId = "";
+
+        /**
+         * RoomData roundId.
+         * @member {string} roundId
+         * @memberof msg.RoomData
+         * @instance
+         */
+        RoomData.prototype.roundId = "";
 
         /**
          * RoomData playerData.
@@ -3958,29 +3967,31 @@ $root.msg = (function() {
                 writer = $Writer.create();
             if (message.roomId != null && Object.hasOwnProperty.call(message, "roomId"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.roomId);
+            if (message.roundId != null && Object.hasOwnProperty.call(message, "roundId"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.roundId);
             if (message.playerData != null && message.playerData.length)
                 for (var i = 0; i < message.playerData.length; ++i)
-                    $root.msg.PlayerData.encode(message.playerData[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.msg.PlayerData.encode(message.playerData[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
             if (message.gameTime != null && Object.hasOwnProperty.call(message, "gameTime"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.gameTime);
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.gameTime);
             if (message.gameStep != null && Object.hasOwnProperty.call(message, "gameStep"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.gameStep);
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.gameStep);
             if (message.resultInt != null && message.resultInt.length) {
-                writer.uint32(/* id 5, wireType 2 =*/42).fork();
+                writer.uint32(/* id 6, wireType 2 =*/50).fork();
                 for (var i = 0; i < message.resultInt.length; ++i)
                     writer.int32(message.resultInt[i]);
                 writer.ldelim();
             }
             if (message.potMoneyCount != null && Object.hasOwnProperty.call(message, "potMoneyCount"))
-                $root.msg.DownBetMoney.encode(message.potMoneyCount, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                $root.msg.DownBetMoney.encode(message.potMoneyCount, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             if (message.historyData != null && message.historyData.length)
                 for (var i = 0; i < message.historyData.length; ++i)
-                    $root.msg.LotteryData.encode(message.historyData[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                    $root.msg.LotteryData.encode(message.historyData[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
             if (message.tablePlayer != null && message.tablePlayer.length)
                 for (var i = 0; i < message.tablePlayer.length; ++i)
-                    $root.msg.PlayerData.encode(message.tablePlayer[i], writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                    $root.msg.PlayerData.encode(message.tablePlayer[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
             if (message.PeriodsNum != null && Object.hasOwnProperty.call(message, "PeriodsNum"))
-                writer.uint32(/* id 9, wireType 2 =*/74).string(message.PeriodsNum);
+                writer.uint32(/* id 10, wireType 2 =*/82).string(message.PeriodsNum);
             return writer;
         };
 
@@ -4019,17 +4030,20 @@ $root.msg = (function() {
                     message.roomId = reader.string();
                     break;
                 case 2:
+                    message.roundId = reader.string();
+                    break;
+                case 3:
                     if (!(message.playerData && message.playerData.length))
                         message.playerData = [];
                     message.playerData.push($root.msg.PlayerData.decode(reader, reader.uint32()));
                     break;
-                case 3:
+                case 4:
                     message.gameTime = reader.int32();
                     break;
-                case 4:
+                case 5:
                     message.gameStep = reader.int32();
                     break;
-                case 5:
+                case 6:
                     if (!(message.resultInt && message.resultInt.length))
                         message.resultInt = [];
                     if ((tag & 7) === 2) {
@@ -4039,20 +4053,20 @@ $root.msg = (function() {
                     } else
                         message.resultInt.push(reader.int32());
                     break;
-                case 6:
+                case 7:
                     message.potMoneyCount = $root.msg.DownBetMoney.decode(reader, reader.uint32());
                     break;
-                case 7:
+                case 8:
                     if (!(message.historyData && message.historyData.length))
                         message.historyData = [];
                     message.historyData.push($root.msg.LotteryData.decode(reader, reader.uint32()));
                     break;
-                case 8:
+                case 9:
                     if (!(message.tablePlayer && message.tablePlayer.length))
                         message.tablePlayer = [];
                     message.tablePlayer.push($root.msg.PlayerData.decode(reader, reader.uint32()));
                     break;
-                case 9:
+                case 10:
                     message.PeriodsNum = reader.string();
                     break;
                 default:
@@ -4093,6 +4107,9 @@ $root.msg = (function() {
             if (message.roomId != null && message.hasOwnProperty("roomId"))
                 if (!$util.isString(message.roomId))
                     return "roomId: string expected";
+            if (message.roundId != null && message.hasOwnProperty("roundId"))
+                if (!$util.isString(message.roundId))
+                    return "roundId: string expected";
             if (message.playerData != null && message.hasOwnProperty("playerData")) {
                 if (!Array.isArray(message.playerData))
                     return "playerData: array expected";
@@ -4169,6 +4186,8 @@ $root.msg = (function() {
             var message = new $root.msg.RoomData();
             if (object.roomId != null)
                 message.roomId = String(object.roomId);
+            if (object.roundId != null)
+                message.roundId = String(object.roundId);
             if (object.playerData) {
                 if (!Array.isArray(object.playerData))
                     throw TypeError(".msg.RoomData.playerData: array expected");
@@ -4273,6 +4292,7 @@ $root.msg = (function() {
             }
             if (options.defaults) {
                 object.roomId = "";
+                object.roundId = "";
                 object.gameTime = 0;
                 object.gameStep = options.enums === String ? "XX_Step" : 0;
                 object.potMoneyCount = null;
@@ -4280,6 +4300,8 @@ $root.msg = (function() {
             }
             if (message.roomId != null && message.hasOwnProperty("roomId"))
                 object.roomId = message.roomId;
+            if (message.roundId != null && message.hasOwnProperty("roundId"))
+                object.roundId = message.roundId;
             if (message.playerData && message.playerData.length) {
                 object.playerData = [];
                 for (var j = 0; j < message.playerData.length; ++j)

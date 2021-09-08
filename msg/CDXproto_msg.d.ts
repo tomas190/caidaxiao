@@ -1567,6 +1567,9 @@ export namespace msg {
         /** RoomData roomId */
         roomId?: (string|null);
 
+        /** RoomData roundId */
+        roundId?: (string|null);
+
         /** RoomData playerData */
         playerData?: (msg.IPlayerData[]|null);
 
@@ -1603,6 +1606,9 @@ export namespace msg {
 
         /** RoomData roomId. */
         public roomId: string;
+
+        /** RoomData roundId. */
+        public roundId: string;
 
         /** RoomData playerData. */
         public playerData: msg.IPlayerData[];

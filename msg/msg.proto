@@ -177,14 +177,15 @@ message LotteryData {
 
 message RoomData {
     string roomId = 1;
-    repeated PlayerData playerData = 2;
-    int32 gameTime = 3; // 游戏时间(之後階段改結構這個可以拿掉)
-    GameStep gameStep = 4; // 当前游戏阶段状态
-    repeated int32 resultInt = 5; // 结算数据
-    DownBetMoney potMoneyCount = 6; // 注池金额集合
-    repeated LotteryData historyData = 7; // 历史记录数据
-    repeated PlayerData tablePlayer = 8; // 桌面玩家
-    string PeriodsNum = 9; // 当前奖期
+    string roundId = 2;
+    repeated PlayerData playerData = 3;
+    int32 gameTime = 4; // 游戏时间(之後階段改結構這個可以拿掉)
+    GameStep gameStep = 5; // 当前游戏阶段状态
+    repeated int32 resultInt = 6; // 结算数据
+    DownBetMoney potMoneyCount = 7; // 注池金额集合
+    repeated LotteryData historyData = 8; // 历史记录数据
+    repeated PlayerData tablePlayer = 9; // 桌面玩家
+    string PeriodsNum = 10; // 当前奖期
 }
 
 message JoinRoom_C2S {

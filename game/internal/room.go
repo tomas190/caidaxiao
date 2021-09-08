@@ -239,6 +239,7 @@ func (r *Room) LoadRoomRobots(num int) {
 func (r *Room) RespRoomData() *msg.RoomData {
 	rd := &msg.RoomData{}
 	rd.RoomId = r.RoomId
+	rd.RoundId = r.RoundID
 	// rd.GameTime = r.counter //舊的
 	rd.GameTime = r.RoomCounter()
 	rd.GameStep = r.GameStat

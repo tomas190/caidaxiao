@@ -1,6 +1,6 @@
 package base
 
-const VersionCode = "1.0.29" // 服务版本
+const VersionCode = "1.0.30" // 服务版本
 
 type UserInfo struct {
 	UserID      int32
