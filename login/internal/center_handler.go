@@ -299,10 +299,10 @@ func handlerError(data ResponseData) {
 
 // 中心服回傳登陸訊息
 func handlerLogin(data ResponseData) {
-	if c4c.hasReConnected {
-		common.GetInstance().Game.Go("UpdateService", true)
-		return
-	}
+	// if c4c.hasReConnected {
+	// 	common.GetInstance().Game.Go("UpdateService", true)
+	// 	return
+	// }
 	c4c.hasLogin = true
 	jsonStr, err1 := json.Marshal(data.Msg["globals"])
 	if err1 != nil {
