@@ -170,7 +170,7 @@ func (p *Player) PlayerAction(m *msg.PlayerAction_C2S) {
 
 			lockScuess := false
 			go func() {
-				ProcessDatachTimeOut := time.NewTimer(time.Second * 2)
+				ProcessDatachTimeOut := time.NewTimer(time.Second * 10) // 中心服回傳timeout設置
 				for {
 					select {
 					case <-ProcessDatachTimeOut.C:
