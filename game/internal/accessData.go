@@ -1681,6 +1681,17 @@ func userZhiBoReward(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	a := ClientAgent.(*ClientInfo).agent
+	player.(*msg.PlayerInfo).Account -= amount
+	p, ok := a.UserData().(*Player)
+	if ok {
+		if p.Account < amount {
+			resp.Code = -1
+			resp.Msg = "餘額不足扣款失败"
+			return
+		}
+	}
+
 	//请求中心服扣款信息
 	payReq := PayRequest{
 		Auth: AuthData{
@@ -1739,13 +1750,8 @@ func userZhiBoReward(w http.ResponseWriter, r *http.Request) {
 		resp.Msg = "扣款成功"
 
 		// 更新玩家余额
+		p.Account -= amount
 
-		a := ClientAgent.(*ClientInfo).agent
-		player.(*msg.PlayerInfo).Account -= amount
-		p, ok := a.UserData().(*Player)
-		if ok {
-			p.Account -= amount
-		}
 		// 记录流水
 		AddTurnoverRecord("ZhiBoGift", common.AmountFlowReq{
 			UserID:    int32(uid),
