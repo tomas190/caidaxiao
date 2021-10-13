@@ -49,7 +49,7 @@ func (r *Room) JoinGameRoom(p *Player) {
 	data.RoomData = roomData
 	data.RoomData.GameTime = r.RoomCounter()
 	data.LeftTime = r.RoomCounter()
-
+	data.CloseTime = CloseTime
 	// log.Debug("房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	p.SendMsg(data, "JoinRoom_S2C")
@@ -67,10 +67,10 @@ func (r *Room) RoomCounter() int32 {
 	case msg.GameStep_Settle, msg.GameStep_LiuJu: //19~24(6)
 		GameTime = SettleStep + SettleTime - time.Now().Second()
 
-	case msg.GameStep_DownBet: //25~44(20s)
+	case msg.GameStep_DownBet: //25~54(30s)
 		GameTime = DownBetStep + DownBetTime - time.Now().Second()
 
-	case msg.GameStep_Close: // 45~59,00~04 (20s)
+	case msg.GameStep_Close: // 55~59,00~04 (10s)
 		if time.Now().Second() < 5 {
 			GameTime = time.Now().Second()
 		} else if time.Now().Second() < 60 {
@@ -88,8 +88,8 @@ func (r *Room) RoomCounter() int32 {
 遊戲階段(每分鐘)
 取號階段5(14s)
 結算階段19(6s)
-下注阶段25(20s)
-封單階段45(20s)
+下注阶段25(30s)
+封單階段55(10s)
 */
 func (r *Room) GetRoomType() {
 	go func() {
@@ -129,7 +129,7 @@ func (r *Room) GetRoomType() {
 					common.Debug_log("----------房間%v 下注阶段----------", r.RoomId)
 					r.DownBetTimerTask() //下注阶段定时
 
-				case CloseStep: //45s
+				case CloseStep: //55s
 					r.GameStat = msg.GameStep_Close
 					common.Debug_log("----------房間%v 封单阶段----------", r.RoomId)
 					r.HandleCloseOver() // 封单时间
@@ -164,6 +164,7 @@ func (r *Room) DownBetTimerTask() {
 	data.GameStep = msg.GameStep_DownBet
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = DownBetTime
+	data.CloseTime = CloseTime
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -183,7 +184,7 @@ func (r *Room) HandleCloseOver() {
 	data.GameStep = msg.GameStep_Close
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = CloseTime
-
+	data.CloseTime = CloseTime
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -206,7 +207,7 @@ func (r *Room) HandleGetRes() {
 	data.GameStep = msg.GameStep_GetRes
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = GetResTime
-
+	data.CloseTime = CloseTime
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -253,7 +254,7 @@ func (r *Room) HandleLiuJu() {
 	data.GameStep = msg.GameStep_LiuJu
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = SettleTime
-
+	data.CloseTime = CloseTime
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -292,6 +293,7 @@ func (r *Room) CompareSettlement() {
 	data.GameStep = msg.GameStep_Settle
 	data.RoomData = RoomData
 	data.LeftTime = SettleTime
+	data.CloseTime = CloseTime
 	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 获取投注统计

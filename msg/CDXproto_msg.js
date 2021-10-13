@@ -4542,6 +4542,7 @@ $root.msg = (function() {
          * @interface IJoinRoom_S2C
          * @property {msg.IRoomData|null} [roomData] JoinRoom_S2C roomData
          * @property {number|null} [leftTime] JoinRoom_S2C leftTime
+         * @property {number|null} [closeTime] JoinRoom_S2C closeTime
          */
 
         /**
@@ -4576,6 +4577,14 @@ $root.msg = (function() {
         JoinRoom_S2C.prototype.leftTime = 0;
 
         /**
+         * JoinRoom_S2C closeTime.
+         * @member {number} closeTime
+         * @memberof msg.JoinRoom_S2C
+         * @instance
+         */
+        JoinRoom_S2C.prototype.closeTime = 0;
+
+        /**
          * Creates a new JoinRoom_S2C instance using the specified properties.
          * @function create
          * @memberof msg.JoinRoom_S2C
@@ -4603,6 +4612,8 @@ $root.msg = (function() {
                 $root.msg.RoomData.encode(message.roomData, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.leftTime != null && Object.hasOwnProperty.call(message, "leftTime"))
                 writer.uint32(/* id 2, wireType 0 =*/16).int32(message.leftTime);
+            if (message.closeTime != null && Object.hasOwnProperty.call(message, "closeTime"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.closeTime);
             return writer;
         };
 
@@ -4642,6 +4653,9 @@ $root.msg = (function() {
                     break;
                 case 2:
                     message.leftTime = reader.int32();
+                    break;
+                case 3:
+                    message.closeTime = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -4686,6 +4700,9 @@ $root.msg = (function() {
             if (message.leftTime != null && message.hasOwnProperty("leftTime"))
                 if (!$util.isInteger(message.leftTime))
                     return "leftTime: integer expected";
+            if (message.closeTime != null && message.hasOwnProperty("closeTime"))
+                if (!$util.isInteger(message.closeTime))
+                    return "closeTime: integer expected";
             return null;
         };
 
@@ -4708,6 +4725,8 @@ $root.msg = (function() {
             }
             if (object.leftTime != null)
                 message.leftTime = object.leftTime | 0;
+            if (object.closeTime != null)
+                message.closeTime = object.closeTime | 0;
             return message;
         };
 
@@ -4727,11 +4746,14 @@ $root.msg = (function() {
             if (options.defaults) {
                 object.roomData = null;
                 object.leftTime = 0;
+                object.closeTime = 0;
             }
             if (message.roomData != null && message.hasOwnProperty("roomData"))
                 object.roomData = $root.msg.RoomData.toObject(message.roomData, options);
             if (message.leftTime != null && message.hasOwnProperty("leftTime"))
                 object.leftTime = message.leftTime;
+            if (message.closeTime != null && message.hasOwnProperty("closeTime"))
+                object.closeTime = message.closeTime;
             return object;
         };
 
@@ -5302,6 +5324,7 @@ $root.msg = (function() {
          * @property {msg.GameStep|null} [gameStep] ActionTime_S2C gameStep
          * @property {msg.IRoomData|null} [roomData] ActionTime_S2C roomData
          * @property {number|null} [leftTime] ActionTime_S2C leftTime
+         * @property {number|null} [closeTime] ActionTime_S2C closeTime
          */
 
         /**
@@ -5344,6 +5367,14 @@ $root.msg = (function() {
         ActionTime_S2C.prototype.leftTime = 0;
 
         /**
+         * ActionTime_S2C closeTime.
+         * @member {number} closeTime
+         * @memberof msg.ActionTime_S2C
+         * @instance
+         */
+        ActionTime_S2C.prototype.closeTime = 0;
+
+        /**
          * Creates a new ActionTime_S2C instance using the specified properties.
          * @function create
          * @memberof msg.ActionTime_S2C
@@ -5373,6 +5404,8 @@ $root.msg = (function() {
                 $root.msg.RoomData.encode(message.roomData, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.leftTime != null && Object.hasOwnProperty.call(message, "leftTime"))
                 writer.uint32(/* id 3, wireType 0 =*/24).int32(message.leftTime);
+            if (message.closeTime != null && Object.hasOwnProperty.call(message, "closeTime"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.closeTime);
             return writer;
         };
 
@@ -5415,6 +5448,9 @@ $root.msg = (function() {
                     break;
                 case 3:
                     message.leftTime = reader.int32();
+                    break;
+                case 4:
+                    message.closeTime = reader.int32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -5473,6 +5509,9 @@ $root.msg = (function() {
             if (message.leftTime != null && message.hasOwnProperty("leftTime"))
                 if (!$util.isInteger(message.leftTime))
                     return "leftTime: integer expected";
+            if (message.closeTime != null && message.hasOwnProperty("closeTime"))
+                if (!$util.isInteger(message.closeTime))
+                    return "closeTime: integer expected";
             return null;
         };
 
@@ -5529,6 +5568,8 @@ $root.msg = (function() {
             }
             if (object.leftTime != null)
                 message.leftTime = object.leftTime | 0;
+            if (object.closeTime != null)
+                message.closeTime = object.closeTime | 0;
             return message;
         };
 
@@ -5549,6 +5590,7 @@ $root.msg = (function() {
                 object.gameStep = options.enums === String ? "XX_Step" : 0;
                 object.roomData = null;
                 object.leftTime = 0;
+                object.closeTime = 0;
             }
             if (message.gameStep != null && message.hasOwnProperty("gameStep"))
                 object.gameStep = options.enums === String ? $root.msg.GameStep[message.gameStep] : message.gameStep;
@@ -5556,6 +5598,8 @@ $root.msg = (function() {
                 object.roomData = $root.msg.RoomData.toObject(message.roomData, options);
             if (message.leftTime != null && message.hasOwnProperty("leftTime"))
                 object.leftTime = message.leftTime;
+            if (message.closeTime != null && message.hasOwnProperty("closeTime"))
+                object.closeTime = message.closeTime;
             return object;
         };
 

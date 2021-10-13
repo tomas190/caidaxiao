@@ -195,6 +195,7 @@ message JoinRoom_C2S {
 message JoinRoom_S2C {
     RoomData roomData = 1;
     int32 leftTime = 2; // 階段剩餘時間
+    int32 closeTime = 3; // 封單時間
 }
 
 message EnterRoom_S2C {
@@ -212,6 +213,7 @@ message ActionTime_S2C {
     GameStep gameStep = 1; // 当前階段
     RoomData roomData = 2; // 房间数据
     int32 leftTime = 3; // 階段剩餘時間
+    int32 closeTime = 4; // 封單時間
 }
 
 message PlayerAction_C2S {

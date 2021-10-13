@@ -25,34 +25,9 @@ type PrizeRecord struct {
 	OpenDate string `json:"opendate"` // 开奖时间
 }
 
-// const ( // 舊的
-// 	BankerTime  = 8  // 庄家时间 8秒
-// 	Banker2Time = 3  // 庄家连庄 3秒
-// 	DownBetTime = 20 // 下注时间 20秒
-// 	SettleTime  = 5  // 结算时间 5秒
-// 	GetResTime  = 13 // 开奖时间 13秒
-// 	CloseTime   = 15 // 封单时间 15秒
-// )
-
-// const (
-// 	DownBetStep = 25 // 下注时间阶段
-// 	CloseStep   = 45 // 封单时间阶段
-// 	GetResStep  = 5  // 开奖时间阶段
-// 	SettleStep  = 19 // 结算时间阶段
-// )
-
-// const (
-// 	WinBig      int32 = 1  //大 1倍
-// 	WinSmall    int32 = 1  //小 1倍
-// 	WinSingle   int32 = 1  //单 1倍
-// 	WinDouble   int32 = 1  //双 1倍
-// 	WinPair     int32 = 2  //对 2倍
-// 	WinStraight int32 = 5  //顺 5倍
-// 	WinLeopard  int32 = 66 //豹 66倍
-// )
 const (
-	DownBetTime = 20 // 下注總时间 20秒
-	CloseTime   = 20 // 封单總时间 20秒
+	DownBetTime = 30 // 下注總时间 30秒
+	CloseTime   = 10 // 封单總时间 10秒
 	GetResTime  = 14 // 开奖總时间 14秒
 	SettleTime  = 6  // 结算總时间 6秒
 
@@ -60,7 +35,7 @@ const (
 
 const ( //切換狀態時間點
 	DownBetStep = 25 // 下注时间點
-	CloseStep   = 45 // 封单时间點
+	CloseStep   = 55 // 封单时间點
 	GetResStep  = 5  // 开奖时间點
 	SettleStep  = 19 // 结算时间點
 )

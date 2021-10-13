@@ -1803,6 +1803,9 @@ export namespace msg {
 
         /** JoinRoom_S2C leftTime */
         leftTime?: (number|null);
+
+        /** JoinRoom_S2C closeTime */
+        closeTime?: (number|null);
     }
 
     /** Represents a JoinRoom_S2C. */
@@ -1819,6 +1822,9 @@ export namespace msg {
 
         /** JoinRoom_S2C leftTime. */
         public leftTime: number;
+
+        /** JoinRoom_S2C closeTime. */
+        public closeTime: number;
 
         /**
          * Creates a new JoinRoom_S2C instance using the specified properties.
@@ -2166,6 +2172,9 @@ export namespace msg {
 
         /** ActionTime_S2C leftTime */
         leftTime?: (number|null);
+
+        /** ActionTime_S2C closeTime */
+        closeTime?: (number|null);
     }
 
     /** Represents an ActionTime_S2C. */
@@ -2185,6 +2194,9 @@ export namespace msg {
 
         /** ActionTime_S2C leftTime. */
         public leftTime: number;
+
+        /** ActionTime_S2C closeTime. */
+        public closeTime: number;
 
         /**
          * Creates a new ActionTime_S2C instance using the specified properties.
