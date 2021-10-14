@@ -33,6 +33,11 @@ func (m *Module) OnInit() {
 	LoadServerSurpool() // 載入盈餘池
 
 	LoadUserList() // 載入玩家列表
+
+	go func() {
+		StartHttpServer() // 监听接口
+	}()
+
 	// 中心服初始化并创建链接
 	// c4c.Init()
 	// c4c.CreatConnect()

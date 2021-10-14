@@ -200,9 +200,6 @@ func playerExitGame(args []interface{}) {
 // 登陸中心服後的處理
 func respondStart(args []interface{}) {
 	// common.Debug_log("gameModule respondStart")
-	go func() {
-		StartHttpServer() // 监听接口
-	}()
 
 	arrPackages := args[0].([]common.LoginResponse)
 	mapTaxPercent = make(map[int]float64)
