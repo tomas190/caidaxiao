@@ -49,7 +49,7 @@ func (r *Room) JoinGameRoom(p *Player) {
 	data.RoomData = roomData
 	data.RoomData.GameTime = r.RoomCounter()
 	data.LeftTime = r.RoomCounter()
-	data.CloseTime = CloseTime
+	data.CloseTime = 60 - CloseStep
 	// log.Debug("房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	p.SendMsg(data, "JoinRoom_S2C")
@@ -164,7 +164,7 @@ func (r *Room) DownBetTimerTask() {
 	data.GameStep = msg.GameStep_DownBet
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = DownBetTime
-	data.CloseTime = CloseTime
+	data.CloseTime = 60 - CloseStep
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -184,7 +184,7 @@ func (r *Room) HandleCloseOver() {
 	data.GameStep = msg.GameStep_Close
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = CloseTime
-	data.CloseTime = CloseTime
+	data.CloseTime = 60 - CloseStep
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -207,7 +207,7 @@ func (r *Room) HandleGetRes() {
 	data.GameStep = msg.GameStep_GetRes
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = GetResTime
-	data.CloseTime = CloseTime
+	data.CloseTime = 60 - CloseStep
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -254,7 +254,7 @@ func (r *Room) HandleLiuJu() {
 	data.GameStep = msg.GameStep_LiuJu
 	data.RoomData = r.RespRoomData()
 	data.LeftTime = SettleTime
-	data.CloseTime = CloseTime
+	data.CloseTime = 60 - CloseStep
 	// log.Debug("ActionTime_S2C 房間: %v   playerData:%v  HistoryData:%v ", data.RoomData.RoomId, len(data.RoomData.PlayerData), len(data.RoomData.HistoryData))
 
 	r.BroadCastMsg(data, "ActionTime_S2C")
@@ -293,7 +293,7 @@ func (r *Room) CompareSettlement() {
 	data.GameStep = msg.GameStep_Settle
 	data.RoomData = RoomData
 	data.LeftTime = SettleTime
-	data.CloseTime = CloseTime
+	data.CloseTime = 60 - CloseStep
 	r.BroadCastMsg(data, "ActionTime_S2C")
 
 	// 获取投注统计
