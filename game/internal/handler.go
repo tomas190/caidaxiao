@@ -106,7 +106,8 @@ func handleLogout(args []interface{}) {
 
 	p, ok := a.UserData().(*Player)
 
-	if ok {
+	_, okIDFA := userIDFromAgent_.Load(a)
+	if ok && okIDFA {
 		log.Debug("handleLeaveHall 玩家退出大厅~ : %v", p.Id)
 		if p.IsAction == true { //有下注不能登出中心服等待結算後登出
 			var exist bool
@@ -169,7 +170,8 @@ func handleJoinRoom(args []interface{}) {
 
 	p, ok := a.UserData().(*Player)
 
-	if ok {
+	_, okIDFA := userIDFromAgent_.Load(a)
+	if ok && okIDFA {
 		log.Debug("handleJoinRoom 玩家加入房间~ : %v", p.Id)
 		hall.PlayerJoinRoom(m.RoomId, p)
 	} else {
@@ -181,7 +183,8 @@ func handleLeaveRoom(args []interface{}) {
 	a := args[1].(gate.Agent)
 
 	p, ok := a.UserData().(*Player)
-	if ok {
+	_, okIDFA := userIDFromAgent_.Load(a)
+	if ok && okIDFA {
 		if p.IsAction == false {
 			log.Debug("handleLeaveRoom 玩家退出房间~ : %v", p.Id)
 			p.PlayerExitRoom()
@@ -196,7 +199,8 @@ func handlePlayerAction(args []interface{}) {
 	a := args[1].(gate.Agent)
 
 	p, ok := a.UserData().(*Player)
-	if ok {
+	_, okIDFA := userIDFromAgent_.Load(a)
+	if ok && okIDFA {
 		// log.Debug("handlePlayerAction 玩家开始行动~ : %v", p.Id)
 		p.PlayerAction(m)
 	} else {
@@ -222,7 +226,8 @@ func handleEmojiChat(args []interface{}) {
 
 	p, ok := a.UserData().(*Player)
 
-	if ok {
+	_, okIDFA := userIDFromAgent_.Load(a)
+	if ok && okIDFA {
 		log.Debug("handleEmojiChat 玩家发送表情~ : %v", p.Id)
 		rid, _ := hall.UserRoom.Load(p.Id)
 		r, _ := hall.RoomRecord.Load(rid)
@@ -244,7 +249,8 @@ func ShowTableInfo(args []interface{}) {
 
 	p, ok := a.UserData().(*Player)
 
-	if ok {
+	_, okIDFA := userIDFromAgent_.Load(a)
+	if ok && okIDFA {
 		log.Debug("ShowTableInfo 玩家发送房间信息~ : %v", p.Id)
 		roomId, _ := hall.UserRoom.Load(p.Id)
 		r, _ := hall.RoomRecord.Load(roomId)
