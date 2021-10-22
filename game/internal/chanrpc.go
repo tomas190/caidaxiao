@@ -177,6 +177,16 @@ func playerEnterGame(args []interface{}) {
 	u.SendMsg(login, "Login_S2C")
 	client.(*ClientInfo).agent.SetUserData(u)
 
+	OLUsers.Lock()
+	defer OLUsers.Unlock()
+	if _, ok := OnlineUsers[cInfo.PackageID]; ok {
+		if !common.SearchSliInt32(OnlineUsers[cInfo.PackageID], cInfo.UserID) { //确保不重复写入
+			OnlineUsers[cInfo.PackageID] = append(OnlineUsers[cInfo.PackageID], cInfo.UserID)
+		}
+	} else {
+		OnlineUsers[cInfo.PackageID] = []int32{cInfo.UserID}
+	}
+
 }
 
 // 玩家離開子遊戲服務
@@ -195,6 +205,16 @@ func playerExitGame(args []interface{}) {
 	}
 
 	unbindAgentWithUser(cInfo.UserID)
+
+	OLUsers.Lock()
+	defer OLUsers.Unlock()
+	for k, v := range OnlineUsers[cInfo.PackageID] {
+		if v == cInfo.UserID {
+			OnlineUsers[cInfo.PackageID] = append(OnlineUsers[cInfo.PackageID][:k], OnlineUsers[cInfo.PackageID][k+1:]...)
+			return
+		}
+	}
+
 }
 
 // 登陸中心服後的處理

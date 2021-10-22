@@ -3,6 +3,12 @@ package internal
 import (
 	common "caidaxiao/base"
 	"caidaxiao/msg"
+	"sync"
+)
+
+var (
+	OnlineUsers = map[int][]int32{}
+	OLUsers     sync.RWMutex //更动userlist时锁定
 )
 
 type Player struct {

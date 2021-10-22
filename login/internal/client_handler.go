@@ -214,6 +214,7 @@ func CS2C_Logout(data ResponseData) {
 		UserHead:    info.Base.GameImg,
 		Balance:     info.Account.Balance,
 		LockBalance: info.Account.LockBalance,
+		PackageID:   info.Base.PackageID,
 	})
 	common.Debug_log("登出成功:%v", info.Base.ID)
 }

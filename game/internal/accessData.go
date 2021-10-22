@@ -233,6 +233,8 @@ func StartHttpServer() {
 	http.HandleFunc("/api/getRoomLimitBet", getRoomLimitBet)
 	// 視訊直播消費扣款
 	http.HandleFunc("/api/userZhiBoReward", userZhiBoReward)
+	// 线上玩家
+	http.HandleFunc("/api/getOnlineTotal", getOnlineTotal)
 
 	err := http.ListenAndServe(":"+conf.Server.HTTPPort, nil)
 	if err != nil {
@@ -1849,4 +1851,67 @@ type AuthData struct {
 	//Token  string `json:"token"`
 	DevKey  string `json:"dev_key"`
 	DevName string `json:"dev_name"`
+}
+
+type OlUsersRes struct {
+	Code int         `json:"code"`
+	Msg  string      `json:"msg"`
+	Data OlUsersData `json:"data"`
+}
+type OlUsersData struct {
+	GameID   string          `json:"game_id"`   // 游戏id
+	GameName string          `json:"game_name"` //游戏名称
+	GameData []OlUsersDetail `json:"game_data"` //各package_id该品牌的线上人数
+}
+
+type OlUsersDetail struct {
+	PackageID int     `json:"packageID"` // 游戏id
+	UsersList []int32 `json:"userData"`  //在线人数 去重后的uid 也就是查询时间段内的有记录的玩家ID
+}
+
+func getOnlineTotal(w http.ResponseWriter, r *http.Request) {
+
+	data := &OlUsersRes{}
+	var result = OlUsersData{}
+	result.GameID = conf.Server.GameID
+	result.GameName = "彩源猜大小"
+	result.GameData = []OlUsersDetail{}
+	PackageID := r.FormValue("package_id")
+
+	// GameId := r.FormValue("game_id")
+
+	defer func() {
+		if len(data.Msg) > 0 {
+			data.Code = -1
+		} else {
+			data.Data = result
+		}
+		bytes, err := json.Marshal(data)
+		if err != nil {
+			log.Error("json marshal error:%s", err.Error())
+		} else {
+			_, err := w.Write(bytes)
+			if err != nil {
+				log.Error("write getOnlineTotal result error:%s", err.Error())
+			}
+		}
+	}()
+
+	OLUsers.RLock()
+	defer OLUsers.RUnlock()
+	if PackageID != "" {
+		PkgID := common.Str2Int(PackageID)
+		userdata := OlUsersDetail{}
+		userdata.PackageID = PkgID
+		userdata.UsersList = OnlineUsers[PkgID]
+		result.GameData = append(result.GameData, userdata)
+	} else {
+		for k, v := range OnlineUsers {
+			userdata := OlUsersDetail{}
+			userdata.PackageID = k
+			userdata.UsersList = v
+			result.GameData = append(result.GameData, userdata)
+		}
+	}
+
 }
