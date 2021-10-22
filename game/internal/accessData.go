@@ -1913,8 +1913,8 @@ func getOnlineTotal(w http.ResponseWriter, r *http.Request) {
 			result.GameData = append(result.GameData, userdata)
 		}
 	}
-	if len(result.GameData) == 0 {
-		result.GameData = nil
-	}
+	// if len(result.GameData) == 0 {
+	// 	result.GameData = nil
+	// }
 
 }
