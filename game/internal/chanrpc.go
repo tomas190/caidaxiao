@@ -211,6 +211,9 @@ func playerExitGame(args []interface{}) {
 	for k, v := range OnlineUsers[cInfo.PackageID] {
 		if v == cInfo.UserID {
 			OnlineUsers[cInfo.PackageID] = append(OnlineUsers[cInfo.PackageID][:k], OnlineUsers[cInfo.PackageID][k+1:]...)
+			if len(OnlineUsers[cInfo.PackageID]) == 0 {
+				delete(OnlineUsers, cInfo.PackageID)
+			}
 			return
 		}
 	}
