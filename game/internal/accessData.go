@@ -1901,12 +1901,18 @@ func getOnlineTotal(w http.ResponseWriter, r *http.Request) {
 	defer OLUsers.RUnlock()
 	if PackageID != "" {
 		PkgID := common.Str2Int(PackageID)
+		if len(OnlineUsers[PkgID]) == 0 {
+			return
+		}
 		userdata := OlUsersDetail{}
 		userdata.PackageID = PkgID
 		userdata.UsersList = OnlineUsers[PkgID]
 		result.GameData = append(result.GameData, userdata)
 	} else {
 		for k, v := range OnlineUsers {
+			if len(v) == 0 {
+				continue
+			}
 			userdata := OlUsersDetail{}
 			userdata.PackageID = k
 			userdata.UsersList = v
