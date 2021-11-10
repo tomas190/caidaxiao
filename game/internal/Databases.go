@@ -520,8 +520,8 @@ type RoomTotalBet struct {
 	PotTotalMoney *msg.DownBetMoney `json:"down_bet_info" bson:"down_bet_info"` // 注池玩家下注总金额
 }
 
-func InsertRoomTotalBet(sur *RoomTotalBet) {
-	s, c := connect(dbName, RoomTotalBetDB)
+func InsertRoomTotalBet(sur *RoomTotalBet, date string) {
+	s, c := connect(dbName, RoomTotalBetDB+"_"+date)
 	defer s.Close()
 
 	err := c.Insert(sur)
@@ -531,9 +531,29 @@ func InsertRoomTotalBet(sur *RoomTotalBet) {
 	}
 }
 
+// //GetPlayerDownBet 获取玩家投注数据
+// func GetRoomTotalBet(page, limit int, selector bson.M, sortBy string) ([]RoomTotalBet, int, error) {
+// 	s, c := connect(dbName, RoomTotalBetDB)
+// 	defer s.Close()
+
+// 	var wts []RoomTotalBet
+
+// 	n, err := c.Find(selector).Count()
+// 	if err != nil {
+// 		return nil, 0, err
+// 	}
+// 	// log.Debug("获取 %v 条数据,limit:%v", n, limit)
+// 	skip := (page - 1) * limit
+// 	err = c.Find(selector).Sort(sortBy).Skip(skip).Limit(limit).All(&wts)
+// 	if err != nil {
+// 		return nil, 0, err
+// 	}
+// 	return wts, n, nil
+// }
+
 //GetPlayerDownBet 获取玩家投注数据
-func GetRoomTotalBet(page, limit int, selector bson.M, sortBy string) ([]RoomTotalBet, int, error) {
-	s, c := connect(dbName, RoomTotalBetDB)
+func GetRoomTotalBet(date string, page, limit int, selector bson.M, sortBy string) ([]RoomTotalBet, int, error) {
+	s, c := connect(dbName, RoomTotalBetDB+"_"+date)
 	defer s.Close()
 
 	var wts []RoomTotalBet

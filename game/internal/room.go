@@ -1006,13 +1006,17 @@ func (r *Room) SeRoomTotalBet() {
 	data.GameId = conf.Server.GameID
 	data.PeriodsNum = r.PeriodsNum
 	data.PeriodsTime = r.PeriodsTime
+
+	PeriodsNumArr := strings.Split(r.PeriodsNum, "-")
+	date := PeriodsNumArr[0]
+
 	if r.RoomId == "1" {
 		data.LotteryType = "hn60"
 	} else if r.RoomId == "2" {
 		data.LotteryType = "qiqffc"
 	}
 	data.PotTotalMoney = r.PlayerTotalMoney
-	InsertRoomTotalBet(data) //todo
+	InsertRoomTotalBet(data, date) //todo
 }
 
 func (r *Room) SetUserRoom(p *Player) {

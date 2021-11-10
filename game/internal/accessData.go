@@ -829,9 +829,6 @@ func getPlayerDownBet(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(req.Page)
 
 	limits, _ := strconv.Atoi(req.Limit)
-	//if limits != 0 {
-	//	selector["limit"] = limits
-	//}
 
 	recodes, count, err := GetPlayerDownBet(page, limits, selector, "-down_bet_time")
 	if err != nil {
@@ -850,6 +847,56 @@ func getPlayerDownBet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
 }
+
+// func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
+// 	var req CaiYuanReq
+
+// 	req.GameId = r.FormValue("game_id")
+// 	// req.RoomId = r.FormValue("room_id")
+// 	req.PrizeType = r.FormValue("prize_type")
+// 	req.PeriodsNum = r.FormValue("periods_num")
+// 	req.Page = r.FormValue("page")
+// 	req.Limit = r.FormValue("limit")
+// 	log.Debug("获取分页数据:%v", req.Page)
+
+// 	selector := bson.M{}
+
+// 	if req.GameId != "" {
+// 		selector["game_id"] = req.GameId
+// 	}
+
+// 	if req.PrizeType != "" {
+// 		selector["lottery_type"] = req.PrizeType
+// 	}
+
+// 	if req.PeriodsNum != "" {
+// 		selector["periods_num"] = req.PeriodsNum
+// 	}
+
+// 	page, _ := strconv.Atoi(req.Page)
+
+// 	limits, _ := strconv.Atoi(req.Limit)
+// 	//if limits != 0 {
+// 	//	selector["limit"] = limits
+// 	//}
+
+// 	recodes, count, err := GetRoomTotalBet(page, limits, selector, "-down_bet_time")
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	var result pageData
+// 	result.Total = count
+// 	result.List = recodes
+
+// 	js, err := json.Marshal(NewResp(SuccCode, "", result))
+// 	if err != nil {
+// 		fmt.Fprintf(w, "%+v", ApiResp{Code: ErrCode, Msg: "", Data: nil})
+// 		return
+// 	}
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.Write(js)
+// }
 
 func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
 	var req CaiYuanReq
@@ -871,9 +918,13 @@ func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
 	if req.PrizeType != "" {
 		selector["lottery_type"] = req.PrizeType
 	}
-
+	var date string
 	if req.PeriodsNum != "" {
 		selector["periods_num"] = req.PeriodsNum
+		PeriodsNumArr := strings.Split(req.PeriodsNum, "-")
+		date = PeriodsNumArr[0]
+	} else {
+		return
 	}
 
 	page, _ := strconv.Atoi(req.Page)
@@ -883,7 +934,7 @@ func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
 	//	selector["limit"] = limits
 	//}
 
-	recodes, count, err := GetRoomTotalBet(page, limits, selector, "-down_bet_time")
+	recodes, count, err := GetRoomTotalBet(date, page, limits, selector, "-down_bet_time")
 	if err != nil {
 		return
 	}
