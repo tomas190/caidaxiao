@@ -1016,7 +1016,7 @@ func (r *Room) SeRoomTotalBet() {
 		data.LotteryType = "qiqffc"
 	}
 	data.PotTotalMoney = r.PlayerTotalMoney
-	InsertRoomTotalBet(data, date) //todo
+	InsertRoomTotalBet(data, date[0:6]) //todo
 }
 
 func (r *Room) SetUserRoom(p *Player) {

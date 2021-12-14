@@ -934,7 +934,7 @@ func getRoomTotalBet(w http.ResponseWriter, r *http.Request) {
 	//	selector["limit"] = limits
 	//}
 
-	recodes, count, err := GetRoomTotalBet(date, page, limits, selector, "-down_bet_time")
+	recodes, count, err := GetRoomTotalBet(date[0:6], page, limits, selector, "-down_bet_time")
 	if err != nil {
 		return
 	}
