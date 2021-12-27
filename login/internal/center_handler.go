@@ -138,7 +138,7 @@ func (c4c *Conn4Center) S2CS_connect() {
 					common.Debug_log("websocket send ping to center err", err.Error())
 					socket.Close()
 				}
-				common.Debug_log("ping center.")
+				// common.Debug_log("ping center.")
 				syncWrite.Unlock()
 			case sig := <-interrupt:
 				// socket.Close()

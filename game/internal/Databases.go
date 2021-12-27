@@ -480,8 +480,8 @@ type PlayerDownBet struct {
 	DownBetTime string            `json:"down_bet_time" bson:"down_bet_time"` // 下注时间
 }
 
-func InsertPlayerDownBet(sur *PlayerDownBet) {
-	s, c := connect(dbName, PlayerDownBetDB)
+func InsertPlayerDownBet(date string, sur *PlayerDownBet) {
+	s, c := connect(dbName, PlayerDownBetDB+"_"+date)
 	defer s.Close()
 
 	err := c.Insert(sur)
@@ -492,8 +492,8 @@ func InsertPlayerDownBet(sur *PlayerDownBet) {
 }
 
 //GetPlayerDownBet 获取玩家投注数据
-func GetPlayerDownBet(page, limit int, selector bson.M, sortBy string) ([]PlayerDownBet, int, error) {
-	s, c := connect(dbName, PlayerDownBetDB)
+func GetPlayerDownBet(date string, page, limit int, selector bson.M, sortBy string) ([]PlayerDownBet, int, error) {
+	s, c := connect(dbName, PlayerDownBetDB+"_"+date)
 	defer s.Close()
 
 	var wts []PlayerDownBet
@@ -753,7 +753,7 @@ func FindCountByQuery(cmd SearchCMD) int {
 	defer s.Close()
 	count, err := c.Find(cmd.Query).Count()
 	if err != nil {
-		common.Debug_log("%v查找v", cmd, err.Error())
+		common.Debug_log("%v查找%v", cmd, err.Error())
 		return 0
 	}
 	return count

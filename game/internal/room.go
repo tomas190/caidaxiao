@@ -476,7 +476,7 @@ func (r *Room) CaiYunApi() bool {
 		err2 := json.NewDecoder(resp.Body).Decode(&errMap)
 		if err2 == nil && errMap["error"] != nil {
 			errMsg, ok := errMap["error"].(string)
-			if ok == false {
+			if !ok {
 				errMsg = "Unknown Error"
 			}
 			err2 = errors.New(errMsg)
@@ -981,7 +981,7 @@ func (r *Room) SetPlayerDownBet() {
 			}
 			data.DownBetInfo = v.DownBetMoney
 			data.DownBetTime = time.Now().Format("2006-01-02 15:04:05")
-			InsertPlayerDownBet(data) //todo
+			InsertPlayerDownBet(PeriodsNum[0:6], data) //todo
 		}
 	}
 }

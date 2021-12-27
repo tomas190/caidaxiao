@@ -822,15 +822,24 @@ func getPlayerDownBet(w http.ResponseWriter, r *http.Request) {
 		selector["lottery_type"] = req.PrizeType
 	}
 
+	// if req.PeriodsNum != "" {
+	// 	selector["periods_num"] = req.PeriodsNum
+	// }
+
+	var date string
 	if req.PeriodsNum != "" {
 		selector["periods_num"] = req.PeriodsNum
+		PeriodsNumArr := strings.Split(req.PeriodsNum, "-")
+		date = PeriodsNumArr[0]
+	} else {
+		return
 	}
 
 	page, _ := strconv.Atoi(req.Page)
 
 	limits, _ := strconv.Atoi(req.Limit)
 
-	recodes, count, err := GetPlayerDownBet(page, limits, selector, "-down_bet_time")
+	recodes, count, err := GetPlayerDownBet(date[0:6], page, limits, selector, "-down_bet_time")
 	if err != nil {
 		return
 	}
@@ -1824,7 +1833,7 @@ func userZhiBoReward(w http.ResponseWriter, r *http.Request) {
 			GiftMoney:  amount,
 			UserID:     int32(uid),
 		}
-		common.Debug_log("%v [%v]发送礼物扣款 礼物金额:%v 玩家余额", uid, a, amount, GiftPush.Balance)
+		common.Debug_log("%v [%v]发送礼物扣款 礼物金额:%v 玩家余额:%v", uid, a, amount, GiftPush.Balance)
 		a.WriteMsg(GiftPush)
 	}
 }
